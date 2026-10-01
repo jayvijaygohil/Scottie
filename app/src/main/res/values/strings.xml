@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Scottie</string>
+    <string name="back">Back</string>
+    <string name="model_download_title">Download Modals</string>
+    <string name="model_download_intro">Download models to use in Scottie and run them on your device.</string>
+    <string name="model_download_download">Download</string>
+    <string name="model_download_pause">Pause</string>
+    <string name="model_download_resume">Resume</string>
+    <string name="model_download_delete">Delete</string>
+</resources>
