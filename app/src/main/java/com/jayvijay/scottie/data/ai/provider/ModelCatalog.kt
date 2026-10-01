@@ -6,6 +6,7 @@ import ai.runanywhere.proto.v1.ArchiveStructure
 import ai.runanywhere.proto.v1.ArchiveType
 import ai.runanywhere.proto.v1.InferenceFramework
 import ai.runanywhere.proto.v1.ModelCategory
+import com.jayvijay.scottie.domain.entities.HardwareTarget
 import com.jayvijay.scottie.domain.entities.Model
 import com.jayvijay.scottie.domain.entities.ModelType
 
@@ -15,6 +16,9 @@ sealed interface CatalogModel {
   val name: String
   val framework: InferenceFramework
   val category: ModelCategory
+
+  /** RAM needed to run the model; 0 or less when unknown. */
+  val memoryBytes: Long
 
   /** Null when unknown. */
   val downloadBytes: Long?
@@ -33,7 +37,7 @@ data class SingleFileModel(
   val url: String,
   override val framework: InferenceFramework,
   override val category: ModelCategory,
-  val memoryBytes: Long,
+  override val memoryBytes: Long,
   override val downloadBytes: Long = memoryBytes,
   val contextLength: Int? = null,
   val supportsLora: Boolean = false,
@@ -46,7 +50,7 @@ data class ArchiveModel(
   val url: String,
   override val framework: InferenceFramework,
   override val category: ModelCategory,
-  val memoryBytes: Long,
+  override val memoryBytes: Long,
   val archiveType: ArchiveType,
   val structure: ArchiveStructure,
 ) : CatalogModel {
@@ -58,13 +62,23 @@ data class MultiFileModel(
   override val name: String,
   override val framework: InferenceFramework,
   override val category: ModelCategory,
-  val memoryBytes: Long,
+  override val memoryBytes: Long,
   override val downloadBytes: Long = memoryBytes,
   val files: List<ModelFile>,
 ) : CatalogModel
 
 fun CatalogModel.toModel(): Model =
-  Model(id = id, name = name, type = category.toModelType(), downloadBytes = downloadBytes)
+  Model(
+    id = id,
+    name = displayTitle(id, name),
+    type = category.toModelType(),
+    downloadBytes = downloadBytes,
+    description = familyDescription(id),
+    target =
+      if (framework == InferenceFramework.INFERENCE_FRAMEWORK_QHEXRT) HardwareTarget.NPU
+      else HardwareTarget.CPU,
+    memoryBytes = memoryBytes.takeIf { it > 0 },
+  )
 
 private fun ModelCategory.toModelType(): ModelType =
   when (this) {

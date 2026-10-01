@@ -11,6 +11,8 @@ class FakeModelRuntime : ModelRuntime {
   /** Ids the device accepts; null accepts every row. */
   var accepted: Set<String>? = null
   val downloaded = mutableSetOf<String>()
+  /** Device RAM; null when unknown. */
+  var totalMemory: Long? = null
   var downloadError: Exception? = null
   var deleteError: Exception? = null
 
@@ -25,6 +27,8 @@ class FakeModelRuntime : ModelRuntime {
   }
 
   override suspend fun downloadedIds(): Set<String> = downloaded.toSet()
+
+  override suspend fun totalMemoryBytes(): Long? = totalMemory
 
   override fun download(modelId: String): Flow<RuntimeDownloadEvent> = flow {
     downloadCalls += modelId

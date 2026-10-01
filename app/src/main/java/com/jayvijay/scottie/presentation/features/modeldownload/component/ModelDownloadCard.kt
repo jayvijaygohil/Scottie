@@ -7,6 +7,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,11 +21,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +37,7 @@ import com.jayvijay.scottie.domain.entities.DownloadPhase
 import com.jayvijay.scottie.domain.entities.DownloadProgress
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.presentation.ui.ScottieTheme
+import com.jayvijay.scottie.presentation.ui.xelauikit.XelaBadge
 import com.jayvijay.scottie.presentation.ui.xelauikit.XelaButton
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.button.XelaButtonState
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.button.XelaButtonType
@@ -41,12 +45,14 @@ import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaButtonMedium
 
 /**
  * Renders a model's download status without owning the download. [onDownload] also resumes and
- * retries. [canStart] is false while another model downloads.
+ * retries. [canStart] is false for unsupported models and while another model downloads; Delete
+ * stays available either way.
  */
 @Composable
 fun ModelDownloadUiItem(
   name: String,
-  description: String,
+  description: String?,
+  supported: Boolean,
   downloadBytes: Long?,
   status: ModelDownloadStatus,
   canStart: Boolean,
@@ -75,13 +81,28 @@ fun ModelDownloadUiItem(
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(text = name, style = MaterialTheme.typography.titleMedium, lineHeight = 24.sp)
-        Text(
-          text = description,
-          style = MaterialTheme.typography.bodyMedium,
-          lineHeight = 16.sp,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
+        Row(
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalAlignment = Alignment.Top,
+        ) {
+          Text(
+            text = name,
+            style = MaterialTheme.typography.titleMedium,
+            lineHeight = 24.sp,
+            modifier = Modifier.weight(1f),
+          )
+          SupportBadge(supported)
+        }
+        if (description != null) {
+          Text(
+            text = description,
+            style = MaterialTheme.typography.bodyMedium,
+            lineHeight = 16.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+          )
+        }
       }
 
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -136,6 +157,22 @@ fun ModelDownloadUiItem(
       }
     }
   }
+}
+
+@Composable
+private fun SupportBadge(supported: Boolean) {
+  XelaBadge(
+    text =
+      stringResource(
+        if (supported) R.string.model_support_supported else R.string.model_support_unsupported
+      ),
+    backgroundColor =
+      if (supported) MaterialTheme.colorScheme.primaryContainer
+      else MaterialTheme.colorScheme.errorContainer,
+    textColor =
+      if (supported) MaterialTheme.colorScheme.onPrimaryContainer
+      else MaterialTheme.colorScheme.onErrorContainer,
+  )
 }
 
 @Composable
@@ -263,6 +300,7 @@ private fun PreviewModelDownloadUiItemStates() {
     listOf(
       ModelDownloadStatus.Available to true,
       ModelDownloadStatus.Available to false,
+      ModelDownloadStatus.Downloaded to false,
       ModelDownloadStatus.Downloading(
         DownloadProgress(PREVIEW_HALF, PREVIEW_TOTAL, fraction = 0.5f)
       ) to false,
@@ -275,10 +313,16 @@ private fun PreviewModelDownloadUiItemStates() {
     )
   ScottieTheme {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-      states.forEach { (status, canStart) ->
+      states.forEachIndexed { index, (status, canStart) ->
         ModelDownloadUiItem(
-          name = "Qwen 2.5 · 1.5B",
-          description = "Text",
+          name = "Qwen3.5 2B",
+          description =
+            "Alibaba general-purpose chat model; strong quality for its size."
+              .takeIf {
+                index != 1
+              },
+          // The third row is downloaded on a device that cannot run it.
+          supported = index != 2,
           downloadBytes = PREVIEW_TOTAL,
           status = status,
           canStart = canStart,

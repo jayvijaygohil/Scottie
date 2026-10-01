@@ -6,7 +6,18 @@ data class Model(
   val type: ModelType,
   /** Null when unknown. */
   val downloadBytes: Long?,
+  /** Null when the catalog has none. */
+  val description: String? = null,
+  val target: HardwareTarget = HardwareTarget.CPU,
+  /** RAM needed to run the model; null when unknown. */
+  val memoryBytes: Long? = null,
 )
+
+/** Where a model executes. */
+enum class HardwareTarget {
+  CPU,
+  NPU,
+}
 
 enum class ModelType {
   TEXT,
@@ -56,7 +67,8 @@ enum class DownloadFailure {
   UNKNOWN,
 }
 
-data class ModelEntry(val model: Model, val status: ModelDownloadStatus)
+/** [supported] is false when this device cannot run [model]; such entries cannot be downloaded. */
+data class ModelEntry(val model: Model, val status: ModelDownloadStatus, val supported: Boolean)
 
 sealed interface ModelCatalog {
   data object Loading : ModelCatalog

@@ -7,6 +7,7 @@ import ai.runanywhere.proto.v1.ModelFileRole
 import ai.runanywhere.proto.v1.ModelInfo
 import ai.runanywhere.proto.v1.ModelSource
 import ai.runanywhere.proto.v1.RegisterModelFromUrlRequest
+import android.app.ActivityManager
 import android.content.Context
 import android.util.Log
 import com.jayvijay.scottie.domain.entities.DownloadFailure
@@ -58,6 +59,12 @@ constructor(@ApplicationContext private val context: Context) : ModelRuntime {
     withContext(Dispatchers.IO) {
       RunAnywhere.models.list().filter { it.isDownloadedOnDisk }.mapTo(mutableSetOf()) { it.id }
     }
+
+  override suspend fun totalMemoryBytes(): Long? =
+    context
+      .getSystemService(ActivityManager::class.java)
+      ?.let { manager -> ActivityManager.MemoryInfo().also(manager::getMemoryInfo).totalMem }
+      ?.takeIf { it > 0 }
 
   override fun download(modelId: String): Flow<RuntimeDownloadEvent> = flow {
     var last = DownloadProgress(bytesDone = 0, bytesTotal = 0, fraction = null)

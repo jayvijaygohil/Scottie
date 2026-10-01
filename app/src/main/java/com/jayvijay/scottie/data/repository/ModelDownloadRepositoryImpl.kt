@@ -9,6 +9,7 @@ import com.jayvijay.scottie.data.ai.provider.toModel
 import com.jayvijay.scottie.di.ApplicationScope
 import com.jayvijay.scottie.domain.entities.DownloadFailure
 import com.jayvijay.scottie.domain.entities.DownloadProgress
+import com.jayvijay.scottie.domain.entities.Model
 import com.jayvijay.scottie.domain.entities.ModelCatalog
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus.Available
@@ -54,11 +55,17 @@ constructor(
       try {
         val accepted = runtime.prepare(rows)
         val downloaded = runtime.downloadedIds()
+        val totalMemory = runtime.totalMemoryBytes()
         ModelCatalog.Ready(
-          rows
-            // Rejected rows (e.g. NPU bundles for other chips) stay visible once on disk.
-            .filter { it.id in accepted || it.id in downloaded }
-            .map { ModelEntry(it.toModel(), if (it.id in downloaded) Downloaded else Available) }
+          rows.map { row ->
+            val model = row.toModel()
+            ModelEntry(
+              model = model,
+              status = if (row.id in downloaded) Downloaded else Available,
+              // Rejected rows (e.g. NPU bundles for other chips) stay listed but cannot download.
+              supported = row.id in accepted && model.fitsIn(totalMemory),
+            )
+          }
         )
       } catch (e: CancellationException) {
         throw e
@@ -74,8 +81,10 @@ constructor(
       kept = -1L
       val entries = (catalog as? ModelCatalog.Ready)?.entries ?: return@update catalog
       if (entries.any { it.status is Downloading }) return@update catalog
+      val entry = entries.find { it.model.id == modelId }
+      if (entry?.supported != true) return@update catalog
       kept =
-        when (val status = entries.find { it.model.id == modelId }?.status) {
+        when (val status = entry.status) {
           Available -> 0
           is Paused -> status.bytesKept
           is Failed -> status.bytesKept
@@ -144,6 +153,10 @@ constructor(
 
   private fun ModelCatalog.Ready.withStatus(modelId: String, status: ModelDownloadStatus) =
     copy(entries = entries.map { if (it.model.id == modelId) it.copy(status = status) else it })
+
+  /** Unknown memory on either side never blocks a model. */
+  private fun Model.fitsIn(totalMemory: Long?): Boolean =
+    memoryBytes == null || totalMemory == null || memoryBytes <= totalMemory
 
   private companion object {
     const val TAG = "ModelDownload"

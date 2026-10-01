@@ -10,12 +10,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,10 +32,12 @@ import androidx.core.content.ContextCompat
 import com.jayvijay.scottie.R
 import com.jayvijay.scottie.domain.entities.DownloadFailure
 import com.jayvijay.scottie.domain.entities.DownloadProgress
+import com.jayvijay.scottie.domain.entities.HardwareTarget
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.domain.entities.ModelType
-import com.jayvijay.scottie.presentation.features.modeldownload.component.ModelDownloadUiItem
+import com.jayvijay.scottie.presentation.features.modeldownload.component.ModelSections
 import com.jayvijay.scottie.presentation.ui.ScottieTheme
+import com.jayvijay.scottie.presentation.ui.components.ScottieSearchField
 import com.jayvijay.scottie.presentation.ui.components.ScottieToolbar
 import com.jayvijay.scottie.presentation.ui.xelauikit.XelaToast
 import com.slack.circuit.codegen.annotations.CircuitInject
@@ -65,6 +64,19 @@ class ModelDownloadUi @Inject constructor() : Ui<ModelDownloadState> {
           subtitle = stringResource(R.string.model_download_intro),
           backLabel = stringResource(R.string.back),
           onBack = { state.eventSink(ModelDownloadAction.Back) },
+          search =
+            if (state.content is ModelDownloadContent.Models) {
+              {
+                ScottieSearchField(
+                  value = state.query,
+                  onValueChange = { state.eventSink(ModelDownloadAction.Search(it)) },
+                  placeholder = stringResource(R.string.model_download_search_placeholder),
+                  clearLabel = stringResource(R.string.model_download_search_clear),
+                )
+              }
+            } else {
+              null
+            },
         )
 
         when (val content = state.content) {
@@ -73,23 +85,15 @@ class ModelDownloadUi @Inject constructor() : Ui<ModelDownloadState> {
           ModelDownloadContent.Unavailable ->
             Message(stringResource(R.string.model_download_unavailable))
           is ModelDownloadContent.Models ->
-            LazyColumn(
-              modifier = Modifier.weight(1f),
-              contentPadding = PaddingValues(16.dp),
-              verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-              items(content.models, key = { it.id }) { model ->
-                ModelDownloadUiItem(
-                  name = model.name,
-                  description = stringResource(model.type.label()),
-                  downloadBytes = model.downloadBytes,
-                  status = model.status,
-                  canStart = model.canStart,
-                  onDownload = { onDownload(model.id) },
-                  onPause = { state.eventSink(ModelDownloadAction.Pause(model.id)) },
-                  onDelete = { state.eventSink(ModelDownloadAction.Delete(model.id)) },
-                )
-              }
+            if (content.sections.isEmpty() && state.query.isNotBlank()) {
+              Message(stringResource(R.string.model_download_search_empty, state.query.trim()))
+            } else {
+              ModelSections(
+                sections = content.sections,
+                onEvent = state.eventSink,
+                onDownload = onDownload,
+                modifier = Modifier.weight(1f),
+              )
             }
         }
       }
@@ -150,58 +154,109 @@ private fun Message(text: String, loading: Boolean = false) {
   }
 }
 
-private fun ModelType.label(): Int =
-  when (this) {
-    ModelType.TEXT -> R.string.model_type_text
-    ModelType.MULTIMODAL -> R.string.model_type_multimodal
-    ModelType.VISION -> R.string.model_type_vision
-    ModelType.IMAGE_GENERATION -> R.string.model_type_image_generation
-    ModelType.EMBEDDING -> R.string.model_type_embedding
-    ModelType.SPEECH_RECOGNITION -> R.string.model_type_speech_recognition
-    ModelType.SPEECH_SYNTHESIS -> R.string.model_type_speech_synthesis
-    ModelType.VOICE_ACTIVITY -> R.string.model_type_voice_activity
-    ModelType.SEGMENTATION -> R.string.model_type_segmentation
-    ModelType.OTHER -> R.string.model_type_other
-  }
+private fun previewState(
+  content: ModelDownloadContent,
+  query: String = "",
+  deleteFailed: String? = null,
+) =
+  ModelDownloadState(
+    content = content,
+    query = query,
+    deleteFailedModelName = deleteFailed,
+    eventSink = {},
+  )
 
-private fun previewState(content: ModelDownloadContent, deleteFailed: String? = null) =
-  ModelDownloadState(content = content, deleteFailedModelName = deleteFailed, eventSink = {})
+private fun previewModel(
+  id: String,
+  name: String,
+  type: ModelType,
+  target: HardwareTarget,
+  status: ModelDownloadStatus,
+  supported: Boolean = true,
+) =
+  ModelDownloadModel(
+    id = id,
+    name = name,
+    description = "Alibaba general-purpose chat model; strong quality for its size.",
+    type = type,
+    target = target,
+    downloadBytes = 1_000_000_000,
+    status = status,
+    supported = supported,
+    canStart = false,
+  )
 
 private val previewModels =
   ModelDownloadContent.Models(
     listOf(
-      ModelDownloadModel(
-        id = "qwen",
-        name = "Qwen 2.5 · 1.5B",
+      ModelSection(
         type = ModelType.TEXT,
-        downloadBytes = 1_000_000_000,
-        status =
-          ModelDownloadStatus.Downloading(DownloadProgress(500_000_000, 1_000_000_000, 0.5f)),
-        canStart = false,
+        count = 3,
+        expanded = true,
+        groups =
+          listOf(
+            ModelGroup(
+              target = HardwareTarget.CPU,
+              expanded = true,
+              models =
+                listOf(
+                  previewModel(
+                    "qwen",
+                    "Qwen3.5 2B",
+                    ModelType.TEXT,
+                    HardwareTarget.CPU,
+                    ModelDownloadStatus.Downloading(
+                      DownloadProgress(500_000_000, 1_000_000_000, 0.5f)
+                    ),
+                  ),
+                  previewModel(
+                    "gemma",
+                    "Gemma 4 31B IT",
+                    ModelType.TEXT,
+                    HardwareTarget.CPU,
+                    ModelDownloadStatus.Available,
+                    supported = false,
+                  ),
+                ),
+            ),
+            ModelGroup(
+              target = HardwareTarget.NPU,
+              expanded = false,
+              models =
+                listOf(
+                  previewModel(
+                    "qwen_npu",
+                    "Qwen3.5 2B",
+                    ModelType.TEXT,
+                    HardwareTarget.NPU,
+                    ModelDownloadStatus.Available,
+                    supported = false,
+                  )
+                ),
+            ),
+          ),
       ),
-      ModelDownloadModel(
-        id = "whisper",
-        name = "Whisper Tiny",
+      ModelSection(
         type = ModelType.SPEECH_RECOGNITION,
-        downloadBytes = 75_000_000,
-        status = ModelDownloadStatus.Failed(DownloadFailure.STORAGE, 12_000_000),
-        canStart = false,
-      ),
-      ModelDownloadModel(
-        id = "gemma3",
-        name = "Gemma 3 · 1B",
-        type = ModelType.MULTIMODAL,
-        downloadBytes = 800_000_000,
-        status = ModelDownloadStatus.Downloaded,
-        canStart = false,
-      ),
-      ModelDownloadModel(
-        id = "llama",
-        name = "Llama 3.2 · 1B",
-        type = ModelType.TEXT,
-        downloadBytes = null,
-        status = ModelDownloadStatus.Available,
-        canStart = false,
+        count = 1,
+        expanded = false,
+        groups =
+          listOf(
+            ModelGroup(
+              target = HardwareTarget.CPU,
+              expanded = true,
+              models =
+                listOf(
+                  previewModel(
+                    "whisper",
+                    "Whisper Tiny EN",
+                    ModelType.SPEECH_RECOGNITION,
+                    HardwareTarget.CPU,
+                    ModelDownloadStatus.Failed(DownloadFailure.STORAGE, 12_000_000),
+                  )
+                ),
+            )
+          ),
       ),
     )
   )
@@ -223,7 +278,16 @@ private fun ModelDownloadPreview() {
 @Composable
 private fun ModelDownloadDeleteFailedPreview() {
   ScottieTheme {
-    ModelDownloadUi().Content(previewState(previewModels, deleteFailed = "Gemma 3 · 1B"), Modifier)
+    ModelDownloadUi().Content(previewState(previewModels, deleteFailed = "Gemma 4 E2B"), Modifier)
+  }
+}
+
+@Preview(name = "No search results", widthDp = 390, heightDp = 844)
+@Composable
+private fun ModelDownloadNoResultsPreview() {
+  ScottieTheme {
+    ModelDownloadUi()
+      .Content(previewState(ModelDownloadContent.Models(emptyList()), query = "llava"), Modifier)
   }
 }
 

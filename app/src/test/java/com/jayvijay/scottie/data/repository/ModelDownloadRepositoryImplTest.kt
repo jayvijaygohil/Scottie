@@ -9,6 +9,7 @@ import com.jayvijay.scottie.data.ai.provider.SingleFileModel
 import com.jayvijay.scottie.domain.entities.DownloadFailure
 import com.jayvijay.scottie.domain.entities.DownloadPhase
 import com.jayvijay.scottie.domain.entities.DownloadProgress
+import com.jayvijay.scottie.domain.entities.HardwareTarget
 import com.jayvijay.scottie.domain.entities.ModelCatalog
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus.Available
@@ -58,14 +59,45 @@ class ModelDownloadRepositoryImplTest {
   }
 
   @Test
-  fun rejectedRowIsHiddenUnlessDownloaded() = runTest {
+  fun rejectedRowIsListedAsUnsupported() = runTest {
     runtime.accepted = setOf(A, B)
-    val hidden = (repository().catalog.value as ModelCatalog.Ready).entries.map { it.model.id }
-    assertEquals(listOf(A, B), hidden)
+    val entries = (repository().catalog.value as ModelCatalog.Ready).entries
+    assertEquals(listOf(A, B, NPU), entries.map { it.model.id })
+    assertEquals(listOf(true, true, false), entries.map { it.supported })
+    assertEquals(HardwareTarget.NPU, entries.last().model.target)
+  }
 
+  @Test
+  fun rowNeedingMoreMemoryThanDeviceIsUnsupported() = runTest {
+    runtime.totalMemory = TOTAL - 1
+    val entries = (repository().catalog.value as ModelCatalog.Ready).entries
+    assertEquals(listOf(false, false, false), entries.map { it.supported })
+  }
+
+  @Test
+  fun unknownDeviceMemoryDoesNotBlock() = runTest {
+    runtime.totalMemory = null
+    val entries = (repository().catalog.value as ModelCatalog.Ready).entries
+    assertTrue(entries.all { it.supported })
+  }
+
+  @Test
+  fun unsupportedModelCannotDownloadButCanBeDeleted() = runTest {
+    runtime.accepted = setOf(A, B)
     runtime.downloaded += NPU
-    val shown = (repository().catalog.value as ModelCatalog.Ready).entries.map { it.model.id }
-    assertEquals(listOf(A, B, NPU), shown)
+    val repo = repository()
+    repo.download(NPU)
+    runCurrent()
+    assertEquals(Downloaded, repo.status(NPU))
+    assertEquals(emptyList<String>(), runtime.downloadCalls)
+
+    assertTrue(repo.delete(NPU).isSuccess)
+    assertEquals(Available, repo.status(NPU))
+    repo.download(NPU)
+    runCurrent()
+    assertEquals(Available, repo.status(NPU))
+    assertEquals(emptyList<String>(), runtime.downloadCalls)
+    assertEquals(0, host.startCount)
   }
 
   @Test

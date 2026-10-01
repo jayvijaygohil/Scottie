@@ -1,5 +1,6 @@
 package com.jayvijay.scottie.presentation.ui.components
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,6 +33,8 @@ fun ScottieToolbar(
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
   subtitle: String? = null,
+  /** Optional search input shown below the title, e.g. [ScottieSearchField]. */
+  search: (@Composable () -> Unit)? = null,
 ) {
   Column(modifier = modifier) {
     TopAppBar(
@@ -76,6 +79,10 @@ fun ScottieToolbar(
         color = MaterialTheme.colorScheme.onSurfaceVariant,
       )
     }
+
+    if (search != null) {
+      Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 12.dp)) { search() }
+    }
   }
 }
 
@@ -100,6 +107,26 @@ private fun ScottieToolbarWithSubtitlePreview() {
       subtitle = "Download models to use in Scottie and run them on your device.",
       backLabel = "Back",
       onBack = {},
+    )
+  }
+}
+
+@Preview(name = "Toolbar with Search")
+@Composable
+private fun ScottieToolbarWithSearchPreview() {
+  ScottieTheme {
+    ScottieToolbar(
+      title = "Download Models",
+      backLabel = "Back",
+      onBack = {},
+      search = {
+        ScottieSearchField(
+          value = "",
+          onValueChange = {},
+          placeholder = "Search",
+          clearLabel = "Clear",
+        )
+      },
     )
   }
 }
