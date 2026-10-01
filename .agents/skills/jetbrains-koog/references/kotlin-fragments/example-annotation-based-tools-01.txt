@@ -1,0 +1,5 @@
+// Kotlin reference fragment from the supplied Koog 1.3.0 documentation.
+package ai.koog.agents.example.exampleAnnotationBasedTools01
+
+@Target(AnnotationTarget.FUNCTION)
+public annotation class Tool(val customName: String = "")

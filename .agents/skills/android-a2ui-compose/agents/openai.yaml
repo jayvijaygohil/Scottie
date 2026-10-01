@@ -1,0 +1,3 @@
+interface:
+  display_name: "Android A2UI Compose"
+  short_description: "Integrate A2UI and build Jetpack Compose components"

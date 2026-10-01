@@ -1,0 +1,42 @@
+// Kotlin reference fragment from the supplied Koog 1.3.0 documentation.
+package ai.koog.agents.example.exampleSpringBootKotlin02
+
+import ai.koog.prompt.message.MessagePart
+import kotlinx.coroutines.CancellationException
+import ai.koog.prompt.dsl.prompt
+import ai.koog.prompt.executor.clients.anthropic.AnthropicModels.Haiku_4_5
+import ai.koog.prompt.executor.clients.openai.OpenAIModels.Chat.GPT4oMini
+import ai.koog.prompt.executor.clients.openrouter.OpenRouterModels.Claude3Haiku
+import ai.koog.prompt.executor.llms.MultiLLMPromptExecutor
+import org.slf4j.LoggerFactory
+import org.springframework.stereotype.Service
+
+@Service
+class RobustAIService(private val multiLLMPromptExecutor: MultiLLMPromptExecutor) {
+
+    private val llms = listOf(GPT4oMini, Haiku_4_5, Claude3Haiku)
+
+    suspend fun generateWithFallback(input: String): String {
+        val prompt = prompt("robust") {
+            system("You are a helpful AI assistant")
+            user(input)
+        }
+
+        for (llm in llms) {
+            try {
+                val result = multiLLMPromptExecutor.execute(prompt, llm)
+                return result.parts.filterIsInstance<MessagePart.Text>().joinToString("\n") { it.text }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.warn("{} executor failed, trying next: {}", llm.id, e.message)
+            }
+        }
+
+        throw IllegalStateException("All AI providers failed")
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger("RobustAIService")
+    }
+}

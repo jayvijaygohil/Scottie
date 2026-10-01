@@ -1,0 +1,4 @@
+// Kotlin reference fragment from the supplied Koog 1.3.0 documentation.
+dependencies {
+    implementation("ai.koog:serialization-jackson:<version>")
+}

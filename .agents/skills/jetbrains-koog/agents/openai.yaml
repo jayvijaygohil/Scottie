@@ -1,0 +1,3 @@
+interface:
+  display_name: "JetBrains Koog"
+  short_description: "Build Kotlin agents with Koog 1.3.0 and beta APIs"

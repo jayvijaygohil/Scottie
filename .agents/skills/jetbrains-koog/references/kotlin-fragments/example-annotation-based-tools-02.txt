@@ -1,0 +1,11 @@
+// Kotlin reference fragment from the supplied Koog 1.3.0 documentation.
+package ai.koog.agents.example.exampleAnnotationBasedTools02
+
+@Target(
+    AnnotationTarget.PROPERTY,
+    AnnotationTarget.CLASS,
+    AnnotationTarget.TYPE,
+    AnnotationTarget.VALUE_PARAMETER,
+    AnnotationTarget.FUNCTION
+)
+public annotation class LLMDescription(val description: String)

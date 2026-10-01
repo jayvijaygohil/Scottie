@@ -1,0 +1,4691 @@
+{
+  "upstream": "JetBrains/Koog documentation examples, version family 1.3.0 / 1.3.0-beta",
+  "count": 340,
+  "examples": [
+    {
+      "file": "example-agent-client-protocol-01.kt",
+      "source_sha256": "630be790ef0ecf6e8290e8f906625d3e8ea63ba4271cd0196909fee8cb310d53",
+      "sha256": "d5a97a7f8da0451274ca0021b07ffe905e569be6038b415934268eab209a81f7",
+      "package": "ai.koog.agents.example.exampleAgentClientProtocol01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agent-client-protocol.md"
+      ],
+      "imports_without_exact_api_entry": [
+        "ai.koog.agents.features.acp.AcpAgent"
+      ]
+    },
+    {
+      "file": "example-agent-client-protocol-02.kt",
+      "source_sha256": "e38d5ba5efdad05b91147670d21f004036640cb83eb6577e29a965b1eb30c674",
+      "sha256": "11cf68e4e4d3374c2ec71978a7fb87f4ae94f2f4d7642a789669b483ca804b8b",
+      "package": "ai.koog.agents.example.exampleAgentClientProtocol02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agent-client-protocol.md"
+      ],
+      "imports_without_exact_api_entry": [
+        "ai.koog.agents.features.acp.AcpAgent",
+        "ai.koog.agents.features.acp.toKoogMessage"
+      ]
+    },
+    {
+      "file": "example-agent-client-protocol-03.kt",
+      "source_sha256": "18c84e9dc4ba1640872f609b83577ef54f2da73fb4088e9d53ca3d58dd211973",
+      "sha256": "e8e2afcd585d492e5cf4bfc14f812e914c73c39676d6ebb8aec065aabfcd1940",
+      "package": "ai.koog.agents.example.exampleAgentClientProtocol03",
+      "adaptations": [],
+      "contains_placeholders": true,
+      "requires_examples": [],
+      "guides": [
+        "guides/agent-client-protocol.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-client-protocol-04.kt",
+      "source_sha256": "9ccd881a07d5893b55bb0197d962b0c056f128446efaa3be6a26280bcd8d159d",
+      "sha256": "5f172e3745fd686e6d937a651e6fc16ffe37026a0c51d9121e490fc4a36a2b0e",
+      "package": "ai.koog.agents.example.exampleAgentClientProtocol04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agent-client-protocol.md"
+      ],
+      "imports_without_exact_api_entry": [
+        "ai.koog.agents.features.acp.toKoogMessage"
+      ]
+    },
+    {
+      "file": "example-agent-client-protocol-05.kt",
+      "source_sha256": "787e4e65bd128b1a2a3a9231bf19a69374df92b533fda451de6a04aec35d077a",
+      "sha256": "5a82ba17250a42fd2c85c20e8267772e3e904952406cfe00ca5ffe0ec194a5e4",
+      "package": "ai.koog.agents.example.exampleAgentClientProtocol05",
+      "adaptations": [],
+      "contains_placeholders": true,
+      "requires_examples": [],
+      "guides": [
+        "guides/agent-client-protocol.md"
+      ],
+      "imports_without_exact_api_entry": [
+        "ai.koog.agents.features.acp.withAcpAgent"
+      ]
+    },
+    {
+      "file": "example-agent-client-protocol-06.kt",
+      "source_sha256": "c56906e6b5a1f138693a96d688ef205357400d56ef3e07598f46b407fbd923b2",
+      "sha256": "bb718e62b793bbab550c2d2c2a9e35ff1cfb5fb19d3ed4fd3539f80273ed495c",
+      "package": "ai.koog.agents.example.exampleAgentClientProtocol06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agent-client-protocol.md"
+      ],
+      "imports_without_exact_api_entry": [
+        "ai.koog.agents.features.acp.withAcpAgent"
+      ]
+    },
+    {
+      "file": "example-agent-config-01.kt",
+      "source_sha256": "4134832f1e92156ae3c3fb75cd7a2ebb86bc90156b35d695b78382fac8fd2165",
+      "sha256": "ab5f5904ab77a502b6e484305feb90a73be9cb695fef961d2bfa81852e93a24a",
+      "package": "ai.koog.agents.example.exampleAgentConfig01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-config-02.kt",
+      "source_sha256": "6e3537871080f146dd4624b078792350f7b596ee5163acd1815230c2df7d3e13",
+      "sha256": "c46d057e0fbb17e9511642b9ed476b5759bc1883bfd5b9cbdc0eed7a739c7795",
+      "package": "ai.koog.agents.example.exampleAgentConfig02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-persistence-01.kt",
+      "source_sha256": "3dbe1642f2ba955b051288b101c394bff0934d70f757425bb3182b0493ab18ce",
+      "sha256": "395a9bae46b6bfdccd45d6cc7e8727553eabd540d941ae57361bc1778e630c34",
+      "package": "ai.koog.agents.example.exampleAgentPersistence01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-persistence.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-persistence-02.kt",
+      "source_sha256": "c63bfc71c4eca861cf668e46d30e2b4bba61e71769172a216342741e2c607756",
+      "sha256": "69625894598810d98c4030e5b3742d4a9e9bec9b3b9fa8de1690f82d35f23d89",
+      "package": "ai.koog.agents.example.exampleAgentPersistence02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-persistence.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-persistence-03.kt",
+      "source_sha256": "27d0d741c653dad0e21e7e659cc17aa0c5a805babd99518d01e65dc437d4a047",
+      "sha256": "b11e84aaa223789ec4960a0f9faf62910b6b6c097108cd47e545f87a361b5827",
+      "package": "ai.koog.agents.example.exampleAgentPersistence03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-persistence.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-persistence-04.kt",
+      "source_sha256": "e6d6392d00cdb3fee5fb5925d2d9efdec9c2442cfe312cb016289f1fcfe4a97d",
+      "sha256": "dd79b915dafff1712dc1aeb67924e8a900227724b75d85370af9b2bdf2b02e3e",
+      "package": "ai.koog.agents.example.exampleAgentPersistence04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-persistence.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-persistence-05.kt",
+      "source_sha256": "fd106e5a6fb9cfa75e250e0e4291b48b462fe6d7ea3b96805776c50ee2465e12",
+      "sha256": "faf5b2961cd4f643f097192c8f34c61ca2fdcd9e63c6b951fa0822c56c3ac793",
+      "package": "ai.koog.agents.example.exampleAgentPersistence05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-persistence.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-persistence-06.kt",
+      "source_sha256": "36439e9967e6ffb3831e4b53901480837d7ec7fa8fd49a20ccf0bd725b4b2fc9",
+      "sha256": "97b54e2cec7911fd1eaad8e2805196196c7ec8a8dc4fa4b6c42e7fcf1d4161b5",
+      "package": "ai.koog.agents.example.exampleAgentPersistence06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-persistence.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-persistence-07.kt",
+      "source_sha256": "1fedc902a2a5dbbefa75f4ff6f10b5e0ed6f0dc1111b359b06d8e184c9cc645e",
+      "sha256": "18348c29e4d93eb6b07f212ceef724ecce2d9cfc0db555eb44032b61d73622a0",
+      "package": "ai.koog.agents.example.exampleAgentPersistence07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-agent-persistence-04.kt"
+      ],
+      "guides": [
+        "guides/features/agent-persistence.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-persistence-08.kt",
+      "source_sha256": "f746df784755685d77cc9bc141c3942117239fce77b9975a29219a216186ab4e",
+      "sha256": "5a0ddee1d590871daa3d435425b539459e5a1e971dbb7c3f70bee020062a8c53",
+      "package": "ai.koog.agents.example.exampleAgentPersistence08",
+      "adaptations": [],
+      "contains_placeholders": true,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-persistence.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-persistence-09.kt",
+      "source_sha256": "0d5608c8ce54d693e860deb0d26341a58d3bbb6cccf2d37e60c2792f9fbec211",
+      "sha256": "9bf5e10b73b830581d25d13a234dad7227bd15130102bda94e4e097f8d7f2b66",
+      "package": "ai.koog.agents.example.exampleAgentPersistence09",
+      "adaptations": [],
+      "contains_placeholders": true,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-persistence.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-agent-persistence-10.kt",
+      "source_sha256": "956f984087cde33306e8c5a3514c2caebb0d26306e393c7acbe7351553f06041",
+      "sha256": "6082b349db00b96d417e78ec7d0e69165db6fe9e11a5bb1f666458019b7f8dca",
+      "package": "ai.koog.agents.example.exampleAgentPersistence10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-persistence.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-annotation-based-tools-01.kt",
+      "source_sha256": "adc972181a0bc0bcbb3440d553c0afd18e46300e55b36256a1b8442300ad1771",
+      "sha256": "5106756f98cba8b528925a00e4234d6d3f57a8afc844d7f263e4a256065e62a9",
+      "package": "ai.koog.agents.example.exampleAnnotationBasedTools01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-annotation-based-tools-02.kt",
+      "source_sha256": "c12aba9def12724afa6ba985df8bede8748b0df92f88c39168aea0731ef5e4c5",
+      "sha256": "c3e8722884561b685bad52980485b0825239e7151f7fb4ac027e7c459ce83cb4",
+      "package": "ai.koog.agents.example.exampleAnnotationBasedTools02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-annotation-based-tools-03.kt",
+      "source_sha256": "537486426a9ea677ed25a0981d8f5c3af5ddeb5c6a8e6d9e559de3ff9a9a9e6d",
+      "sha256": "65cadc1291dac81a7be64f541b81fc55f04f53c93ab475acedfa5c9cd194e38c",
+      "package": "ai.koog.agents.example.exampleAnnotationBasedTools03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-annotation-based-tools-04.kt",
+      "source_sha256": "daf94c38351218ef4a96934d90eb3aecb9738736a82183a815f39f7d63446633",
+      "sha256": "06ff42a39ea91b711d8c61320c8b240ae4c4696b0a4c8190eb2e868bfcad7201",
+      "package": "ai.koog.agents.example.exampleAnnotationBasedTools04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-annotation-based-tools-05.kt",
+      "source_sha256": "928413cfd371e43b6b968b65fad5bdd5312c7ed88d2c0c96b90d95054da6e098",
+      "sha256": "2982611b5c79f53bf6f5de0f83e76d1c8c547d9e6d04c5687341dcbb0bc0d0cf",
+      "package": "ai.koog.agents.example.exampleAnnotationBasedTools05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-annotation-based-tools-06.kt",
+      "source_sha256": "dbdec770d4d983623c8db7165e6c41679817b3192604d3ec66669501b1da28ce",
+      "sha256": "d0e7963515c4eed7ad6b4dbb6ecc07860a6ed2ff3b51407ecbfe6f469491eed5",
+      "package": "ai.koog.agents.example.exampleAnnotationBasedTools06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-annotation-based-tools-07.kt",
+      "source_sha256": "e8c03fd93d8e7bbac0678ef873add914c88aee9c19e83c8d7d4bad9af16a8906",
+      "sha256": "bcc3293e1ad5178f465e1f2c8d8d5a1d0472fc05778a840ee4598fac3d7c05b9",
+      "package": "ai.koog.agents.example.exampleAnnotationBasedTools07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-annotation-based-tools-06.kt"
+      ],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-annotation-based-tools-08.kt",
+      "source_sha256": "f7749841e5461d2b46b9b5c26a0d720cf1c2159bbae0185a8cfa29d8e47c1fe3",
+      "sha256": "59db9e1a7c14d08c7027a904add42829d510be884a5fa4b97534a1d9197940be",
+      "package": "ai.koog.agents.example.exampleAnnotationBasedTools08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-annotation-based-tools-09.kt",
+      "source_sha256": "04e28e08d0fedb7beae71dd159d4b03cf114e4b57ae778f4deef7ecf0a4d60ae",
+      "sha256": "7afc6328d77a595c4b7321fe7459f12e0e3077fc2a344e9c9c079ae1e7beead3",
+      "package": "ai.koog.agents.example.exampleAnnotationBasedTools09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-basic-01.kt",
+      "source_sha256": "5209fca5e9fe84225ec0980f4c27ec6aad5cb4b5f5632bb8676e49c67a7ccc25",
+      "sha256": "7af67a0adaa450e1dd30d5229cd80085ed454290b2c8661857c8b7727eb9834f",
+      "package": "ai.koog.agents.example.exampleBasic01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/basic-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-basic-02.kt",
+      "source_sha256": "b3c463d3db2598651b5b61af9ec702fad125f67503f24aee5f92860139e3a892",
+      "sha256": "7ab880e567604ff301ab10ee913f4b4ae931b1e5710e5c6e435cfd9e56558de2",
+      "package": "ai.koog.agents.example.exampleBasic02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/basic-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-basic-03.kt",
+      "source_sha256": "2d8a4cbe9d056b74c15d1280967b24d29ab648fc569004a865023bd40412b75f",
+      "sha256": "bf336d5b134f6f71d120329b7a9b373262bd3990f6593d1c726c9e0675457e58",
+      "package": "ai.koog.agents.example.exampleBasic03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/basic-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-basic-04.kt",
+      "source_sha256": "474bf6cb5391f162846c084cfd3947bea008346b082d6e1788b8c160a0bd3ac0",
+      "sha256": "1507fb9763e4fdd26ac5a57553fb2f18ec78539b15c581adf4f360237d143cac",
+      "package": "ai.koog.agents.example.exampleBasic04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/basic-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-basic-05.kt",
+      "source_sha256": "725336a11e22402d0cd6d85193ddb63e3da0aba0cea98bcedf7957f7f98bb4f5",
+      "sha256": "f0437c22e606ee233050ec1dd64b57955063dc6d363d7615cd3bd75d30cc7769",
+      "package": "ai.koog.agents.example.exampleBasic05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/basic-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-basic-additional-01.kt",
+      "source_sha256": "c1ee909b11f8175ee0b07940498702ba7c3f428e9163aade88d52fee255c4fc2",
+      "sha256": "a1d4cc74ee49f7d6d7f89c5e8a2feeae7de9821366ec2e72e95d9cc73e75f165",
+      "package": null,
+      "adaptations": [
+        "Renamed an upstream Kotlin file whose filename had a misleading language suffix."
+      ],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/basic-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-built-in-tools-01.kt",
+      "source_sha256": "2ef6a32a203d5a04e953f8d6d81474ef4ac82484772a040939cc754e5128765a",
+      "sha256": "c7eb689c0d379a6af1eda726b3ccb00c26f94e8ba0c31b20186da576a610abf4",
+      "package": "ai.koog.agents.example.exampleBuiltInTools01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/built-in-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-cache-control-01.kt",
+      "source_sha256": "fc021854b9ee79cec629b92514a068584500e20b9de8f51485630285e6867662",
+      "sha256": "823b1b4314fdd057ada440b79a24103a49325cf536aa920b5de89fc5a416881f",
+      "package": "ai.koog.agents.example.exampleCacheControl01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/cache-control.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-cache-control-02.kt",
+      "source_sha256": "bae75e04fa389e9a52ac3615b990c91fa80388808b85c4586248b04d7fc3d448",
+      "sha256": "c9a101224175866fe62f0c3a3b7b22669277a080e722b70045f7cadcb5318d6c",
+      "package": "ai.koog.agents.example.exampleCacheControl02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/cache-control.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-cache-control-03.kt",
+      "source_sha256": "54bdfac1f316ca2497909545d8426493fd71ba061913ed7e36aea426231859bf",
+      "sha256": "3650406b70037fc4e17202abf0aad26b1e6fb599a2e5c19557e0bfe027ae7860",
+      "package": "ai.koog.agents.example.exampleCacheControl03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/cache-control.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-cache-control-04.kt",
+      "source_sha256": "4bfcaed2a1c618a06820cb1ba95ca9fab67801d01bcbddaf1967a1c7061b3d40",
+      "sha256": "6ddf4f54a31f8661ebf4fba80b8c2c621884c4b17ca49a6ad6aace226d10c42a",
+      "package": "ai.koog.agents.example.exampleCacheControl04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/cache-control.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-cache-control-05.kt",
+      "source_sha256": "a272e45ec4f2f9fdc2e51053b53f18991deef955a80d4d0ac18082189e61c174",
+      "sha256": "7659f6dd7b78071aaf566a2dcb721c1236996106649a9b3442a18732eea9edd2",
+      "package": "ai.koog.agents.example.exampleCacheControl05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/cache-control.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-cache-control-06.kt",
+      "source_sha256": "38e025195ecc6129e8fd2ab49fde85ad72f7c39253b4b0278eafaa81ed4098a1",
+      "sha256": "3c37ee68563d74be6ad4b7ccb4a2fa72bc81882c7c243b06cade6692bf7486fb",
+      "package": "ai.koog.agents.example.exampleCacheControl06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/cache-control.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-cache-control-07.kt",
+      "source_sha256": "af9082d4e66b83f6b2411781a715270be2a875e2fcac866ff91a945113e92ae2",
+      "sha256": "8dbb51f0a06c802f7e841bac529854272f31b4a327114921cb6f6b007a401ec8",
+      "package": "ai.koog.agents.example.exampleCacheControl07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/cache-control.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-cache-control-08.kt",
+      "source_sha256": "dc947d4150ebd12735d1464ea3ca98ee77c136521d46f887b3eddf443c1c896a",
+      "sha256": "450fdde5d2370d503dcb4d4638fd98fc4ae555ffd7659e4bea5dba73dc2431c2",
+      "package": "ai.koog.agents.example.exampleCacheControl08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/cache-control.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-class-based-tools-01.kt",
+      "source_sha256": "d8f5044274e1096ba620e5893c9e594bae5db6aa1b5b2570c1dc4b78877933ca",
+      "sha256": "d10a8aa03f663f5a394a3593439810e0b5ebc022f91d6bb66c0b3bb8c5a96a23",
+      "package": "ai.koog.agents.example.exampleClassBasedTools01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/class-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-class-based-tools-02.kt",
+      "source_sha256": "6a9e39f7d0d3a684f347033deaa9988c6a25589ec784b997784b7c7ee3901697",
+      "sha256": "188c9b387c19fa59c717fa0e2393e4fd92619d9dab5d2054507a1bb69f69aa6c",
+      "package": "ai.koog.agents.example.exampleClassBasedTools02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/class-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-class-based-tools-03.kt",
+      "source_sha256": "81afca1e3e98e8f39c0c0da06d48fa75a0809c54e0e32c5e2884becd27f2c408",
+      "sha256": "d7ab6533262966c169bd9064b3250fd47bfc58f879076b7ca7148c92961b84cd",
+      "package": "ai.koog.agents.example.exampleClassBasedTools03",
+      "adaptations": [],
+      "contains_placeholders": true,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/class-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-class-based-tools-metadata-01.kt",
+      "source_sha256": "c3ac6d342d4319b2fc3fd71b181a5f52a771e40afc3589b8308697e0cc77344f",
+      "sha256": "69020d54da916bf8492488c626a2e66cbbb5832aa4fb4462ae47b8b9f2ed61bc",
+      "package": "ai.koog.agents.example.exampleClassBasedToolsMetadata01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/class-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-class-based-tools-metadata-02.kt",
+      "source_sha256": "fea6c4416ec41fd8be6c4cd7e94a60ffcaeb1fc1cafe02bd52d21750c9ee64c5",
+      "sha256": "30bb4f64a780b0f7955f461affa478b34ed4f330e3eb48c42d2ce4ae4b26c46c",
+      "package": "ai.koog.agents.example.exampleClassBasedToolsMetadata02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/class-based-tools.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-content-moderation-01.kt",
+      "source_sha256": "79f1609ac96ed65414ae6045395bcdd6b2bdada2c349824534f016e674f33206",
+      "sha256": "469c02dc43975dbc20c8b699a3b3cb634304db021739d6e45756ccc87ffb43a9",
+      "package": "ai.koog.agents.example.exampleContentModeration01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/content-moderation.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-content-moderation-02.kt",
+      "source_sha256": "62db2f7e4637c86ab87791ba2e1307b13788a4fe95880f79ec11077112cbb2a5",
+      "sha256": "60ae74436d2204497cfeeca0c00c98126903e2f8b3ffed1a1a6c01f660d7a1e5",
+      "package": "ai.koog.agents.example.exampleContentModeration02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/content-moderation.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-content-moderation-03.kt",
+      "source_sha256": "def3b38cb827b30b76bdbf05a40176ca4ce78d076c9309d106d709778deb56b0",
+      "sha256": "3a6ba18d63b71bee03c6ddb64bc47d664e6aa726858a50620a4d867f4a55fc18",
+      "package": "ai.koog.agents.example.exampleContentModeration03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/content-moderation.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-content-moderation-04.kt",
+      "source_sha256": "6227ef1e3605901405ea90d041da581d2015d9d6c8b99971b82b4425467fa0fa",
+      "sha256": "1ed11bca8597ebe428859fdd3378723a7e050873c29a5ef7f0523ce34f5dc8c3",
+      "package": "ai.koog.agents.example.exampleContentModeration04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/content-moderation.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-content-moderation-05.kt",
+      "source_sha256": "c61e163ba1abdba65c3749956c2564ae9dc68faf75658f20d8bd27fd16486b03",
+      "sha256": "46a884663f67d0dd94ebad89205a1cc49d5ac45f5a4bc4910d2fbe1278aa231f",
+      "package": "ai.koog.agents.example.exampleContentModeration05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/content-moderation.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-content-moderation-06.kt",
+      "source_sha256": "3daadd9f3d4e87cb6bf718fb1819f3a079cf934b3796eacef57579a09ac550be",
+      "sha256": "ce3f966ef0e4e04ec5656236173aaeb227ffdf26ebd34b5d6382ff84c8731f5c",
+      "package": "ai.koog.agents.example.exampleContentModeration06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/content-moderation.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-content-moderation-07.kt",
+      "source_sha256": "52b57d8812aab0bea7517e8cc604353a247d0f91b8454771eeba64704bb4e421",
+      "sha256": "63693c97abff4266adc30125503b19839a0b2930a915434a24b17858090cd06f",
+      "package": "ai.koog.agents.example.exampleContentModeration07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/content-moderation.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-content-moderation-08.kt",
+      "source_sha256": "f0ad0a62e1d84d3f6d18fbb33f88b3cc939dbd0bca730560281308c302b420e1",
+      "sha256": "de02debfc1fce52c3c615e4a2791350ccc7d645700bbfff20e87ad3a6c5e66ed",
+      "package": "ai.koog.agents.example.exampleContentModeration08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/content-moderation.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-creating-prompts-01.kt",
+      "source_sha256": "e3d55592d1502b821cec30efaad7e334edaf4e2437fd0c356df7e796985f8bb4",
+      "sha256": "b4565966ba53ceb15b5607b87b631dc44a4cea3ab8ea729bd015ecfb888f852a",
+      "package": "ai.koog.agents.example.exampleCreatingPrompts01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-creating-prompts-02.kt",
+      "source_sha256": "31ae3a7d1837c894ba10a877628a0e93387ef339d247c061db14c1efa1ab8820",
+      "sha256": "90ed399a3e7175512d76b1a174bfba85a85bfb37c358463b7900ecc78bb4012c",
+      "package": "ai.koog.agents.example.exampleCreatingPrompts02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-creating-prompts-03.kt",
+      "source_sha256": "c9183ff4b83ef20a701bbbd48716cb1fcf876d4a039426d6d2f82cf1f0ba8509",
+      "sha256": "bd1dfa859189410fc2670d3418ec02de73867d042bf6212f500bdc207348abd6",
+      "package": "ai.koog.agents.example.exampleCreatingPrompts03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-creating-prompts-04.kt",
+      "source_sha256": "36f628f253236898e06f25216d0bd10e05b5277b2b82d9854e6fd59c2f8952d0",
+      "sha256": "66a105fe0d2176093bd33c31c1eb171ae76b95dd36834e086ce0a00d2bec37ad",
+      "package": "ai.koog.agents.example.exampleCreatingPrompts04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-creating-prompts-05.kt",
+      "source_sha256": "e4d03c95cb1f897086d771adea5256d37fbfa9fb36499482282151080f33fa70",
+      "sha256": "0a8aea9b32803f277aa28d2a7234227efb4f83d3f0752d63738150992ea5775d",
+      "package": "ai.koog.agents.example.exampleCreatingPrompts05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-creating-prompts-06.kt",
+      "source_sha256": "6d5902a775c32a425799c8570572498833883a9524003e40f3538aff0c417260",
+      "sha256": "ff527982cb48f0c33bc6375b8d7e1ab5f9b4e0023ee1d3d29f36dc7e6971af14",
+      "package": "ai.koog.agents.example.exampleCreatingPrompts06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-creating-prompts-07.kt",
+      "source_sha256": "70d2422c94ee1c56dca436de334d59d3cba87249515d3d0993d0dee83f17cec2",
+      "sha256": "6badeb8787cdde2948315bf6cff00eb48caec4a812655f5b494a4e5330fa3d36",
+      "package": "ai.koog.agents.example.exampleCreatingPrompts07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-creating-prompts-08.kt",
+      "source_sha256": "7ff0482e482d4be8fff80b0dbc2a09b99ade742848a3c20e562c2fe6cf2e43ce",
+      "sha256": "5fe50dee818fd52fb07b4ae2a66b7e245b5d0d9e3eaf93df4bc89cde61771758",
+      "package": "ai.koog.agents.example.exampleCreatingPrompts08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-creating-prompts-09.kt",
+      "source_sha256": "b8a712213b15a89c83cdc625a1148519479c474c32772ba3c5cd2834cb774ffb",
+      "sha256": "79d3081ac1a73aa515c3a9c8a45bdf37b83c701a7a6f0d4a76e07915f4a9295c",
+      "package": "ai.koog.agents.example.exampleCreatingPrompts09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-creating-prompts-10.kt",
+      "source_sha256": "3150ddf002388ded34c7a43f8c47fe3bb2c6f23e62aeae37c82688c1b5892b4d",
+      "sha256": "39b1e0f62cc2d120bce72cb5c7618f9cee63eb8d9960500853f0940415ee0e72",
+      "package": "ai.koog.agents.example.exampleCreatingPrompts10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-features-01.kt",
+      "source_sha256": "4e0323692939f73b330e4a89b96a72afae83008307281f4a1c411d9836d9f5cf",
+      "sha256": "c6bbdc226f608d12ccc510f0cad0e334a8cb0b39d63c7f293c2fc9a79bb25b91",
+      "package": "ai.koog.agents.example.exampleCustomFeatures01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/custom-features.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-features-02.kt",
+      "source_sha256": "de9355ee884e140253f53a6f66747bfebe68b83db474c9a31849ea7b47a99fc7",
+      "sha256": "fa91e26c220e747a759c56659b408694dee6583719c65f9e0877250d6b7b4002",
+      "package": "ai.koog.agents.example.exampleCustomFeatures02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/custom-features.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-features-03.kt",
+      "source_sha256": "80cfeed7a95dcbefd8adf2a13c45d9ea8821673fa88f5046a406898b08c49c0f",
+      "sha256": "08aec7487ea669e139132c6e7f0b5428c1970d64c86a634c725c92871436ad3c",
+      "package": "ai.koog.agents.example.exampleCustomFeatures03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/custom-features.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-features-04.kt",
+      "source_sha256": "e4094cb5bc92de2cda1c998c77494ced541de0173011d413b9a7286fb71af1e6",
+      "sha256": "8dd126496ac4d0fafd3acaad9c35c6f99c617bb4164e0b9b56707a21be509abe",
+      "package": "ai.koog.agents.example.exampleCustomFeatures04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/custom-features.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-features-05.kt",
+      "source_sha256": "c2a5ce03310eb15864e4909965973db54777c3a70a0ed71507d40733273daa95",
+      "sha256": "c624783c6ae06777abb7e4bd53401787813499f154ce291d8d71e804020aea3f",
+      "package": "ai.koog.agents.example.exampleCustomFeatures05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/custom-features.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-features-06.kt",
+      "source_sha256": "916a32e70731afabad9bb58f2fefae247f56a43ca99e2cbe655694ca1262351d",
+      "sha256": "08631e8c292e13407e5263686c2a0b228eb7b3e0c76e4e6f7c6dcfdccd1ff66b",
+      "package": "ai.koog.agents.example.exampleCustomFeatures06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/custom-features.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-01.kt",
+      "source_sha256": "d198e510cb93c3d8b2e9eedc7babd0090d56c8b2e73df9647b2963f7c02bf72a",
+      "sha256": "45bca4feb0aab411c74ab832121aa7fd74568d2b871621ab3f013a14875045c3",
+      "package": "ai.koog.agents.example.exampleCustomNodes01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-02.kt",
+      "source_sha256": "7dbde62836dd29673bbeaa5a49658f617f39aa7dfae5b77d0e64f3b925926edd",
+      "sha256": "3e0dc20cc2f6ee8482435146013297bee90169f2d64b76bc45d2fde3780b5f9d",
+      "package": "ai.koog.agents.example.exampleCustomNodes02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-03.kt",
+      "source_sha256": "04803d1ff3d5f647114370212935203d229ae6072aeec030ae24ed334bf843c7",
+      "sha256": "a5e6826a5aaac30c38d2f38e9458b82af5cd1f6e001ad5ec4799ff0dcf04c13f",
+      "package": "ai.koog.agents.example.exampleCustomNodes03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-04.kt",
+      "source_sha256": "39c01abda3d9374e2194d31a702ea19d5bbdc56cd0f28e1db73933a592d90a6f",
+      "sha256": "c6a696f339732b950ba7f3f56f9ad2b97b7776a8bb4d3dc4ce184ed9b71b6dea",
+      "package": "ai.koog.agents.example.exampleCustomNodes04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-05.kt",
+      "source_sha256": "7c99fb7f032b138587717cd9e5480f9c31c751c7665c506fd7186df863a5212f",
+      "sha256": "1bb9bb49d8bfe0dd97763240d86a6910ab031011497e21ac3d47169ec0a84512",
+      "package": "ai.koog.agents.example.exampleCustomNodes05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-06.kt",
+      "source_sha256": "94fcdb4cd19a4160e61612d5b46f7b0d50b3a8551a457cb5d6dddcfafa15cae2",
+      "sha256": "fdf6b1c88f702002ed5942f2e09e34404c5779aa7f23dee7fb0a535a30427a46",
+      "package": "ai.koog.agents.example.exampleCustomNodes06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-07.kt",
+      "source_sha256": "0c7e3253fa10cae9a8ed6add21d32dc734d58f41ce178ec1ecdbbec74f8d37b0",
+      "sha256": "d0e74a45f88c5cce5461ad0810c8112f5c7537ad8872bd378523741e35416f96",
+      "package": "ai.koog.agents.example.exampleCustomNodes07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-08.kt",
+      "source_sha256": "3612360e3548a17278c46e6e3c9e88e754b3916303d5192a3537116b1c525266",
+      "sha256": "f057a6d1b69ca644ebeb72d67d8ecc89879aaa30e47a7f61713b92c6b16fbac3",
+      "package": "ai.koog.agents.example.exampleCustomNodes08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-09.kt",
+      "source_sha256": "34cabd6c6c0392c2098a87b55d8a228b91be359cdf5ac533e2ef54bd3590f1f4",
+      "sha256": "410b2ce306b40eb0a890d69a9508c84ae57c93f54eda8e4d53f030f5be53d0e8",
+      "package": "ai.koog.agents.example.exampleCustomNodes09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-10.kt",
+      "source_sha256": "b4a6bab91aa4f8e8f83c9efb1c28aaaf591c24759aa4fdaf5046d4ba52a889d0",
+      "sha256": "b18d884435e1c8c43d4e933570d111b6deec79194b1b5612b985819fc2013519",
+      "package": "ai.koog.agents.example.exampleCustomNodes10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-nodes-11.kt",
+      "source_sha256": "fd3535b6927283badbc4fe916df04ce0d2f4bd6e2219591231ee8471b163413a",
+      "sha256": "566acd9d84d6cb2d2b016b1cb7988ad81b4a71a178efa141926cd62de7e59ac7",
+      "package": "ai.koog.agents.example.exampleCustomNodes11",
+      "adaptations": [
+        "Used Kotlin Uuid with an explicit opt-in."
+      ],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-01.kt",
+      "source_sha256": "7ce60c4772d86e0d26bb86108db522f6da1c0229d12b0ebac40a2b5fbe7e62ef",
+      "sha256": "825882ed6d1adc8f241095a55b1dfe92dd9c949833ca28ca98cb9e527559a7bf",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-02.kt",
+      "source_sha256": "83cba4cab809403100569616e4a86aaae506534c8319716e3311a9f53302ad4f",
+      "sha256": "6aca7c55f35bc870b81331704ac79e9109436b8b71d8cb747c16c61767653f42",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-03.kt",
+      "source_sha256": "fa4024d242c35f993f99da4b86bf52027bd92486b1d1adec31df4259b2c68002",
+      "sha256": "2457747d02c16ce3f539a427f38b0fe21f0419b26b8aeb415896ea6f412047e0",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-04.kt",
+      "source_sha256": "de3fbe20ea6d176664e7ee8d1b45da56427532754a0c62194cdb970f1da77558",
+      "sha256": "36f5b20b23eac26acce7246a8f1c944d4bb5bed33a85b0b44254b4cbf323e316",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-05.kt",
+      "source_sha256": "520b929f50d2831dd28dd3b10e55401d4a59ed54514fc3d0cb25b7575f351117",
+      "sha256": "0caf831143d372afc0fe9eb9810123be581b10d45a0b62c00b761823a6afb2aa",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-06.kt",
+      "source_sha256": "05b9ecfa0b48e79460cae4e58ead12c6d5b847d3037fd74acee41a23fffb3d89",
+      "sha256": "193f8ab7317e33771cbf0acad7cae9d3b3bbcfb72ca0d847ad975d1d79eda01c",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-07.kt",
+      "source_sha256": "cc9bf372f155239fec28bd1b7fa7041a7559b66c300fe3450e04f2f6567021fc",
+      "sha256": "b8c95f4433a610e3665c206bc6fe577341e2b233b8323f4e8d44d47a99eb348a",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-08.kt",
+      "source_sha256": "9cfcbe73930204c7722cc0991a9a26eca840fff6fa74626bec776981234ccc88",
+      "sha256": "a33bfdd0fac580e6113614c758f7f63de5b38b391d303ec5b738120e14c37c8c",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-09.kt",
+      "source_sha256": "78be976ca61ee09ff13f707cd9eb477494ba9c2aab8a56e829234db2fb34dded",
+      "sha256": "20bb11e896501c59f13428b15d05065cd554ce9516b98da1fb052a7ff3de25fa",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-10.kt",
+      "source_sha256": "615d956ce7b264f218fdbc5a85363b2a2c400982733e3f7fb7a5a7fee374aa18",
+      "sha256": "b1ac918d026782b84170e743b8ffcfa564fcbacb25feeabfc311e411a09e355a",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-strategy-graphs-11.kt",
+      "source_sha256": "1a2c3dbc71334690f0a5d028e875be86e28f7d290fb93a5ff5099610d876b2f3",
+      "sha256": "028495e772b113375fc0880dd9a837388f940fd6d5b9e43decde7899eaea6087",
+      "package": "ai.koog.agents.example.exampleCustomStrategyGraphs11",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-strategy-graphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-subgraphs-01.kt",
+      "source_sha256": "859f67ffed8741b38c59354d64ed10354df5e742b01fb9c45f42066997a29fa2",
+      "sha256": "ec0a3eb1c6404606b271867309e3ad06b44f7c6c664c619d09036b440afd4bf5",
+      "package": "ai.koog.agents.example.exampleCustomSubgraphs01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-subgraphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-subgraphs-02.kt",
+      "source_sha256": "6ac4afced0c82555886e709a222a5e4ccf900d56788f90c9613d6e0c27ace81e",
+      "sha256": "02747040c84b5361ec0eab3d94107b857cd0b90025da05b5d26770763ba1b265",
+      "package": "ai.koog.agents.example.exampleCustomSubgraphs02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-subgraphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-subgraphs-03.kt",
+      "source_sha256": "f822628e09c3609a9044369c83b95f2df49e37e02b5d54778ee992a76aed66f7",
+      "sha256": "c9750977b3702b9e93fc64c1f4acbbf99f242c89593e95bcf08135a600abea93",
+      "package": "ai.koog.agents.example.exampleCustomSubgraphs03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-subgraphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-subgraphs-04.kt",
+      "source_sha256": "5764442c89e289e0225795f34cf1993da734fac13dd7c0dd53bfed26bd7048e2",
+      "sha256": "913fd80b95615c502f3b5451c8a0275621c78069e0309743c13baa4667d0cb1e",
+      "package": "ai.koog.agents.example.exampleCustomSubgraphs04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-subgraphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-subgraphs-05.kt",
+      "source_sha256": "cdd24133051538cdce8003acf2bf37b283202a8b6921d94ade45234542c117f8",
+      "sha256": "6dc77fbc6d7cc3235ef63d66bd0d1ea68018b3d2ceb63a27b1b57c251f323a66",
+      "package": "ai.koog.agents.example.exampleCustomSubgraphs05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-subgraphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-subgraphs-06.kt",
+      "source_sha256": "49091c03abf4a0f316d7dd6df9d98d4a02f0cc68dabf698014afff65c4e48e6c",
+      "sha256": "df5f5b3f378a6eb5ee5c320dd54ea0eb06c29f2c7daec21ea4d6d1c484a2bacd",
+      "package": "ai.koog.agents.example.exampleCustomSubgraphs06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-subgraphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-subgraphs-07.kt",
+      "source_sha256": "f79ac9a3e0d7f65526bba50f8ca65d99c0fa2c2433fca0e62054020817f77ab5",
+      "sha256": "6b40b0015e2f2945b63e9efdb3734680594e58301b19924be507a4ea35ee78cb",
+      "package": "ai.koog.agents.example.exampleCustomSubgraphs07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-subgraphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-custom-subgraphs-08.kt",
+      "source_sha256": "eb95053a9fc76f01fa57608882e393223f7236f5808e972507ab9d93c05a21a2",
+      "sha256": "af5503441b660723c7bb4eadeebd0783e5261da55ce2eb0894147532c7e6c111",
+      "package": "ai.koog.agents.example.exampleCustomSubgraphs08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/custom-subgraphs.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-data-transfer-between-nodes-01.kt",
+      "source_sha256": "4b121205c6534be9949559da7161a46ac09716804cf53a5a429a0abf8faa5512",
+      "sha256": "3e1feea29e2850fad5d0d02c2a5649bba90581eb75aac72dfa79f0a5930322e5",
+      "package": "ai.koog.agents.example.exampleDataTransferBetweenNodes01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/data-transfer-between-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-data-transfer-between-nodes-02.kt",
+      "source_sha256": "e9125f2019670e4a445a8bd448c133eefc1524418a84a67d48937c71b0dd7717",
+      "sha256": "eeb5da42da8078f895a0905232ad18cc033d6a3aff7e2bd371134124cfe36ef1",
+      "package": "ai.koog.agents.example.exampleDataTransferBetweenNodes02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/data-transfer-between-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-data-transfer-between-nodes-03.kt",
+      "source_sha256": "23f372a30a180a10b4e0ac827240d3ded32a4fc5c56fced365fcf3afcfc3dcd1",
+      "sha256": "278574b14b73821bd4d620669d844a5791775131cad0b7a299bf71657c947f25",
+      "package": "ai.koog.agents.example.exampleDataTransferBetweenNodes03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/data-transfer-between-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-data-transfer-between-nodes-04.kt",
+      "source_sha256": "a962cd9ca9b0a4af87ad7a86147bff5531be00b3954d8bf2d57a1de10b0251fd",
+      "sha256": "a2b0206bddfcdc36c957892e7187ff15aada13fa0a5ee3c5ba2d41310024a094",
+      "package": "ai.koog.agents.example.exampleDataTransferBetweenNodes04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/data-transfer-between-nodes.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-datadog-exporter-01.kt",
+      "source_sha256": "50b019c633a27af1a0f381ff5a1c140ef3341f68c9094b6540eeba1c9f59a72e",
+      "sha256": "b95cc648080007cec80da1c14c340e0088e8920aea6e21acbf21a681f5a5d831",
+      "package": "ai.koog.agents.example.exampleDatadogExporter01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/opentelemetry-datadog-exporter.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-datadog-exporter-02.kt",
+      "source_sha256": "12f5969093a7caebbfaaa9e0c792990aa9cbfe271132017c87f693cbb71b1a8e",
+      "sha256": "197613b18d98d51a17407a0724f5ad579cae09ad116db6cc9f1555d7e1a57ebb",
+      "package": "ai.koog.agents.example.exampleDatadogExporter02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/opentelemetry-datadog-exporter.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-datadog-exporter-03.kt",
+      "source_sha256": "c9415e61b3cc2d1905de39ca06eb664fd31669d97eae3eaa430531c71fb3c7fd",
+      "sha256": "186b72ad6a58e5fe80d4325dd8e69f34871999eea2c8f33f68ecd0cf58a1fcbb",
+      "package": "ai.koog.agents.example.exampleDatadogExporter03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/opentelemetry-datadog-exporter.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-embeddings-01.kt",
+      "source_sha256": "b73307bb8714e99475b0091044999183d8520533e349cd2433019e237cd4a0a6",
+      "sha256": "4e4a60af0c7558de4e4ec21bbaec43dd352242931b4a9c42eeac9600dd4af414",
+      "package": "ai.koog.agents.example.exampleEmbeddings01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/embeddings.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-embeddings-02.kt",
+      "source_sha256": "2df4da10a3024bf3442c3bbab0c163278a7a9a0835bdbbdc48f5537d1b59f16b",
+      "sha256": "6f0d453233d59ed3ac356cdcd1da0e60739874b81606ab0747013b7a67b12b89",
+      "package": "ai.koog.agents.example.exampleEmbeddings02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/embeddings.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-embeddings-03.kt",
+      "source_sha256": "df0a13c05921e8e4f66acfa99d6c9202d1f4f850bf2e3ee8b2ffa3ebc83ebf82",
+      "sha256": "25da5d312d7164c4b8652abef0535cba329030ccde9d01ae03e6d6256a47071a",
+      "package": "ai.koog.agents.example.exampleEmbeddings03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/embeddings.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-embeddings-04.kt",
+      "source_sha256": "29bc1c249ecd911308612a671712aec717fcbc8f1180d378727aefaf52706caf",
+      "sha256": "6abff9a799de7ce1ed19144f81b607bd7b2412f0e30ebbd999901bee44716715",
+      "package": "ai.koog.agents.example.exampleEmbeddings04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/embeddings.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-embeddings-05.kt",
+      "source_sha256": "3e020e23c6f2c7a13a9f7c05e735fc3543d12f03a6b0524aca1f11eee326ff64",
+      "sha256": "74fdc5318e3374c8fd76d578b6dd7bc152bcb4be0798da042949a21268aef8f8",
+      "package": "ai.koog.agents.example.exampleEmbeddings05",
+      "adaptations": [
+        "Replaced embedded other-language code with Kotlin Fibonacci and sorting implementations while preserving the embedding comparison."
+      ],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/embeddings.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-event-handlers-01.kt",
+      "source_sha256": "e812a96e84494227faf42538de5e9c09ad8ba852782a9126787dafc8a505ed57",
+      "sha256": "dda0faedaa14413104174ecf528c91675275266bca3b860817a4416463f17787",
+      "package": "ai.koog.agents.example.exampleEventHandlers01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-event-handlers.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-event-handlers-02.kt",
+      "source_sha256": "d08f4a6c76ec1916cb0dbafa3620b81a5b6e1b6a9c3c7d45d02c3a4525208fb3",
+      "sha256": "af71c9614242ff251f77c16699a808cadc6a4c7a694cebb33b3c83fc2d191975",
+      "package": "ai.koog.agents.example.exampleEventHandlers02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/agent-event-handlers.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-events-01.kt",
+      "source_sha256": "f732d69346f3d09eea5ef547f4d5b6d1dfc5932c8268efe47eb3b2cb5f688219",
+      "sha256": "016a683d3fa82f8878258dc64a3afd703494f5c48470c4a0d1dfd25b5678029d",
+      "package": "ai.koog.agents.example.exampleEvents01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-tracing-01.kt"
+      ],
+      "guides": [
+        "guides/agent-events.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-events-02.kt",
+      "source_sha256": "0c5180c1007054b170fd95d002924411d9a8cf4d032edf058c780cc6ca8bfe41",
+      "sha256": "e10ced2eeba082c41a20a079fcf16b5fd46095f3657defdc3daf8fb2c68d81d2",
+      "package": "ai.koog.agents.example.exampleEvents02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-tracing-01.kt"
+      ],
+      "guides": [
+        "guides/agent-events.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-events-03.kt",
+      "source_sha256": "98cb8ae004a2156a0c916eef53a9b546ea01a72ba2565a1d310ac595ccec6ec8",
+      "sha256": "4193b8599c7c87368467add3f6c58178bf4c6d8b2c51aa43fb5a3d253fdddd82",
+      "package": "ai.koog.agents.example.exampleEvents03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agent-events.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-functional-agent-01.kt",
+      "source_sha256": "f66265cb8c572dfabde6bf84ad01591fa6e2e51fee10fb76a98c9f6fb0740972",
+      "sha256": "2c2e1711fddc63e4122dd10a86efc233dd55ebdceee0ee27185d08d78dfb6210",
+      "package": "ai.koog.agents.example.exampleFunctionalAgent01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/functional-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-functional-agent-02.kt",
+      "source_sha256": "0ed61f82bb7a7db80fdf39e73524c4c55bfb0a5142e1b4714d79b680894a3322",
+      "sha256": "5ed1b99f2aff2fb24140ed40b6ef2ba0b012c4479e3c94aba314cec621b4be34",
+      "package": "ai.koog.agents.example.exampleFunctionalAgent02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/functional-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-functional-agent-03.kt",
+      "source_sha256": "e092a6b3bebb2d74d2150cb5ea7f39599285aa9ef412c328c816b46efda12ca4",
+      "sha256": "d38136f700792c1ec130cc8e3bb9827876b4b185ff27c720eff100b9bc00158e",
+      "package": "ai.koog.agents.example.exampleFunctionalAgent03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/functional-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-getting-started-01.kt",
+      "source_sha256": "e3df711c76225d2853cd44b43c81d5dac1ad193bc687a3fd4fa1f40f8bc19607",
+      "sha256": "7c286f6629fe1fc075d9f4ebb3267cd5a23d6500e194f0533c1ec64191aa2a0b",
+      "package": "ai.koog.agents.example.exampleGettingStarted01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/quickstart.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-getting-started-02.kt",
+      "source_sha256": "f0c0177eb40cc60a6dc6fcd4c4efefb474d6eb52562fcb9da259285684756d4c",
+      "sha256": "751407e07c9d02a5a9321c07dc3ff14dec6003a10c1f3fffbe3857f39ba2fa0f",
+      "package": "ai.koog.agents.example.exampleGettingStarted02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/quickstart.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-getting-started-03.kt",
+      "source_sha256": "ad8163ba6be562c57ef9117bef4a525aa6e2cc790ccee522481f1e90acf1fac3",
+      "sha256": "5d7f126545cffa7bb36c215059f7a3cf7adef50e7dbb48fe8ccac1971091dc3d",
+      "package": "ai.koog.agents.example.exampleGettingStarted03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/quickstart.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-getting-started-04.kt",
+      "source_sha256": "e776200f2a68ee2a26620028ecc325a9ece36fb22d2535044ba0ee6f5cd4501f",
+      "sha256": "51ef0b9f4abcd841fc1ee352e902e28e6ba999728035319d7745c6c5a5a755c5",
+      "package": "ai.koog.agents.example.exampleGettingStarted04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/quickstart.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-getting-started-05.kt",
+      "source_sha256": "1c12c70ed9897aa303d5afcccb37b5a512e0ac8c4d12032d5a78a24238afff99",
+      "sha256": "c0f21f8355c80802dd21e79d8ce37fe3b4b6cc488ca995c4d418090abfbcea1b",
+      "package": "ai.koog.agents.example.exampleGettingStarted05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/quickstart.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-getting-started-06.kt",
+      "source_sha256": "44ca759c1188a4404dee1def3ac880fbf03f9f2a02b8ac51a7cdb212b7ddc4d6",
+      "sha256": "8f76d18b5b0d55eb37b600d05d726cbfb7eca08751956205d03c3549b01bc182",
+      "package": "ai.koog.agents.example.exampleGettingStarted06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/quickstart.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-getting-started-07.kt",
+      "source_sha256": "169f33828c483f40bbef9bfcb8c81a5111aee63c5e930197ca33d64c66198c63",
+      "sha256": "82d488b8eca321df76ddf234c17993b3af33625f10eb3c85ba3e1155950b71dc",
+      "package": "ai.koog.agents.example.exampleGettingStarted07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/quickstart.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-getting-started-08.kt",
+      "source_sha256": "37d1dd27d42a232ddb8a5b68c4f9d92adf72e80677082e4bf7de4604b6a68b66",
+      "sha256": "e50e5730207daff945b5c0cd6891c613665203e5eeaca19f214386fec3c92ee1",
+      "package": "ai.koog.agents.example.exampleGettingStarted08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/quickstart.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-goap-agents-01.kt",
+      "source_sha256": "d3990594ebaa2589da76c112f638a0bccc6081f0379bddd4edec3aa79422d932",
+      "sha256": "7b69c4bb1ad6e6ff28edd4d0bae6e536904978045935aaa009024df14c3ba2bb",
+      "package": "ai.koog.agents.example.exampleGoapAgents01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/planner-agents/goap-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-goap-agents-02.kt",
+      "source_sha256": "c13ddba0a94808ca0ead5c865fc2be0bea299365d0439c62c2d84b0d1797ccf3",
+      "sha256": "58201c59e297eaeb2eea26610d35db77e76e5ee2d5c3593b33bb1e6fb9376623",
+      "package": "ai.koog.agents.example.exampleGoapAgents02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/planner-agents/goap-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-goap-agents-03.kt",
+      "source_sha256": "5e909f96bd78b27a6054032be55f3dde52ad5d883254db6bf3065ccb93414d3c",
+      "sha256": "934db16583b25b1bd228b15ecd02e6a1cdb5ff7947133c94ce43b550c1478922",
+      "package": "ai.koog.agents.example.exampleGoapAgents03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/planner-agents/goap-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-graph-agents-01.kt",
+      "source_sha256": "45b7c12e5c51080f57c0806a5e08369cdaab51e159c1490682e8f467301c1782",
+      "sha256": "9607636d7d36618d72e3c741057e532202fd547816dc5f24efb9ff682c94247d",
+      "package": "ai.koog.agents.example.exampleGraphAgents01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/graph-based-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-graph-agents-02.kt",
+      "source_sha256": "6f5e362ac93e34789caa5758fe53fd51549602057735d4bed9cb9fd8b9240e8d",
+      "sha256": "39fcb920b6edb500714452fa967df972e47bdb4dff0226b5b1db3cbd5ddd412b",
+      "package": "ai.koog.agents.example.exampleGraphAgents02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/graph-based-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-graph-agents-03.kt",
+      "source_sha256": "b8d320bfffad20b41caa65bf96846e257ae5b97107ff1698420f8a1b4183a5ab",
+      "sha256": "93bf6a3906c4bf0179011eae68c9b828875cd024dbeee20422978df1be6c5fd2",
+      "package": "ai.koog.agents.example.exampleGraphAgents03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/graph-based-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-graph-agents-04.kt",
+      "source_sha256": "7f3b919736ee39604d599a1ab125fa812a54dbfcd5fe803344a93c41de5aee0d",
+      "sha256": "5789501adef3bc9e8b102a9b51ecc82fbb7774724ffe73c4f806c8d25d1b0ca6",
+      "package": "ai.koog.agents.example.exampleGraphAgents04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/graph-based-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-graph-agents-05.kt",
+      "source_sha256": "cd09a0579900b4224436f9f7b0de16631881baa9a3a9c78d8286400e194abbfb",
+      "sha256": "27d56b5e62216c7f3d087a12f704fca653e7f3dc70756b710098e1ef863cd3ce",
+      "package": "ai.koog.agents.example.exampleGraphAgents05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/graph-based-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-graph-agents-06.kt",
+      "source_sha256": "aba3afa62fe7274329eb71f0f56811adf8ccda15e9c0e439b65b60cc8c2701b6",
+      "sha256": "b26d451930aeceac9d47c238e0a51bf5cf8f1f27f18517cd7f37ef6b7ae45499",
+      "package": "ai.koog.agents.example.exampleGraphAgents06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/graph-based-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-graph-agents-07.kt",
+      "source_sha256": "305d67b506102dea95aae1b01bf8135aacee03859cd93afd3c0793e129f6e7ef",
+      "sha256": "0b9be9a7a131d3684d9d2768ae74c9b10c22850b65ec8b9a28d400cc5968e9b7",
+      "package": "ai.koog.agents.example.exampleGraphAgents07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/graph-based-agents.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-handling-failures-01.kt",
+      "source_sha256": "f32600e4105fdc72d3a14a85b4381719b8e0fce795d12ceb57ddcaa56846081d",
+      "sha256": "9585045d7fd5f823dd61871e4e0e2bfd568d36963268bdda8255138504a76616",
+      "package": "ai.koog.agents.example.exampleHandlingFailures01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/handling-failures.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-handling-failures-02.kt",
+      "source_sha256": "8b9fcc09fc0b7bb4d9c6ee5ca8a1697223540d20a3d1ca5145cf750dae6a578a",
+      "sha256": "1b43980b7ad6474b82c991b9ab21f63f1d7f105074229b4806f522e400878c28",
+      "package": "ai.koog.agents.example.exampleHandlingFailures02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/handling-failures.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-handling-failures-03.kt",
+      "source_sha256": "f782405e4cc6d9ea415b456cc4995e9f3d30005adc704d2a45d97fec785876b8",
+      "sha256": "67f1868a5a2ea3129edc05abafa5464e620476b98ca37c6850f07713da6a675a",
+      "package": "ai.koog.agents.example.exampleHandlingFailures03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/handling-failures.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-handling-failures-04.kt",
+      "source_sha256": "7e043e3a874d2022c333549df033776028c1187f14e84f28f8a0ffabbee198b5",
+      "sha256": "c509b14d1eb37f2c848fc2b5f4b55f6f4d0289058fcd35e443849c7cead550f5",
+      "package": "ai.koog.agents.example.exampleHandlingFailures04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/handling-failures.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-handling-failures-05.kt",
+      "source_sha256": "b2f476fd38a8444d7b748f4026f55c46ba09d29c9ab30654842aeaec05077cf5",
+      "sha256": "a151d671c0ea2cbadc9104c71fc18a890809e3a8ca43447f06c8913c220bfc1b",
+      "package": "ai.koog.agents.example.exampleHandlingFailures05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/handling-failures.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-handling-failures-06.kt",
+      "source_sha256": "40fb9831ae0dda27c540895184f72e3e7a969205b78aeb83a2c9cb63e91c12df",
+      "sha256": "da0f213dcb7883979db202a53e6066e2e1879b002d300adf7df033ca23bc350a",
+      "package": "ai.koog.agents.example.exampleHandlingFailures06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/handling-failures.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-handling-failures-07.kt",
+      "source_sha256": "6d830eddde7fc05d4692d323faffc118e974b5093847d5fb95d8ea5f90941d65",
+      "sha256": "c4c1d87cb283386dea303c34a179ddb9c06e6be27b14006fc8199fdf58aca6f1",
+      "package": "ai.koog.agents.example.exampleHandlingFailures07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/handling-failures.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-handling-failures-08.kt",
+      "source_sha256": "e5ecc6853fa84e1ec353368f89a960232492234af94bae1a920f6b6a591db7ad",
+      "sha256": "92d7dada5e62b3ebf3c787f6074a20023147235c1a40a4f3ac8b7266a5f2160d",
+      "package": "ai.koog.agents.example.exampleHandlingFailures08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/handling-failures.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-handling-failures-09.kt",
+      "source_sha256": "cf3f77a0d81161decb71241c60c0f912f19e5a4d2850f17677bd5a6cb79bf15b",
+      "sha256": "2c0424d93609f686b20303f9d2e5677c6a2922e6de6fee2e3ab5f9ce5d10af22",
+      "package": "ai.koog.agents.example.exampleHandlingFailures09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/handling-failures.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-01.kt",
+      "source_sha256": "915d059bdd41cad0d6c8e7b9a2d439809e4bbdde4157a92c115d3b93405e5064",
+      "sha256": "e283d1da60d87dd14e6530c8f7501c28ea80b511c17e32aba0c88cfca7338080",
+      "package": "ai.koog.agents.example.exampleHistoryCompression01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-02.kt",
+      "source_sha256": "6dac1157f9c753bdafd0f61cb7cd531285ee547f7a109dcaf60d5688cfe59e27",
+      "sha256": "b3f63eada6f30455bca027484c515ef750bfa5167a564e90dcc1e534297585f3",
+      "package": "ai.koog.agents.example.exampleHistoryCompression02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-03.kt",
+      "source_sha256": "56cfbc4c2ea75d7041271ca7ca41a494ef4fb30131c96592194fcf0397d64c87",
+      "sha256": "e30b91128604697f0f328a222f2b032195bb616530b022236d7c11ec8ef6c653",
+      "package": "ai.koog.agents.example.exampleHistoryCompression03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-04.kt",
+      "source_sha256": "ac82730e0f7d253226fdcd9d1cfd16a628e972502f79b4190f32ace5bef9eb31",
+      "sha256": "390c68fac084fda03be6b74a36fa9c9203f591f9718dc874e05d954e373dba73",
+      "package": "ai.koog.agents.example.exampleHistoryCompression04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-05.kt",
+      "source_sha256": "d5b35cf6bb3ea2765295e3415129ad904257a596e02897e8618f6d653ed4ab0b",
+      "sha256": "b048855ee1b03ca54824eb09002466e409bce2f74bbe5b02e146c26232d6e95c",
+      "package": "ai.koog.agents.example.exampleHistoryCompression05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-06.kt",
+      "source_sha256": "38bd7c30c0e5029018bfa75e10f6585c9b404fd8e5cf5f287070f5c41c3b177c",
+      "sha256": "2aee3d5b82006768a8db68162086fa08c65146a55a01a51df7a1f5ba24616e7e",
+      "package": "ai.koog.agents.example.exampleHistoryCompression06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-07.kt",
+      "source_sha256": "bb7713b614bf396fd528f91e3d2ce812e2d59c07b34c6554b70e4916cf79ee61",
+      "sha256": "61ae0cf81ff5d66ec022b296eebfb32b5b57fa975aea78ce07dc19dee143612a",
+      "package": "ai.koog.agents.example.exampleHistoryCompression07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-08.kt",
+      "source_sha256": "5cd65f2349b75b7e4e8dd8736c6f6499a4a0e31e3bf2712ea628e425d7680345",
+      "sha256": "88d5959597242caba2f5196a7ad98f5684f4614933ae5ca557771d39af40ae03",
+      "package": "ai.koog.agents.example.exampleHistoryCompression08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-09.kt",
+      "source_sha256": "e0d0e7122835483cfa3b81e63cdd1a2112897e54eb1bbb7f4d7642dde1fabd94",
+      "sha256": "f62e15eb72f0df07d2efbba0cbea570b4e16a88be89f1963e61384cc73660336",
+      "package": "ai.koog.agents.example.exampleHistoryCompression09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-10.kt",
+      "source_sha256": "41e826e18b937062f3ee24a750357639015583a9ffafd0f7707548c249b8ad80",
+      "sha256": "2a15de5a24c8f9d25c7611cd3a3d245e8f1663ffd281bbd183ea5c317f399ddd",
+      "package": "ai.koog.agents.example.exampleHistoryCompression10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-11.kt",
+      "source_sha256": "4f1eca1f352bfd0ea74b4cf21093b745aae5aeee18c0d4dff74410f3663c1470",
+      "sha256": "e6160f7ab8c3f96566d8487ca2de6b30434ccbaea809166e014478335110cacd",
+      "package": "ai.koog.agents.example.exampleHistoryCompression11",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-12.kt",
+      "source_sha256": "919a5bff7be1491f8cdd4fa27984caf3eac020f91ec99bf6e6f767a8ed56355b",
+      "sha256": "5f76f8af2d8d8158e3475e4fdf782566d1aa208603ed60f6315bd20992fbc3f2",
+      "package": "ai.koog.agents.example.exampleHistoryCompression12",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-13.kt",
+      "source_sha256": "c0173ab778d95f8dd982dc0f89236c941bac4842e923c1b168a2c62c80e80c04",
+      "sha256": "b1ad39774154931c2a0f16e42bff2097bf6d38c16f1826095241a5b3b4400b20",
+      "package": "ai.koog.agents.example.exampleHistoryCompression13",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-history-compression-12.kt"
+      ],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-14.kt",
+      "source_sha256": "69f1506085b551bc0a8f389989f4dffb1a5a9b54cca867b0462044b51290a3ab",
+      "sha256": "74c9d048d06d1a2df57b96d06f83470b01d92ed1564df8a9ca07fdcf0ee8be49",
+      "package": "ai.koog.agents.example.exampleHistoryCompression14",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-history-compression-12.kt"
+      ],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-15.kt",
+      "source_sha256": "8c0175ebf97222522a16e9f5c9497608c05f89d88347af23061930a075501eac",
+      "sha256": "07a01f1d7876121ecfbe3180f9497816b2147c51a2a8ede06bc707d2d286102e",
+      "package": "ai.koog.agents.example.exampleHistoryCompression15",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-history-compression-16.kt",
+      "source_sha256": "b7ec7ed1fcef4db28dbd2bcff2e434895e2dabaee73ab2f8fccbdc54c016660c",
+      "sha256": "176036834840396c2f8dec403ab2795d8d97355ebf7c3f70301024166ed8d755",
+      "package": "ai.koog.agents.example.exampleHistoryCompression16",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/history-compression.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-http-clients-01.kt",
+      "source_sha256": "7fb73f1b64b15024db5b77319f845092913779466f9892405bc54de923c43bea",
+      "sha256": "c80741b06d7026196d4ca547a1512c4b7404430f94f9ff1d9621ea1e3cf6d182",
+      "package": "ai.koog.agents.example.exampleHttpClients01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/http-clients.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-http-clients-02.kt",
+      "source_sha256": "66d133682dc6c90112ab53b4b871c1e5afcb25307fdba6eb71bf9f9816b1650e",
+      "sha256": "70fb3e7f051f9d7ff0baccaa6e6f595dc3fadd38d97c463cc2d8f207c1433835",
+      "package": "ai.koog.agents.example.exampleHttpClients02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/http-clients.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-langfuse-exporter-01.kt",
+      "source_sha256": "08b0af4148db89311c5276525fcba61ec50312c3d7c1d0955083f0f7efca93ac",
+      "sha256": "5f83eeb21a7bb7b8348d5aee63c0c7edfc70dc3c99441758e37d1d98992621a5",
+      "package": "ai.koog.agents.example.exampleLangfuseExporter01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/opentelemetry-langfuse-exporter.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-langfuse-exporter-02.kt",
+      "source_sha256": "b9176de507acd026181067957985966705c0ca631882f9f808792d4195a72f93",
+      "sha256": "2a9748be520a07c2b499efaf428109c1891dd0f6b70064fd0b3319f16e040e1c",
+      "package": "ai.koog.agents.example.exampleLangfuseExporter02",
+      "adaptations": [
+        "Used Kotlin Uuid with an explicit opt-in."
+      ],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/opentelemetry-langfuse-exporter.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-based-planners-01.kt",
+      "source_sha256": "63d3c4be1548828971dffaec12d3ebb36b4e17b883bc1a71941d379ae4b3036a",
+      "sha256": "61093c2eebffcc380bebcbe550a5d23af13737582dba9759283f230be6735642",
+      "package": "ai.koog.agents.example.exampleLlmBasedPlanners01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/agents/planner-agents/llm-based-planners.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-clients-01.kt",
+      "source_sha256": "33d385c3a483a07c2bee9ef6feca102bedeb0c27176d6f84d524bd5a14d3ceae",
+      "sha256": "4e11347631143fe3ec0ceeca69b6cc9a93a8e8d25ec3e8c2ab7c527a0165b6fa",
+      "package": "ai.koog.agents.example.exampleLlmClients01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/llm-clients.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-clients-02.kt",
+      "source_sha256": "ef07b391fef25f1d92a0c3f76cc3f7360513579946f622668067a1c67aeb445d",
+      "sha256": "e6addec585a45a43b2bc7051b046294306fd9a912a43c40d4f4e633d779cf2fb",
+      "package": "ai.koog.agents.example.exampleLlmClients02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/llm-clients.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-clients-03.kt",
+      "source_sha256": "092064448210330e24ef9a4188539caf9b4d6b3bd0e0c7d8b17ef547878b0e9b",
+      "sha256": "94e82a95f63b0a2ea2671abbb393e5f0a890c0eaa89cef60332ae3dd49ac0614",
+      "package": "ai.koog.agents.example.exampleLlmClients03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/llm-clients.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-clients-04.kt",
+      "source_sha256": "849abc2909ad56258fa0ea8c268f3fdcc75c623a675679a8281e02900c84e94d",
+      "sha256": "9888e49034a652a2f00be0dde5fa3b4b4c7b64a01f6cd4ebf34214d94dfa17bf",
+      "package": "ai.koog.agents.example.exampleLlmClients04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/llm-clients.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-clients-05.kt",
+      "source_sha256": "d788bb7ccc92b9d12cfb9c01cf250125fbdb53c6446a51aabd9996404f92cec3",
+      "sha256": "0fa3bf9299fe35837a5c30d78ad580287d0948f60381befe5e8cd3ed87d711b7",
+      "package": "ai.koog.agents.example.exampleLlmClients05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/llm-clients.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-clients-06.kt",
+      "source_sha256": "9a9491f69b1aab25085f975689e4c989a91fa3ed5709a9a92e7868c4afe41ee4",
+      "sha256": "8bb43c9f8214a6160576eecbda8e83a76d2c652a83568315f885311eeab76c30",
+      "package": "ai.koog.agents.example.exampleLlmClients06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/llm-clients.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-01.kt",
+      "source_sha256": "aa272314e850fa87f96a6f33148817b13990b049bc11947e3a859cad9ee504f4",
+      "sha256": "c021292a632c749394c199937f70d47bd7234900980568e219fb7271675f8b40",
+      "package": "ai.koog.agents.example.exampleLlmParameters01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-02.kt",
+      "source_sha256": "2c490e265e2554392cce14ab42c77fe30b3a2e1a02f6fff55705f1fe6efa8b75",
+      "sha256": "dfd3bceef44e3b5cf2a27673ec802e093e06eab39944a9c3daf3f9aa9f0761c6",
+      "package": "ai.koog.agents.example.exampleLlmParameters02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-03.kt",
+      "source_sha256": "adaa2b9465f947de283459e3bf1042913532c28c797ab730adef687ec8566cf9",
+      "sha256": "3345a4e4daea0ebe6306d96b6438cee3f566520f0e213fb0afbab930c42c19a2",
+      "package": "ai.koog.agents.example.exampleLlmParameters03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-04.kt",
+      "source_sha256": "9bf028f5daffadf0207ccf8e649e4c354c8ecb227610d0a22b4e3b165b6a178e",
+      "sha256": "08e7797e9476cd52c35ca7c8bc05824d850d9a856e26457d9f2fc28b47b21fa1",
+      "package": "ai.koog.agents.example.exampleLlmParameters04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-05.kt",
+      "source_sha256": "8628dc7963c68018be8b5e305ad5bfb75b0ae440d2a8654a9518450166e153de",
+      "sha256": "accd41e5543c9cf035ab116857cdcd1d7d912980800cffe4157db1a319d219ac",
+      "package": "ai.koog.agents.example.exampleLlmParameters05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-06.kt",
+      "source_sha256": "69353cbf4ed5c62312b2d3db2c996107bf555e14b0dee9c11efca0c04c305dd5",
+      "sha256": "d7cc5ae2062881ab9950bcedfb1561966c3df739610243b26ae7b38cd40feb28",
+      "package": "ai.koog.agents.example.exampleLlmParameters06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-07.kt",
+      "source_sha256": "30607e53a91f5225013fe595b14dc73aa96c30610ae97367a4782847a6f5ec82",
+      "sha256": "6c9af6278587f2f16b12bed259870448e6faf50a611613da3af2b86f390af97c",
+      "package": "ai.koog.agents.example.exampleLlmParameters07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-08.kt",
+      "source_sha256": "166dcdd6427cd9067d3e33c247d41d5e8c662a62a58ac86e6b088fa24e87e9ae",
+      "sha256": "02c907dfa1b139d8996c90510fd6561961f3b5c6c6ec833619cddbb842300740",
+      "package": "ai.koog.agents.example.exampleLlmParameters08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-09.kt",
+      "source_sha256": "ecb5772d717b6e10348c9480b33d755b51f5d2f91558c48850c6f140747365ea",
+      "sha256": "28b62e137cb7f97f051f53158b3ddeea0b3e827994687fa06fcf2ed4e2ed1716",
+      "package": "ai.koog.agents.example.exampleLlmParameters09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-10.kt",
+      "source_sha256": "fec70705aa6539abc9274fea9611dacfb0e7591f0cf8ced1a573393a5f8ddf8f",
+      "sha256": "cc6e9a4765dbe9fdb7b4de297b6ebbd68594f5081b2c8649da1dbeba82422912",
+      "package": "ai.koog.agents.example.exampleLlmParameters10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-11.kt",
+      "source_sha256": "6ea53414b03f3c3970c35f54b4492fd456d675e24216393ce4d32bfe4d638223",
+      "sha256": "a83ed71bd2fd4e40ed179513f453890bb3cec296bc8e0eb319c82e9c913dbec1",
+      "package": "ai.koog.agents.example.exampleLlmParameters11",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-12.kt",
+      "source_sha256": "b7a4d055ff1051679a6c3f53145e65d745e9a515a7d67e4eb4b55fc2fbb275b0",
+      "sha256": "d0c382443bff9ff6f846ecfcc47a243f18f03a73aea931e3ddfc0c793be55b09",
+      "package": "ai.koog.agents.example.exampleLlmParameters12",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-parameters-13.kt",
+      "source_sha256": "279da4e9987590763cd6935d907915149dc12e7e025b454876e9cff8cb2c8499",
+      "sha256": "177e06a63be16f81bce97f3a5e2e9ccf5da26bcd742254f9a742bcfe8bc0a3ff",
+      "package": "ai.koog.agents.example.exampleLlmParameters13",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/llm-parameters.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-llm-response-caching-01.kt",
+      "source_sha256": "2676a90f86d231f7a0ce94cb77e671f2e2286976185cead8a32f705cda677dd7",
+      "sha256": "a304f2a8837a29e13764118515c91d536271ce755494f14f127f8dec108cb86a",
+      "package": "ai.koog.agents.example.exampleLlmResponseCaching01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/llm-response-caching.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-capabilities-01.kt",
+      "source_sha256": "bf0cca2e4bf94ce06b05fd5f01ad2527a21ce4f925046adced0ac990e02f1934",
+      "sha256": "fd6f311f73328fc74444a8cb5609071cf7e8406af8ffe1551d881ff9d836bfce",
+      "package": "ai.koog.agents.example.exampleModelCapabilities01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/model-capabilities.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-capabilities-02.kt",
+      "source_sha256": "80e693ca200eb98fcabab81679ead92de3f3af562708f95c0d0707bd5b3378d9",
+      "sha256": "a8acf16d499c409f520fe4bf8c5b5fd4c96a74e2227b2dd2b238c9e594f9f921",
+      "package": "ai.koog.agents.example.exampleModelCapabilities02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/model-capabilities.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-capabilities-03.kt",
+      "source_sha256": "09ab03cb0b899ec928eec6197d988368ada5a6c8c2c1ed4405c2e51f5b3ba5df",
+      "sha256": "2df3a7b42d54cd2a978ae36a23b3b3628a734d5026455f79e42c5607d6bc0e93",
+      "package": "ai.koog.agents.example.exampleModelCapabilities03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/model-capabilities.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-capabilities-04.kt",
+      "source_sha256": "f606398a9c1c4aaebbeec50008e7024d4a81aeca9f5beb859201d144b086aebd",
+      "sha256": "0a4a05978c17fa1d84534631c7593d2f3c60ba9fa3e6682d4f584735c28803d4",
+      "package": "ai.koog.agents.example.exampleModelCapabilities04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/model-capabilities.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-capabilities-05.kt",
+      "source_sha256": "396b4716cdef9c01f935ed40b144947bcdd83feaeaf6a42a1d40fcbf8aea9c53",
+      "sha256": "0889efec7b8081f049fb6c1a3a5bef9750963158ccbad3100b96bf23a639550d",
+      "package": "ai.koog.agents.example.exampleModelCapabilities05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/model-capabilities.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-context-protocol-01.kt",
+      "source_sha256": "e1bf542c17322c4d9d51bb10c568a70834fab52a85f8a7dd3e6b1d283b275031",
+      "sha256": "d69126052e57de2485018df7f27b85ee96f8549773a79f4e19b4d514d4b18a0a",
+      "package": "ai.koog.agents.example.exampleModelContextProtocol01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/model-context-protocol.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-context-protocol-02.kt",
+      "source_sha256": "80612ff2a3181abd3e09e722fcc65c117de938cec4bd6c35ff4b2d5bcf9fb2cd",
+      "sha256": "17f648183e4ebf56c724b7bd71271c584f66c95b7939190cb5732a831263ce13",
+      "package": "ai.koog.agents.example.exampleModelContextProtocol02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/model-context-protocol.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-context-protocol-03.kt",
+      "source_sha256": "24f72a70b03c26b78974f3724a731d32df49ed27582c12680a72868c4391b5bd",
+      "sha256": "c9dcb494535f9d0719074c6d8b04cf60dcc84f45a6a7f1d4721effdea5eec93e",
+      "package": "ai.koog.agents.example.exampleModelContextProtocol03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-model-context-protocol-01.kt"
+      ],
+      "guides": [
+        "guides/model-context-protocol.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-context-protocol-04.kt",
+      "source_sha256": "5773ba8b6c8770ae9aa591f745eb16fe39adb8f7712c93c3e510d3dad2d53842",
+      "sha256": "f1d80bd48010614d32ce1d25064ba3ef46c5dccd73149df1732316033f343fc4",
+      "package": "ai.koog.agents.example.exampleModelContextProtocol04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/model-context-protocol.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-context-protocol-05.kt",
+      "source_sha256": "11853bd09364f2118703b019cbf13e04c10fc0ac8c9817a01719f08e7172932c",
+      "sha256": "bb0bd9f567f29a9ee33c513bba48c612c7aa8ffdc520b06f11f881cd530cb819",
+      "package": "ai.koog.agents.example.exampleModelContextProtocol05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-model-context-protocol-04.kt"
+      ],
+      "guides": [
+        "guides/model-context-protocol.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-context-protocol-06.kt",
+      "source_sha256": "303ae201250b1c9fd9bddc250ec726ac11afea9b90cd4ec87157c98bc1bc828a",
+      "sha256": "de7ae05197f97327a41e6ab341debdfa8f59b258b8e662e7b5ec3c8a02395feb",
+      "package": "ai.koog.agents.example.exampleModelContextProtocol06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/model-context-protocol.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-model-context-protocol-07.kt",
+      "source_sha256": "02ce6d4b9cd27eadb20e2f79caa81385a1e0d131495c28178fe67f26cfe83699",
+      "sha256": "a4f520777003bfdb54e4ff1c874d8f21c0c358cea55e01219ef08d337dcb23b8",
+      "package": "ai.koog.agents.example.exampleModelContextProtocol07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/model-context-protocol.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-multimodal-content-01.kt",
+      "source_sha256": "e0652018677e040b918ec85f76e925cb6836055f3b2777ba6d2e28943b92f3d9",
+      "sha256": "ed88385fb9301e173756b3b60a1a8d1976da1f965b724b6665455482e0496888",
+      "package": "ai.koog.agents.example.exampleMultimodalContent01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/multimodal-content.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-multimodal-content-02.kt",
+      "source_sha256": "d1db1dc37bac44e91fdbf023ac09c021c3454772c9086539a30e7651e281d789",
+      "sha256": "58d2c7be34d9058748c4a0cdd8c539d1260843bdbb71397784c8988d6f202d88",
+      "package": "ai.koog.agents.example.exampleMultimodalContent02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/multimodal-content.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-multimodal-content-03.kt",
+      "source_sha256": "7aa39195d387135a6619f041d3cf1fa672240a84fbec299c2a8dc2876bf77dd7",
+      "sha256": "ac7d99e4d6bdf33db57855696f78d6947167b4d18416dfb68c9f49d36f127bb2",
+      "package": "ai.koog.agents.example.exampleMultimodalContent03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-creation/multimodal-content.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-01.kt",
+      "source_sha256": "ff3ff4df0f41d18bdf046ddcdb5f1e2169b7037373f2a05b82c21d978e911682",
+      "sha256": "87cbf7bac79e13fa5b1a265e5059ebcc536834e704212d1f07960c3e27a0d401",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-02.kt",
+      "source_sha256": "bda4b6cf08674a41ae5c20fcdf22b660fee3606d3fcac94924ffd56d7d0be49f",
+      "sha256": "c507cf5e1eaaf3d159e01dd1446070bb3b7f09a4a0a24220ab3eb468ecf7797f",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-03.kt",
+      "source_sha256": "5c465d1e645d9d5bf89ec569d314311d6737b5f2b71e26167ee6a16762f2efbf",
+      "sha256": "06414f40f367f0c2c245eabe5c69508be0bbdb19cb69035e1423c747aef85e2c",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-04.kt",
+      "source_sha256": "2504c1d583eb587774be40355b43d4c34bd791571b00aaf75c37c5b1a2d38cbf",
+      "sha256": "b8ea6ff164b42dbc871d6eeb0904152982a1f5fc55bb8ec6b5efdc23ee0503a0",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-05.kt",
+      "source_sha256": "f8bfb40d201ef377317f57b2382b4f298dca13115483641b2e7028465336007e",
+      "sha256": "4d5d3353b57e16c6b576a742167749a4d04805a48a39fbe4ee7b453b1e666a26",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-06.kt",
+      "source_sha256": "b3480ef4aa0cc4a424392d65eaf3ace96f02cee39b30a8000736e13e6aadf78f",
+      "sha256": "244a9316d4d9800c3489460660c2f80898261d79f4844b656591b80dbd62e926",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-07.kt",
+      "source_sha256": "ebbf8f216bb74dcbc5cc4bf6eb5048d467b00403a531a5df4efaeb000456b750",
+      "sha256": "91aa8a4009f58dba5b3e2b16c9ea88162cd9da72c88977c9f85c09b673120e40",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-08.kt",
+      "source_sha256": "08ec978d55d462f67084237150ba6235744e3cd56ca4fb818b9492f276436f1f",
+      "sha256": "7503ec96503a618296759dd26745afff267b49a9ac5dcad673dd65f2440a8b83",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-09.kt",
+      "source_sha256": "c1353256bc1f815a3197a32370b55052ea19d9aad94a0afba6b8064cb9cb9b0b",
+      "sha256": "97f555efb2803dba2fa4d9380aca0ec206034c40f67e52326eaaf0e109d99b9d",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-10.kt",
+      "source_sha256": "611929a67bcaf5f1488fa1791c9981ba505b2057a9b5ceede4ae6820608e5b3e",
+      "sha256": "842bf6ca45a7256dbf4e5ad6aeaf9fdc64b89bfe73d8f398e1d86a23f9c829fa",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-11.kt",
+      "source_sha256": "24f64cc42672d74598e3aa6d594bc1fc403ea0ecb976d152509702e287564c90",
+      "sha256": "565605b189f13b1994481997cd13efb79d9653f7714720d57266b9bf18ddf500",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent11",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-12.kt",
+      "source_sha256": "726d1d45add37b796a4317d495fbc33512ce73619be34c8b7eeff7564ccbb334",
+      "sha256": "37d65fc4951f51b2d3ddd7a3485610cbf87236ff82a0da07f7ca20f2be7f6a6f",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent12",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-13.kt",
+      "source_sha256": "38b0364dc7077b141566850e901ec16ca22c6225a984f4843b41424f4dab6e19",
+      "sha256": "6e47f29964b71a3f25668a111659d8f970bda8d4110e88a58ccc7081826aeb8f",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent13",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-14.kt",
+      "source_sha256": "dc47b1d2f060e81628a7369efc06f3e890a2b6af267201b3922a878956147bca",
+      "sha256": "e6e351b64a1a83966d1996c80e23a22b3511e44c9b2c541b1c73bd54c06ab3a1",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent14",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-15.kt",
+      "source_sha256": "09a548152cc7797f2518233c8364ed89213c36027eecc6e48c232ea79132590c",
+      "sha256": "b08bc11d15e2c44141f08b82a158d62f7542d17da9f76aed904ba0c7a520966e",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent15",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-16.kt",
+      "source_sha256": "b19df8d453d61ae563565359b8eed4da0d1844787b8aacfd8ea8cd97fa22b897",
+      "sha256": "631172cc7c67cf9d75b12d559fa5a6c71ed70e2bceb830c64caee6a1e0df6c2a",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent16",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-17.kt",
+      "source_sha256": "fd671391f2c3a7b5b41636567cef462166523d1cae32c814ab31975cfc25b710",
+      "sha256": "2af0d75de6416593e679aafa1eb45604ebc44203a0fbfe76915b125609a82cc3",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent17",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-nodes-and-component-18.kt",
+      "source_sha256": "b9f18d12648a581ff38fd7d9253668c8479523bdb7c0e71d63db418326c83610",
+      "sha256": "502aeba6ca6862b9785793d097093b738cf284f736ab3ac230f73564cb318b8a",
+      "package": "ai.koog.agents.example.exampleNodesAndComponent18",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-streaming-api-05.kt",
+        "example-streaming-api-06.kt",
+        "example-streaming-api-08.kt"
+      ],
+      "guides": [
+        "guides/nodes-and-components.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-01.kt",
+      "source_sha256": "b0c073951af40f8f9a2aa40bbbe305d6b860371b3423960190be3aabb07d47e4",
+      "sha256": "d92e0e179e12a5c64a637178fb898db26c409494fec4613fab8846bc9f1d84eb",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-02.kt",
+      "source_sha256": "d5fd69354a67edb674ad357b6fe8c0c95ec8ce5606357056f96a2fa3d0befa4f",
+      "sha256": "bdd3fb9e798038a32a49cde15a2a6d0df54fb939436af7c3092b9c956c8dd087",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-03.kt",
+      "source_sha256": "43a85c35e70bd32cec4818d32b6b999914d1e0ad5e4adf182d4aba73d76a8db4",
+      "sha256": "6bfb018df150a2067e22710d069d7a9d042d3614761489c651813ff92628ce57",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-04.kt",
+      "source_sha256": "7d28a9737766c23047be9055750a7b0db05b38d82732f103d62ae1419540492a",
+      "sha256": "f4a9772599dc35366b125d7fef5af80b7cb28c2d12933be481327310afee98ac",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-05.kt",
+      "source_sha256": "7e1601ebf36a6423b77896c3585d2ac811a79dd88ad17f4fd4fe98281defc012",
+      "sha256": "3a5d4fe7ca1dd36d97d4d604f3d2945d52cd10fe5e73aecd54fb7b973dd7487b",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-06.kt",
+      "source_sha256": "52eb088d362ea9ae03981cc5e7ac96b8bd18638e0dc0b40035f4b15e27b680d5",
+      "sha256": "aa019c6995497ecb795f22dc1e033505684006988d124d9398b446872b308317",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport06",
+      "adaptations": [
+        "Inferred the exporter timeout unit through Kotlin enumValueOf."
+      ],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-07.kt",
+      "source_sha256": "1030df4021aea9afe00f9c8e4254846245f8985ea113907aeebbfa731d87ab9e",
+      "sha256": "4cf6170cca289096659bb2efcb4413d61ae0011bed1e454f44293418fb4120c3",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-08.kt",
+      "source_sha256": "4a3a3faaca1b92cdb3dc61e9feda664a47e7831e0312cf7565697fdadd7a63b3",
+      "sha256": "8a7f4861f9dcdb224c52f416195cebc157bac49a8a94772e317300e2f9c6812b",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-09.kt",
+      "source_sha256": "12ed93169a7534045c6aed98bbb029370abd46b0008e87030073eb045798be0f",
+      "sha256": "b146ff0f2da1e8883f17228b6cedb0eb3a2a9e4a7482e18475e65374003cb1be",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-10.kt",
+      "source_sha256": "f79672af928eafcd42837265180d43873e8e80d93923880f81d5e2eede30c1df",
+      "sha256": "506a235020456effa019b74c2e0e80a11e3300cbaff753f2363b76495fd3d16e",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-11.kt",
+      "source_sha256": "3109d353c88bfacf3fce11e8797e56bdb6a4e7d673c5671123bd54de377ccf6e",
+      "sha256": "d98c6ccd187ca1b4f2e650b289f111ba552b20ed3ae38e2bf9ed59454c17644e",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport11",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-opentelemetry-support-12.kt",
+      "source_sha256": "20155871bc7b6321e83f656ea540697208219c078cc11d57f15712d2ad72b2be",
+      "sha256": "962d3cd7abc15c9c6af8dafbd5d0fd72f91d70b35b24c08b9daaa0227ae73f94",
+      "package": "ai.koog.agents.example.exampleOpentelemetrySupport12",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-parallel-node-execution-01.kt",
+      "source_sha256": "e43c5d9a07f52c64f7a85f783837eaefbf044d6c266d6f7caae6b045c0b48a3c",
+      "sha256": "87d17f4148b96fb6657e8d3d027f132f0a417167de320999ff09285bd8627765",
+      "package": "ai.koog.agents.example.exampleParallelNodeExecution01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/parallel-node-execution.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-parallel-node-execution-02.kt",
+      "source_sha256": "1c7150c0599080e8d8071b542613179ed4c0f1b9e669ef1cac88dd441776033f",
+      "sha256": "5282339e9f5245db1b092f7f5de07265c5669203be763854c128e478d9070f02",
+      "package": "ai.koog.agents.example.exampleParallelNodeExecution02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/parallel-node-execution.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-parallel-node-execution-03.kt",
+      "source_sha256": "8235868419111fa51bd45f2693d923d2952c97296505feb32d993d294f9dd46d",
+      "sha256": "b45d99f440127e2cba73e059f42c59896cff61ecdde1879f42cba4d02880caf0",
+      "package": "ai.koog.agents.example.exampleParallelNodeExecution03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/parallel-node-execution.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-parallel-node-execution-04.kt",
+      "source_sha256": "2803b175f0aa50d77fba7e4e48747bb9818fd4a3a46f5ac5388f54d89b29a0e1",
+      "sha256": "bf3f719eff5a348d8d2a94fa24799d76ba9dbd5e17c94b543293215e53ac170b",
+      "package": "ai.koog.agents.example.exampleParallelNodeExecution04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/parallel-node-execution.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-parallel-node-execution-05.kt",
+      "source_sha256": "ba1ebc96c8f2e1cc668ca7daec50f0b585ddde4c28c7e26f6ee6ab046fcf0320",
+      "sha256": "a160c38806f776fbf8b7db33d5934eeeac5e53116d263aaf840075cafb04ddb7",
+      "package": "ai.koog.agents.example.exampleParallelNodeExecution05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/parallel-node-execution.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-parallel-node-execution-06.kt",
+      "source_sha256": "7a765946a86f369ec907e7be7b79bd62f6caa7e1ee2a224e7ce9bfe39f33e552",
+      "sha256": "4da10126fb660031c64393e29563606f9d0d23dddadd78132843877f395cec48",
+      "package": "ai.koog.agents.example.exampleParallelNodeExecution06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/parallel-node-execution.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-parallel-node-execution-07.kt",
+      "source_sha256": "5234ee9075decce1f8d72ff5b7b1e5229451f419255a655c5d9c123c3e3db89f",
+      "sha256": "9564dbc5a93e4a3662e36b4a62001baae343d87d66fc9b8f19da0da3cde5c0c6",
+      "package": "ai.koog.agents.example.exampleParallelNodeExecution07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/parallel-node-execution.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-predefined-strategies-01.kt",
+      "source_sha256": "9a9416e9cb55ffb978ea232109f25463549b0e2cf3f47110be6fc9f0e51790c5",
+      "sha256": "7ea24b11cfceb0ea45c1173b16a81672e7090dae1fd871124eded3d4a7b179a2",
+      "package": "ai.koog.agents.example.examplePredefinedStrategies01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/predefined-agent-strategies.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-predefined-strategies-02.kt",
+      "source_sha256": "5eb056c8bacf91ac0b9c71cc385e226b50746541f386b838d4a63c134179a831",
+      "sha256": "2c96f7801629cc0e2575ee5bf918cb800aff88b90fc7a4fa005e3e54e978ca10",
+      "package": "ai.koog.agents.example.examplePredefinedStrategies02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/predefined-agent-strategies.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-predefined-strategies-03.kt",
+      "source_sha256": "f3698a7add2f363cfe3e99a6baa70cbd34b5d1bd8dc6c035cb857ec21aa29e96",
+      "sha256": "736cef6c5842a86fb774c0cf4681b6ff39cbae35a952db70589fee013ce3dc6e",
+      "package": "ai.koog.agents.example.examplePredefinedStrategies03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/predefined-agent-strategies.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-predefined-strategies-04.kt",
+      "source_sha256": "d6d827f37e98414e7b4f2246a8a8c00e9b56fbc830ef7323c8e8719bd36d01a4",
+      "sha256": "09d204c148822dde108f53bb47ba96ef84288953e646d5727567a29297a12462",
+      "package": "ai.koog.agents.example.examplePredefinedStrategies04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/predefined-agent-strategies.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-prompt-executors-01.kt",
+      "source_sha256": "ef61baf7b04a96a1480eeca61aeb20d7ce4e48521543ab6f020eb7499703f103",
+      "sha256": "0a1b266129ca9954c73b691517faebf46a738f387ed342555981550c561e90d1",
+      "package": "ai.koog.agents.example.examplePromptExecutors01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-executors.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-prompt-executors-02.kt",
+      "source_sha256": "75dc3a72c73c0d60a28a275bda6803a487fbdd2f924967078d43cf9de07c5bd0",
+      "sha256": "9f37c2dcb27ebf45c5e046ff5d508761e8c42b2a00b58a0304f82a0e7052b78c",
+      "package": "ai.koog.agents.example.examplePromptExecutors02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-executors.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-prompt-executors-03.kt",
+      "source_sha256": "37d31642947081c187e40b16e9d1661550fe40d4a82d5db65f45db1ed0237094",
+      "sha256": "a37dc4cde18fdea0a8f82e52c6feb00c83efa376750bdada13d8826ace15967d",
+      "package": "ai.koog.agents.example.examplePromptExecutors03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-executors.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-prompt-executors-04.kt",
+      "source_sha256": "ddd53f0bb943c14e3df59641afd9d06201c85ca29806741e6ead21903390a059",
+      "sha256": "3da1dae2822a7e475a6fdb10e386fa15a6f53b4f08f0fce8748031763b12c06b",
+      "package": "ai.koog.agents.example.examplePromptExecutors04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-executors.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-prompt-executors-05.kt",
+      "source_sha256": "cd89bf81ded95476737f79fefd2dd86eccfbc7dda9a56d820d49db20d5c21db9",
+      "sha256": "18abbe602f5e720f2cebef6d50ec8f5f11efef1b41cf8e9644121d85780d8a03",
+      "package": "ai.koog.agents.example.examplePromptExecutors05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-executors.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-prompt-executors-06.kt",
+      "source_sha256": "54c8db6f1b8548e39247cd5c7c9ec4b3fb5a67d3c13b71eb9cb5daea6e28e412",
+      "sha256": "1241af4033fbe14abeaf78e9e7126457efc95e24f181afad5d8615dd8ed74b60",
+      "package": "ai.koog.agents.example.examplePromptExecutors06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-executors.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-prompt-executors-07.kt",
+      "source_sha256": "7c043d48859bb6cde1ff38c0c4f20d4623d5c2d8130817a0689a9e64bef6e7e1",
+      "sha256": "9d636bd09a814dad7e426e1388f65363c74543a675e6c3a6ee2ddf0bf10ab024",
+      "package": "ai.koog.agents.example.examplePromptExecutors07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-executors.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-prompt-executors-08.kt",
+      "source_sha256": "7857fdbd5f9e6d789abc1fc1f1b8ac47a7fb19e804d06d0ced14e67ac146e201",
+      "sha256": "66172db9beae8ae34862a36ed7fffb3f218c4b5cd71d4251d7970acac11a22df",
+      "package": "ai.koog.agents.example.examplePromptExecutors08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/prompt-executors.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-prompts-01.kt",
+      "source_sha256": "f55c78bc205464d1dc5e32b3f6371a8c07e62790dd87afeecbd57ff9df4651d8",
+      "sha256": "ba9e5080f36805b247e0e2f4fdd8693ced339633e80d824e656eed70f770f001",
+      "package": "ai.koog.agents.example.examplePrompts01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-prompts-02.kt",
+      "source_sha256": "8368533442f384f1036421dcc4423fe9e4679cbcdad1267a716ce296fe11ab4c",
+      "sha256": "9722b327f291a625abb1f2901e00c3c705f17a56f4d1a2cdbe2a61482856131e",
+      "package": "ai.koog.agents.example.examplePrompts02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/prompts/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-retrieval-augmented-generation-01.kt",
+      "source_sha256": "5b01547b003f8dc70a7db00230d5f578b9c0f6d08aa07ecc8b0a0730534c3af5",
+      "sha256": "7b45447124494b94dd77e32a6730c804428a4914b2cdfd0527e6d4484eb0dce7",
+      "package": "ai.koog.agents.example.exampleRetrievalAugmentedGeneration01",
+      "adaptations": [
+        "Used Kotlin path/readText helpers and inferred the storage type."
+      ],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/retrieval-augmented-generation.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-retrieval-augmented-generation-02.kt",
+      "source_sha256": "1496a2cebd97a1a4abf7d841aad73655cae367104f42d7899fa87f81f14f613a",
+      "sha256": "57a11ecc097bf19de3a89fe3b09f66c9121785a7fffb18dcc616c1e20b91c259",
+      "package": "ai.koog.agents.example.exampleRetrievalAugmentedGeneration02",
+      "adaptations": [
+        "Used Kotlin path/readText helpers and inferred the storage type."
+      ],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/retrieval-augmented-generation.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-serialization-01.kt",
+      "source_sha256": "109911c9954d3f5d578c7413ed85258d89e35a45060b6b56f3d768a572bb476a",
+      "sha256": "b9a3e7743c32b6281d169d2a828849ee1242e273c8c0d3846f03f32e55b5acbb",
+      "package": "ai.koog.agents.example.exampleSerialization01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/serialization.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-serialization-02.kt",
+      "source_sha256": "fa60afc0019b9b7e8c8f286f471e5959c320623c40ab2b7751fef18a4b1eb68a",
+      "sha256": "f421066eb5437ff9875766028802897f8d8246289123eaae4b44f06b6c5768b6",
+      "package": "ai.koog.agents.example.exampleSerialization02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/serialization.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-serialization-03.kt",
+      "source_sha256": "4c503c29558f0c41e6e78dca78d7876d528ba63d885e177a68db5e12aaaf43db",
+      "sha256": "338a1e7ce97b3bfe0f68a53212fd626e4d771d9c633b9e9715aecfc30f337122",
+      "package": "ai.koog.agents.example.exampleSerialization03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/serialization.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-serialization-04.kt",
+      "source_sha256": "4a1beb45cd759892b43074e0b6d42771cec267ece9a790455c1a1acbdba6dd9b",
+      "sha256": "d45f99b84efe54113c48deb9aacc6e336da0cafe32fa72ebca5c77965ff4073f",
+      "package": "ai.koog.agents.example.exampleSerialization04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/serialization.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-serialization-05.kt",
+      "source_sha256": "685c79e22be38814115471839559ceaf435bdc49a64e2aafce69f1c00a92abd2",
+      "sha256": "79ad8ca36af015273a8e19c1c06f3f9b87e4e6f415844548c8c03e345ca6c5da",
+      "package": "ai.koog.agents.example.exampleSerialization05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/serialization.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-serialization-06.kt",
+      "source_sha256": "3a869e6856b31a44b56a847a2c798108e47cbf6a3f67e30b9fa1d4e5ffa28b9b",
+      "sha256": "60188b9cf1c1271a7664aa7fcfb565c2b458ca0748c797dbeac734b6782fe91c",
+      "package": "ai.koog.agents.example.exampleSerialization06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/serialization.md"
+      ],
+      "imports_without_exact_api_entry": [
+        "ai.koog.serialization.jackson.JacksonSerializer"
+      ]
+    },
+    {
+      "file": "example-serialization-07.kt",
+      "source_sha256": "fb7ce3eaef19cae77aec785b45826b26000e420d3862404bad2b9215783b1659",
+      "sha256": "979349932aa672797a0ac353f8f83f66a11a4c639f33b2547c2d936e324701a2",
+      "package": "ai.koog.agents.example.exampleSerialization07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/serialization.md"
+      ],
+      "imports_without_exact_api_entry": [
+        "ai.koog.serialization.jackson.toJacksonJsonNode",
+        "ai.koog.serialization.jackson.toKoogJSONElement"
+      ]
+    },
+    {
+      "file": "example-serialization-08.kt",
+      "source_sha256": "9db2a317bd328d74938ab4a183e7a12463d9bedf242b995cc052b8fff0466311",
+      "sha256": "64b4e7772f1f4fc63d603e9679f0e7cae4b2ff2e376cfca00b174027d70f0f8d",
+      "package": "ai.koog.agents.example.exampleSerialization08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/serialization.md"
+      ],
+      "imports_without_exact_api_entry": [
+        "ai.koog.serialization.jackson.JacksonSerializer"
+      ]
+    },
+    {
+      "file": "example-sessions-01.kt",
+      "source_sha256": "2bbd25d8e07bdc0816cdb33bca5af0baf302d138a09f550560f5342fe4f80fc2",
+      "sha256": "b60085617f01b5f0341b55b015fba3f5da5f68a68fe26e36e24d0c111c8e72c3",
+      "package": "ai.koog.agents.example.exampleSessions01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-02.kt",
+      "source_sha256": "16e17469c6bbaae2cdd0e886f894454fb19a4c54951f851f3594e44d682e4cd4",
+      "sha256": "46afbb3bf57faab2bf61ab006609310974d4def9df762daddce5db2cae4ebbce",
+      "package": "ai.koog.agents.example.exampleSessions02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-03.kt",
+      "source_sha256": "58806fcd654841922b02a299e277fa4a932423e59c54a038b2050af5cd8321a2",
+      "sha256": "06a5ef10ada2705330eb82828527ec33c990be2a1ae51accc43cee971efb85cb",
+      "package": "ai.koog.agents.example.exampleSessions03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-04.kt",
+      "source_sha256": "31b2a64272039efce2c218d1d51e8b4b715994df7f4abe60d38c358244f300d6",
+      "sha256": "22c9227e6a4aaa0b94c829b6da5e593cc0e965e83916c0aa1eab83d329f47aa0",
+      "package": "ai.koog.agents.example.exampleSessions04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-05.kt",
+      "source_sha256": "8da054f2271bda13798327ad6d4825a2ba11674d67b3d2e2297b0e604f4158f6",
+      "sha256": "4a63e6abc40843dc79564063754868749252db2c4ca685b12c341d69d0517fe9",
+      "package": "ai.koog.agents.example.exampleSessions05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-06.kt",
+      "source_sha256": "ff18c981adef0395fb6806e2e4018a9fe290667a195195afd1b1a1712c8e4797",
+      "sha256": "dbbf649b907e0f3b957023b57efd531ba4acb569bfbb5ee2f6b71c6ff70f4571",
+      "package": "ai.koog.agents.example.exampleSessions06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-parallel-node-execution-07.kt"
+      ],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-07.kt",
+      "source_sha256": "36acd3a915e51d8acaa7204e92318975061d021e644bf0687c8b829a33fb03d6",
+      "sha256": "de3106d263c9bac16b3f9dc1a6c2e78bfcde46f3ca489500c7646fa70ec92861",
+      "package": "ai.koog.agents.example.exampleSessions07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-08.kt",
+      "source_sha256": "75ede3cae9daa49dcf4917524ef492355906857ae4ba2428d204c5a310f0422a",
+      "sha256": "e2770870b679c62f65540ae012170e2c17b7ddf889e71932aa0b4fd895deb5ab",
+      "package": "ai.koog.agents.example.exampleSessions08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-09.kt",
+      "source_sha256": "76b24521d9d3a082c25c822b0da946ce5c09e69d4860a7c574cec919213da964",
+      "sha256": "7c00025c567f4e8261e1aacf294c7a7cf841d94c3ef6d6543a1d8757487b1786",
+      "package": "ai.koog.agents.example.exampleSessions09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-10.kt",
+      "source_sha256": "cc0df9b188228f8985942e321d916df0f48a5e7fe5bb21a3facd531eeca88a7b",
+      "sha256": "76c887b5f615d613be3a712757cf947f53d9b4e42e476e82ab7d4f6f02654da2",
+      "package": "ai.koog.agents.example.exampleSessions10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-11.kt",
+      "source_sha256": "8cf863afc2c816fb2212582091fba2433ad895997775f4d8ce8be6144a3f5d21",
+      "sha256": "f407de3d38fe51b0197449b860d883503625bd40eae3d014e8d1fe7b4911f5b0",
+      "package": "ai.koog.agents.example.exampleSessions11",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-12.kt",
+      "source_sha256": "1850373a31930d3842d94c683409ea9c416e1f74f55da73c9f1eec52d971b800",
+      "sha256": "aafda647e9e82cabf5ff0f8de5eeb51bcdba886ebda8472dc6ccfcebcd9b1af4",
+      "package": "ai.koog.agents.example.exampleSessions12",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-sessions-13.kt",
+      "source_sha256": "bd18e8d1e22393f405b83d5a5e1505873aca931bdd31f8bbac9f432c59a8abe1",
+      "sha256": "f11df5667c4480fb2af1e325a7cbb9aedf0f7456532d38dbc0e211d541f802b7",
+      "package": "ai.koog.agents.example.exampleSessions13",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/sessions.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-skills-usage-01.kt",
+      "source_sha256": "9526fe4db7824f3a4edf39a0f431d5b1215b57b8ca382f1bdf64b08e5751c92c",
+      "sha256": "bc0565c7ea37684ada67b025c4c748e7dda568840adf5611e9363742aadbdb31",
+      "package": "ai.koog.agents.example.exampleSkillsUsage01",
+      "adaptations": [
+        "Used the API key already validated by the example."
+      ],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/skills.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-01.kt",
+      "source_sha256": "fb352e77f24f2eed3997eea3529dc3e4aa08f0e9867814f1094fb8e82d57616f",
+      "sha256": "9650260df4141ebb00c72c608f88c5093746c222d4bff30f0f2f13b47f4a26bf",
+      "package": "ai.koog.agents.example.exampleStreamingApi01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-02.kt",
+      "source_sha256": "46c2f4a5643c0d6fcc8766d18249b11fd8eaeb04a3adb8185d2a287123fa41ae",
+      "sha256": "6135a85f5f48f9a9b28eaad884f6945cc024a82d68588d6de735d401ed0d6b60",
+      "package": "ai.koog.agents.example.exampleStreamingApi02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-03.kt",
+      "source_sha256": "06fa21b3ce0232a619d951dffec34e2a227518a425ba0b91996d30840d6ca1fb",
+      "sha256": "06d0b9d62174620579aaec31964b6e61dc360ebb98bcbdf6c995eb012b3f6d95",
+      "package": "ai.koog.agents.example.exampleStreamingApi03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-04.kt",
+      "source_sha256": "57cc702e52ab48eacce4bfcb22b0f99ac99fe4861b8d6967d752ce708b33a5da",
+      "sha256": "80c6863f4e580e488d0f8e335c51d70e46c16caad08bd1c4bd9f3ba63af1180b",
+      "package": "ai.koog.agents.example.exampleStreamingApi04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-05.kt",
+      "source_sha256": "9e3d089a492e914e1ca37a5ee6cf5020d21df9b0c91972a120d9d99f563fbc1f",
+      "sha256": "affdbbcf4be4fb271ca2dcb75e30219130fa540fb2848333cd353aee10b7862b",
+      "package": "ai.koog.agents.example.exampleStreamingApi05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-06.kt",
+      "source_sha256": "631fa3d877339381ff7543a31c555c25380c51bf8de858036b0185dd466ff6af",
+      "sha256": "2034f57b8f09137fdb5106ebf791413d18c4d364bc5373728349bd53866d7571",
+      "package": "ai.koog.agents.example.exampleStreamingApi06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-07.kt",
+      "source_sha256": "bc3bbdd0d32835f5cc91528226f237a075c8a0f9fe347a3c9c3c00fabac2d63b",
+      "sha256": "6abeb458fd8374b1bf042fc5b6f4c59908296d83e497edeb07dc9bced49480cf",
+      "package": "ai.koog.agents.example.exampleStreamingApi07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-streaming-api-05.kt"
+      ],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-08.kt",
+      "source_sha256": "243abbf45aeb2f91b4f092947c1954d043f48b441a948eb5af3eb814cb48dc8e",
+      "sha256": "4ac0919ebab47228344665045d4e987f077ffd73fc34fa29e36792c6c2e27df0",
+      "package": "ai.koog.agents.example.exampleStreamingApi08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-streaming-api-05.kt"
+      ],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-09.kt",
+      "source_sha256": "bbba09a00b42d62728d46c8e643a10bd803ba1035c5ca2df92540f9509c02416",
+      "sha256": "f71a3a6aff5af60448e36a5b26c1fab2887a49307b3ecf222256704f140d3e00",
+      "package": "ai.koog.agents.example.exampleStreamingApi09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-streaming-api-05.kt",
+        "example-streaming-api-06.kt",
+        "example-streaming-api-08.kt"
+      ],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-10.kt",
+      "source_sha256": "6cafad4c2270f0f2eea3b6a9b83db297047e62ba2e6bb6e22e11aaf06953a003",
+      "sha256": "b7374a68746cc9a0c4aded68fcc5147a67984f79cc1feb479e90a43831a69579",
+      "package": "ai.koog.agents.example.exampleStreamingApi10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-streaming-api-05.kt"
+      ],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-11.kt",
+      "source_sha256": "09a986fbf7efa4d3b201316d5a1beb7824d8b4734cfee0e9d0d05c251f9ff7d7",
+      "sha256": "a4e221bb6e675d14c518e5e17f04166f6958463a05bb52da387b886fbfcd0244",
+      "package": "ai.koog.agents.example.exampleStreamingApi11",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-streaming-api-06.kt",
+        "example-streaming-api-08.kt",
+        "example-streaming-api-10.kt"
+      ],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-12.kt",
+      "source_sha256": "590892c732763199768113680f835ff83cae712112b74318fa783e06d6d49829",
+      "sha256": "4f6786da650a1f7ca30e31997c8313ab4be4e980e0e005bd6cd5f3ed9468dd0d",
+      "package": "ai.koog.agents.example.exampleStreamingApi12",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-streaming-api-10.kt"
+      ],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-streaming-api-reasoning-01.kt",
+      "source_sha256": "7d13f195ba4e076fb5a9a342a6b60f73502e66a535c0a6dfcd000da867452133",
+      "sha256": "0d1139bea0542cc2badce339cb0a0220aa0b4f68a1ddc60c85b36a6ef232876f",
+      "package": "ai.koog.agents.example.exampleStreamingApiReasoning01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/streaming-api.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-01.kt",
+      "source_sha256": "ddb77c2a6b5f9697a82ecff249c7769655ba95db108fe8631dd8d082ab2e84df",
+      "sha256": "3a81dd18beac8f3f1df46789b53369459a1e51c03d5f83f6513f50a2d47cb017",
+      "package": "ai.koog.agents.example.exampleStructuredData01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-02.kt",
+      "source_sha256": "2c9a74e8eab7f58fb2f302142b618e06e9f62897a774c0d9a5693dfccf2f6f5f",
+      "sha256": "81500a79aae4a12ef84148042ede54e857e6303628ae87f758f47a6d50774cbc",
+      "package": "ai.koog.agents.example.exampleStructuredData02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-03.kt",
+      "source_sha256": "5e93028a251482e36326e32fc48749d31ddb4a2e79d2fba91809a56d9fbb4414",
+      "sha256": "1cb74b369038b27bd0d8dda7f01c5a9224692a20a6801d1476077866b4ec74e7",
+      "package": "ai.koog.agents.example.exampleStructuredData03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-04.kt",
+      "source_sha256": "6800591b31bc24f8c671ffef398fc55de21d8dfc46c2e5145803ddc005c0d0b8",
+      "sha256": "e5698c2c2b14f28f0705f6e6de687ea09ddc43fe6b3be8bb605283d2799bf38d",
+      "package": "ai.koog.agents.example.exampleStructuredData04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-05.kt",
+      "source_sha256": "a7870add39ba92278fb18f8734aa7871f8c3fdabb4ff260da7c7809f50a98b92",
+      "sha256": "4dfbdc6190446c50d4dea95c7cf4c61e2ebe057c2f1cbee6aea5ffebf8120fbb",
+      "package": "ai.koog.agents.example.exampleStructuredData05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-06.kt",
+      "source_sha256": "3d6ebfd7e09a1806c3f0ef14d855693227ae1fa503cc0ead877f864a660a8a47",
+      "sha256": "ce2ad2287e2c42f8dc10ea00c0e3bcf41e97ee88dce068ba4caf0a13f0e2c5ac",
+      "package": "ai.koog.agents.example.exampleStructuredData06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-structured-data-03.kt"
+      ],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-07.kt",
+      "source_sha256": "5ee62aba69624cfc6c54d2866aa461e655785cbe4ff0c98f24b6abf3f14dab01",
+      "sha256": "a39ebf3511af1775847e4f0893a016c56fcf4a3f42849c52f0d4a0585db0a0c6",
+      "package": "ai.koog.agents.example.exampleStructuredData07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-structured-data-03.kt",
+        "example-structured-data-06.kt"
+      ],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-08.kt",
+      "source_sha256": "8c40ec217fefb0563bf4d23e1b4531d7967ea0a54d0cd6b55cd605c6697a4411",
+      "sha256": "52fe720cbe76cf50a45efb1c36e077e441b74991efaa023ffb9d56382c08aefa",
+      "package": "ai.koog.agents.example.exampleStructuredData08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-structured-data-03.kt",
+        "example-structured-data-06.kt"
+      ],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-09.kt",
+      "source_sha256": "69e44e22b44b549b2f4d6951956ee56ade532265538c023a5cb7d7658fbd1ec2",
+      "sha256": "0f4d2eed130cbc7c04f16c081e4eb8da33d326b653973989d8c4f71fee82676b",
+      "package": "ai.koog.agents.example.exampleStructuredData09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-structured-data-03.kt"
+      ],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-10.kt",
+      "source_sha256": "ebdd89eb55c4463748ec47e1f8819fdd181ce1d61b297e26ea76bb09a95f1f93",
+      "sha256": "96b79b9dc2fdafb5b67f2e1b5c9dcb9b5318c949ca28119bfa393aa8f0a033ab",
+      "package": "ai.koog.agents.example.exampleStructuredData10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-structured-data-03.kt",
+        "example-structured-data-06.kt"
+      ],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-11.kt",
+      "source_sha256": "2b5f66a006aa197b0c47695fd23012e1b82583ed59f260a993360a37d760f8c8",
+      "sha256": "d8f488c533e18b1c4aa2cec2590cb18be48097dec6a9c2756a33b2ccba4f2449",
+      "package": "ai.koog.agents.example.exampleStructuredData11",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-structured-data-12.kt",
+      "source_sha256": "6986546354e083b8c052f102f3c2a3cbcf3deaa57ebab2816626ead8241201b9",
+      "sha256": "6c9e76021f9e8c5ec402f998e2545d06dd719bf2c5e8941e3d759b56014689e5",
+      "package": "ai.koog.agents.example.exampleStructuredData12",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-structured-data-03.kt",
+        "example-structured-data-06.kt"
+      ],
+      "guides": [
+        "guides/structured-output.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-01.kt",
+      "source_sha256": "deb89d1c0038be1c6e4dd5f62d4918f075c6d24723b86366f8043e5eb57ea2b0",
+      "sha256": "58d0988caa251e85998d2c93b880ed7f19d7217a8577cc54f3ee380cc8139e9a",
+      "package": "ai.koog.agents.example.exampleTesting01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-02.kt",
+      "source_sha256": "0503f547a606bd7e5f4823171e0b8f388849e5b11b0056a398880085fe118651",
+      "sha256": "b44836b1afd837c437f1250c95170115f152e6683722f5088ceba1f12fd5af95",
+      "package": "ai.koog.agents.example.exampleTesting02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-03.kt",
+      "source_sha256": "c2ca8c0e22710560323d597884eb322d048069353f212a9c25e1f96bb7856a20",
+      "sha256": "bb52f2bcc5bc795d1a2ca942670d23c02b49c8c2294729b17a05acf6aaa3f329",
+      "package": "ai.koog.agents.example.exampleTesting03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-04.kt",
+      "source_sha256": "01082fc20c4d9a77cbb0adb194cc9b339d7a18f1a378a34565bbb10d7de8e5a5",
+      "sha256": "992ee0c5bc42678499a83e5b9d7215ea27f04f09701ab30c806ba16fb3b11389",
+      "package": "ai.koog.agents.example.exampleTesting04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-05.kt",
+      "source_sha256": "531c2017d237d254629cdf1a155ce82397570b1ec35eb76f3f625f3ed24637e0",
+      "sha256": "db4831c033f444aaf18b75b004337448032d2000153885983f48ce827bde83bb",
+      "package": "ai.koog.agents.example.exampleTesting05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-06.kt",
+      "source_sha256": "2f6d152bea9ab17d32f443048f4ef18733b5346f0d6cf581ecc571883ca10c07",
+      "sha256": "b8b989c1ad3ee3ca501e83b04ccd7dba649cdcfbe84e8f2f9595fa73e6d54df1",
+      "package": "ai.koog.agents.example.exampleTesting06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-07.kt",
+      "source_sha256": "c2947ab68d67a8a605c34dc61f2ae29eaabd107088083e76e5c8bdea9f84c6b9",
+      "sha256": "873e0eccc97bea9b43a9dc63e6b5b731d652c0addbe219815e2549f009eab1d7",
+      "package": "ai.koog.agents.example.exampleTesting07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-08.kt",
+      "source_sha256": "7cde093fc59fc44ce0b5b68abb2c37591cf446f4980e5aba967b2a722dab08d2",
+      "sha256": "4ba91b696b0917352cad7f8a3d0c424112490f3973752fafb9385defaf6b1e90",
+      "package": "ai.koog.agents.example.exampleTesting08",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-09.kt",
+      "source_sha256": "041d9fdd90e6f203ab8fe5019fdfa02b007d8769c41f76ea5da93ad5dc132435",
+      "sha256": "b6a9afe3378a2e14ef9f4d194b00a3556fc3201ba2ae7876c1eb6246e01f6661",
+      "package": "ai.koog.agents.example.exampleTesting09",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-10.kt",
+      "source_sha256": "ffef93b0f4352f0f4bb490935f1ee90dd9ded98c5a57710c01702e9cb56c81ca",
+      "sha256": "186fe4c9fe91c5bc869835c520a785246d7c555b6c58a18177c0942eb0bd7031",
+      "package": "ai.koog.agents.example.exampleTesting10",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-11.kt",
+      "source_sha256": "e149c0d3142a5b1b01fe303e4886d884765dca26df0e5691d85a74eb7308b1a0",
+      "sha256": "d1426bd11882a59c0c91e593720fc68f777be2c0c589b30b91a5556e8a58f9c8",
+      "package": "ai.koog.agents.example.exampleTesting11",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-12.kt",
+      "source_sha256": "1ce3b5f17e6252f7adcb325512c95d47bfdc7a2ede3f3eec1575d31bbaaa0fa0",
+      "sha256": "ecc3549186cb8ecbe776eb1dd3788a8d56fbd78434dae41b358728af01cd82af",
+      "package": "ai.koog.agents.example.exampleTesting12",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt",
+        "example-testing-09.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-13.kt",
+      "source_sha256": "9c9a92d461d9563e650f6c34c09b7ddd786f51121545ac6b8219043977a0eb78",
+      "sha256": "5e263e89e936b18bc794ce7d00e820343ce9c0ba6aa206bbcf358108c2c6fde1",
+      "package": "ai.koog.agents.example.exampleTesting13",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt",
+        "example-testing-09.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-14.kt",
+      "source_sha256": "a8a523b0251505e9f5ae71a98965b8c5cb002628622674fa2d0bbef7f5270639",
+      "sha256": "a65dcd22734e7ad60f88e9d6c4eda033981ee4573c9122e02301c0d0f8ebe52d",
+      "package": "ai.koog.agents.example.exampleTesting14",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-15.kt",
+      "source_sha256": "763a6fe7e356a7039fc9618aba356a6339adda165838782a704e7b0ed2649b48",
+      "sha256": "93818b244f984793534ee5e189dec613364f0e7dfdbb7250ba7ae08fe9fc1056",
+      "package": "ai.koog.agents.example.exampleTesting15",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-16.kt",
+      "source_sha256": "55a67dfb2853ac98a0ce5e842c6391ce75e0639327bc0a4e5230cd612211bbfd",
+      "sha256": "ff38546283b0a03158a80f418aaeb05726d69cb8674e6082764a5d6e9d4f6253",
+      "package": "ai.koog.agents.example.exampleTesting16",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-17.kt",
+      "source_sha256": "455805c5cd61dcae3d212029b0a77cc9ceea889737f146c711c71dff9de5d8ca",
+      "sha256": "58ea7284e685e3e852512621e07971d8a7868b72bfab71848901c0b7e9c57140",
+      "package": "ai.koog.agents.example.exampleTesting17",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-testing-02.kt",
+        "example-testing-03.kt"
+      ],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-testing-18.kt",
+      "source_sha256": "8a490727d246ebda4ba1dbc8fdd9696a20ca9f3e3b9e96aa97be8792cfeb07ed",
+      "sha256": "5b9124d07c32afd46e290ee2e81fb899ee478af2802f0ae0c14adf6c55b8b8e6",
+      "package": "ai.koog.agents.example.exampleTesting18",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/testing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tool-descriptor-schemer-01.kt",
+      "source_sha256": "92a4a657a686314b72a3d5b604c558b1b0fc9034493f1f54795a58de3e9a32ba",
+      "sha256": "4c203276f1e8df99c05bc58ed015a8fe74305ee35d88b39fe15e0afa901c209b",
+      "package": "ai.koog.agents.example.exampleToolDescriptorSchemer01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/tool-descriptor-schemer.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tool-descriptor-schemer-02.kt",
+      "source_sha256": "9caac7483d712f900f33b4fef37ba93d276dd17070f4547a1cfc857cea58c688",
+      "sha256": "0d571fc0a25c887ca6c2a5b707f53c2a47cf78e4176a7ebf7347909241cf6cc7",
+      "package": "ai.koog.agents.example.exampleToolDescriptorSchemer02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/tool-descriptor-schemer.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tool-descriptor-schemer-03.kt",
+      "source_sha256": "a05b6eefb8f8f601d42c8b2d7d6d547ad62898f585036ea868c7f5e3960a8b0f",
+      "sha256": "46a13d02679f15703457898f06ea7915ac1c7e6762edf0d337b41aeecba23c47",
+      "package": "ai.koog.agents.example.exampleToolDescriptorSchemer03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/tool-descriptor-schemer.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tool-descriptor-schemer-04.kt",
+      "source_sha256": "10c08705329935f4021bd3bb5081b5ac1f00b1f58fe25eee1c49105a2e2d096b",
+      "sha256": "66cb81feae39f813bbe6f22c006cd0bb0cf76ab5f839c1d110a872215f434d25",
+      "package": "ai.koog.agents.example.exampleToolDescriptorSchemer04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/tool-descriptor-schemer.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tools-overview-01.kt",
+      "source_sha256": "996510059d42096c31b590b8d0508081cd790d8a47ed960cf69338e50500dfe8",
+      "sha256": "c25d7fe4982cc14823054be2996adf1cb652bcd5634609f3131c90362e7da65a",
+      "package": "ai.koog.agents.example.exampleToolsOverview01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tools-overview-02.kt",
+      "source_sha256": "81397e9761ab55a89c4d2a8a69581c677d7a8c50adc350af9959a2b6f31045ea",
+      "sha256": "13b1d410343aa306bfe6dbaaae5654f8537518cd9d9d3b7e30d0b25c212dfed7",
+      "package": "ai.koog.agents.example.exampleToolsOverview02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tools-overview-03.kt",
+      "source_sha256": "c678d011b188cb12b68b6bc7cf49fc1762f8e69af36860527d40682fc65632e8",
+      "sha256": "67ffc23ac5a3b46b80f63a2fce0b68e59ced0c055e9d0fd9efeea697aae2e157",
+      "package": "ai.koog.agents.example.exampleToolsOverview03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-tools-overview-01.kt"
+      ],
+      "guides": [
+        "guides/tools/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tools-overview-04.kt",
+      "source_sha256": "ac7fe971380f1a2bcd9480dad5acc25fcc8d007f5293beb4db1825074d5e1f41",
+      "sha256": "685dfb6727b8982e618022bfeb225896f94e7c1b3af434356d6191499e5b4359",
+      "package": "ai.koog.agents.example.exampleToolsOverview04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tools-overview-05.kt",
+      "source_sha256": "da0a6052ce4585f07b8fd12a47f2b2ead4b4f337f8c20fb13f39c88e7fc52a82",
+      "sha256": "fcf50e8cee29e322794e9a8feff819d40ca244dbb764d8e13736687b27816e61",
+      "package": "ai.koog.agents.example.exampleToolsOverview05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/tools/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tools-overview-06.kt",
+      "source_sha256": "a940a32f79bc4c46a6686501b8d5afc9a20dd904487d0828b113105745967d20",
+      "sha256": "38e62ef5fe157a02f2de01e3881f8f6ab3a373900cbb073bfcc61cfe3ce8ccd4",
+      "package": "ai.koog.agents.example.exampleToolsOverview06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-tools-overview-05.kt"
+      ],
+      "guides": [
+        "guides/tools/index.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tracing-01.kt",
+      "source_sha256": "9faeda551198b429d60a9b5a9d97fc503b19b6286707814b09b0bd4d8bed3b1d",
+      "sha256": "66bf51e02dd82f4f8fe033e3ef8b4d006e9442495a34de556fdfbd17ef2be254",
+      "package": "ai.koog.agents.example.exampleTracing01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/tracing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tracing-02.kt",
+      "source_sha256": "b3b73dfe6dfc29dc4eabd0eee0cdeee79a364c9d0f64762fd7217280706689f8",
+      "sha256": "dc1829b5e020a64eb0fc6636157e2d74368279a850d2774e8b31414d1fc8cbab",
+      "package": "ai.koog.agents.example.exampleTracing02",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-tracing-01.kt"
+      ],
+      "guides": [
+        "guides/features/tracing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tracing-03.kt",
+      "source_sha256": "6f47c7b617f7d33eaf4e41d29cda7f4569430cf01eb3dfe0700540f2c264d2d1",
+      "sha256": "144fbce62a0ee478ada879492c9f4d1383e13011fbb577a1fcb19d90765ae28b",
+      "package": "ai.koog.agents.example.exampleTracing03",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/tracing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tracing-04.kt",
+      "source_sha256": "dd72bb12bcd5eee3f4ff289c38718ae07d52069a8ba37d7ad43c3f8e01206743",
+      "sha256": "09899f81299d98e4a7aaa85c3a54d431e1a5bddc72848a4c9a01e11b3f8b7498",
+      "package": "ai.koog.agents.example.exampleTracing04",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-tracing-01.kt"
+      ],
+      "guides": [
+        "guides/features/tracing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tracing-05.kt",
+      "source_sha256": "3b1777add62a7e5bde4e8b78b0b08adfe36f8d9afca442172b93d449e65a6b07",
+      "sha256": "a074ed6a8c9807f073d87b88d712d8f96a18293343182d26f5f341a27c839459",
+      "package": "ai.koog.agents.example.exampleTracing05",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [
+        "example-tracing-01.kt"
+      ],
+      "guides": [
+        "guides/features/tracing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tracing-06.kt",
+      "source_sha256": "c43d63ae5450ae6085bcb1f3808d723905d5d806e665c0bb21f6c82b2a2effba",
+      "sha256": "aedeaf5143d877e72505e9377ae28448a0ae4b9578932dbe694caf364d8aee26",
+      "package": "ai.koog.agents.example.exampleTracing06",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/tracing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-tracing-07.kt",
+      "source_sha256": "4a1352d6c45003da5336bc3c6775939035e77f2231a354c8858e769d23a23e61",
+      "sha256": "58bad4f805d94ec05582e6cd3a24f987602ac60e845dd5e6e3724c32448a4242",
+      "package": "ai.koog.agents.example.exampleTracing07",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/tracing.md"
+      ],
+      "imports_without_exact_api_entry": []
+    },
+    {
+      "file": "example-weave-exporter-01.kt",
+      "source_sha256": "c1813bd6d0fe1f9feeabdd00f275d8edda1d9c958829dafc7975926485c77301",
+      "sha256": "a0f6983336578f3e1cf25bbb129bf3f413b1ff687a85844ee919aeb86be888f9",
+      "package": "ai.koog.agents.example.exampleWeaveExporter01",
+      "adaptations": [],
+      "contains_placeholders": false,
+      "requires_examples": [],
+      "guides": [
+        "guides/features/open-telemetry/opentelemetry-weave-exporter.md"
+      ],
+      "imports_without_exact_api_entry": []
+    }
+  ],
+  "fragment_count": 12,
+  "fragments": [
+    {
+      "file": "example-annotation-based-tools-01.txt",
+      "source_sha256": "b18552820c5e525880fa5d47977bbc27f97bbae879fca240279c61e2b5b81886",
+      "sha256": "cea4c5013589361d778400fbb0f436eb45f7b6ed363fb6f086b9f21d13dcc2bc",
+      "adaptations": [],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ]
+    },
+    {
+      "file": "example-annotation-based-tools-02.txt",
+      "source_sha256": "05fe259a7b371be41d7d124a8ad8175db3fe93aa5ef890a2e22a6dbfd87e036c",
+      "sha256": "ce268ff9e6145f644a9663398b48cd1dc9e9afa809da42e956773b2b80aecb7c",
+      "adaptations": [],
+      "guides": [
+        "guides/tools/annotation-based-tools.md"
+      ]
+    },
+    {
+      "file": "example-multimodal-content-01.txt",
+      "source_sha256": "41600721601aef975eb629c614ed445b8497ba1529cf889d5af2c16725adbd11",
+      "sha256": "9777f064358cfb3886d7b6b7aa04f7560d0545f3247377b65e87d385eaa4c014",
+      "adaptations": [
+        "Removed generated package scaffolding from this expression or build-script fragment."
+      ],
+      "guides": [
+        "guides/prompts/prompt-creation/multimodal-content.md"
+      ]
+    },
+    {
+      "file": "example-multimodal-content-02.txt",
+      "source_sha256": "7f0235ce39fce4d731f5ad73285333d969330bfa1486ccad8322160f361e12c9",
+      "sha256": "ea386942e09c61421018a145c9dd7079a0b73a9674d95bf6b9cd510add70e927",
+      "adaptations": [
+        "Removed generated package scaffolding from this expression or build-script fragment."
+      ],
+      "guides": [
+        "guides/prompts/prompt-creation/multimodal-content.md"
+      ]
+    },
+    {
+      "file": "example-multimodal-content-03.txt",
+      "source_sha256": "3e062015e6f817991c57ff187fe353352ebc686695c1c42b43deb524375f07ad",
+      "sha256": "ad4da8f7f192c2ad4aa813e985f9e1f250bed87d8cf200c0fdc58d5b6ef8d489",
+      "adaptations": [
+        "Removed generated package scaffolding from this expression or build-script fragment."
+      ],
+      "guides": [
+        "guides/prompts/prompt-creation/multimodal-content.md"
+      ]
+    },
+    {
+      "file": "example-multimodal-content-04.txt",
+      "source_sha256": "e3f10e555e80d92d34dbf1486ec38441780fb99b11046c66860bcfa533002c71",
+      "sha256": "4f396d79d503a949d3b9e3f6c5f331d582bd1deb8ddad3de0b8ac94eacbe6daa",
+      "adaptations": [
+        "Removed generated package scaffolding from this expression or build-script fragment."
+      ],
+      "guides": [
+        "guides/prompts/prompt-creation/multimodal-content.md"
+      ]
+    },
+    {
+      "file": "example-predefined-strategies-01.txt",
+      "source_sha256": "178988385bfb3bed733d03ec98ee6fcbfb7cf6d0921ef457765a0f4c2d82e174",
+      "sha256": "4f4be406f7414ee65897843ae00d215e1e2627de8ffa9469bb8c6eaeb7b4d38d",
+      "adaptations": [
+        "Removed generated package scaffolding from this expression or build-script fragment."
+      ],
+      "guides": [
+        "guides/predefined-agent-strategies.md"
+      ]
+    },
+    {
+      "file": "example-serialization-02.txt",
+      "source_sha256": "a4425374e0de208974ec2397b43c7c46b2218c5eaa701475751aa52737835f2f",
+      "sha256": "0522207ffc588baa1503d22f8f695a7121c3d261a1c1916c9036e366cbe7fa8b",
+      "adaptations": [
+        "Removed generated package scaffolding from this expression or build-script fragment."
+      ],
+      "guides": [
+        "guides/serialization.md"
+      ]
+    },
+    {
+      "file": "example-spring-boot-01.txt",
+      "source_sha256": "3d204b497207d7b4f73cbb0627d1f0744d083c709d0c88840aa933c263c9430b",
+      "sha256": "014e6b4aaabe8f357d022cfd12c0282c79dc8d2c1a82bc3d8b8f544cd7a81c33",
+      "adaptations": [
+        "Removed generated package scaffolding from this expression or build-script fragment."
+      ],
+      "guides": [
+        "guides/spring-boot.md"
+      ]
+    },
+    {
+      "file": "example-spring-boot-kotlin-01.txt",
+      "source_sha256": "452731483273fca12a2be16d94484e849eeae969d457798cf0460e04b7bcb58b",
+      "sha256": "3af032517a76b301b4bfe6dd5d8cf8b42d079bb300263f9d35e120a20d057366",
+      "adaptations": [
+        "Read text parts from the documented Message.Assistant return type; propagate coroutine cancellation."
+      ],
+      "guides": [
+        "guides/spring-boot.md"
+      ]
+    },
+    {
+      "file": "example-spring-boot-kotlin-02.txt",
+      "source_sha256": "3d106f9107c14d6920933193ca7bbfae3467a1cc17cecd6b2454c54ed35216c2",
+      "sha256": "80e1b4c750e36f861a7f508d5008808ad1bd20bda8746e78e6d31bb9f306747f",
+      "adaptations": [
+        "Read text parts from the documented Message.Assistant return type; propagate coroutine cancellation.",
+        "Use a Kotlin string for the logger name."
+      ],
+      "guides": [
+        "guides/spring-boot.md"
+      ]
+    },
+    {
+      "file": "example-spring-boot-kotlin-03.txt",
+      "source_sha256": "9a83f368cd8e7a3bb693dd7e5a3a161eba9464adee3932b43ad765e26794c2e2",
+      "sha256": "70586a2489641a362667ff5f0b42870951040b2571249c67578f62e0b9445396",
+      "adaptations": [
+        "Added imports for the abbreviated service declaration; its application body remains a placeholder."
+      ],
+      "guides": [
+        "guides/spring-boot.md"
+      ]
+    }
+  ]
+}

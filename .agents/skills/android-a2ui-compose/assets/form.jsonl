@@ -1,0 +1,4 @@
+{"version":"v0.9","createSurface":{"surfaceId":"profile","catalogId":"https://a2ui.org/specification/v0_9_1/catalogs/basic/catalog.json"}}
+{"version":"v0.9","updateDataModel":{"surfaceId":"profile","path":"/","value":{"form":{"name":"Ada"}}}}
+{"version":"v0.9","updateComponents":{"surfaceId":"profile","components":[{"id":"root","component":"Column","children":["title","name","submit"]},{"id":"title","component":"Text","text":"Profile","variant":"h2"},{"id":"name","component":"TextField","label":"Name","value":{"path":"/form/name"}},{"id":"submit","component":"Button","child":"submitLabel","variant":"primary","action":{"event":{"name":"submit","context":{"name":{"path":"/form/name"}}}}},{"id":"submitLabel","component":"Text","text":"Submit"}]}}
+{"version":"v0.9","updateDataModel":{"surfaceId":"profile","path":"/form/name","value":"Grace"}}
