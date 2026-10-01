@@ -42,8 +42,8 @@ android {
   }
 
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
   }
 
   buildFeatures {
@@ -99,6 +99,11 @@ dependencies {
   implementation(libs.a2ui.compose.ui)
   implementation(libs.a2ui.engine)
   implementation(libs.a2ui.model)
+
+  implementation(libs.runanywhere.sdk)
+  implementation(libs.runanywhere.llamacpp)
+  implementation(libs.runanywhere.onnx)
+  implementation(libs.runanywhere.qhexrt.android)
 
   testImplementation(libs.junit)
 
