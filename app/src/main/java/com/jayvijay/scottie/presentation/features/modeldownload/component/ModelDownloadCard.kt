@@ -1,6 +1,7 @@
 package com.jayvijay.scottie.presentation.features.modeldownload.component
 
 import android.content.res.Configuration
+import android.text.format.Formatter
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -20,62 +21,46 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jayvijay.scottie.R
+import com.jayvijay.scottie.domain.entities.DownloadFailure
+import com.jayvijay.scottie.domain.entities.DownloadPhase
+import com.jayvijay.scottie.domain.entities.DownloadProgress
+import com.jayvijay.scottie.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.presentation.ui.ScottieTheme
 import com.jayvijay.scottie.presentation.ui.xelauikit.XelaButton
+import com.jayvijay.scottie.presentation.ui.xelauikit.models.button.XelaButtonState
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.button.XelaButtonType
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaButtonMedium
 
-enum class ModelDownloadItemState {
-  DOWNLOADING,
-  PAUSED,
-  DOWNLOADED,
-  AVAILABLE,
-}
-
-/** Localized action labels, supplied by the screen alongside its formatted status text. */
-data class ModelDownloadItemLabels(
-  val download: String,
-  val pause: String,
-  val delete: String,
-  val resume: String,
-)
-
 /**
- * Renders a download snapshot without owning the download operation.
- *
- * [statusText] includes the formatted size and, while downloading, percentage and byte counts.
- * [progress] is a fraction in 0..1; null means the total size is not yet known. Callbacks report
- * intent; the caller owns confirmation, failures, and subsequent state changes.
+ * Renders a model's download status without owning the download. [onDownload] also resumes and
+ * retries. [canStart] is false while another model downloads.
  */
 @Composable
 fun ModelDownloadUiItem(
   name: String,
   description: String,
-  state: ModelDownloadItemState,
-  statusText: String,
-  labels: ModelDownloadItemLabels,
+  downloadBytes: Long?,
+  status: ModelDownloadStatus,
+  canStart: Boolean,
   onDownload: () -> Unit,
   onPause: () -> Unit,
   onDelete: () -> Unit,
-  onResume: () -> Unit,
   modifier: Modifier = Modifier,
-  progress: Float? = null,
 ) {
-  require(progress == null || progress in 0f..1f) { "Progress must be null or in 0..1" }
-
+  val downloadLabel = stringResource(R.string.model_download_download)
   val density = LocalDensity.current
   val textMeasurer = rememberTextMeasurer()
   val downloadTextLayout =
-    remember(labels.download, density) {
-      textMeasurer.measure(
-        text = labels.download,
-        style = xelaButtonMedium,
-      )
+    remember(downloadLabel, density) {
+      textMeasurer.measure(text = downloadLabel, style = xelaButtonMedium)
     }
   val buttonWidth = with(density) { downloadTextLayout.size.width.toDp() } + 32.dp
 
@@ -90,12 +75,7 @@ fun ModelDownloadUiItem(
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-          text = name,
-          style = MaterialTheme.typography.titleMedium,
-          lineHeight = 24.sp,
-        )
-
+        Text(text = name, style = MaterialTheme.typography.titleMedium, lineHeight = 24.sp)
         Text(
           text = description,
           style = MaterialTheme.typography.bodyMedium,
@@ -106,14 +86,18 @@ fun ModelDownloadUiItem(
 
       Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(
-          text = statusText,
+          text = statusText(status, downloadBytes),
           style = MaterialTheme.typography.bodyMedium,
           lineHeight = 16.sp,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
+          color =
+            if (status is ModelDownloadStatus.Failed) {
+              MaterialTheme.colorScheme.error
+            } else {
+              MaterialTheme.colorScheme.onSurfaceVariant
+            },
         )
-
-        if (state == ModelDownloadItemState.DOWNLOADING || state == ModelDownloadItemState.PAUSED) {
-          ModelDownloadProgress(progress = progress)
+        if (status is ModelDownloadStatus.Downloading) {
+          ModelDownloadProgress(fraction = status.progress.fraction)
         }
       }
 
@@ -123,45 +107,28 @@ fun ModelDownloadUiItem(
         verticalArrangement = Arrangement.spacedBy(8.dp),
       ) {
         val buttonModifier = Modifier.defaultMinSize(minWidth = buttonWidth)
-        when (state) {
-          ModelDownloadItemState.AVAILABLE ->
+        val start: @Composable (Int) -> Unit = { label ->
+          ModelDownloadButton(
+            text = stringResource(label),
+            onClick = onDownload,
+            filled = true,
+            enabled = canStart,
+            modifier = buttonModifier,
+          )
+        }
+        when (status) {
+          ModelDownloadStatus.Available -> start(R.string.model_download_download)
+          is ModelDownloadStatus.Paused -> start(R.string.model_download_resume)
+          is ModelDownloadStatus.Failed -> start(R.string.model_download_retry)
+          is ModelDownloadStatus.Downloading ->
             ModelDownloadButton(
-              text = labels.download,
-              onClick = onDownload,
-              filled = true,
-              modifier = buttonModifier,
-            )
-
-          ModelDownloadItemState.DOWNLOADING -> {
-            ModelDownloadButton(
-              text = labels.pause,
+              text = stringResource(R.string.model_download_pause),
               onClick = onPause,
               modifier = buttonModifier,
             )
+          ModelDownloadStatus.Downloaded ->
             ModelDownloadButton(
-              text = labels.delete,
-              onClick = onDelete,
-              modifier = buttonModifier,
-            )
-          }
-
-          ModelDownloadItemState.PAUSED -> {
-            ModelDownloadButton(
-              text = labels.resume,
-              onClick = onResume,
-              filled = true,
-              modifier = buttonModifier,
-            )
-            ModelDownloadButton(
-              text = labels.delete,
-              onClick = onDelete,
-              modifier = buttonModifier,
-            )
-          }
-
-          ModelDownloadItemState.DOWNLOADED ->
-            ModelDownloadButton(
-              text = labels.delete,
+              text = stringResource(R.string.model_download_delete),
               onClick = onDelete,
               modifier = buttonModifier,
             )
@@ -172,17 +139,75 @@ fun ModelDownloadUiItem(
 }
 
 @Composable
-private fun ModelDownloadProgress(progress: Float?) {
+private fun statusText(status: ModelDownloadStatus, downloadBytes: Long?): String {
+  val context = LocalContext.current
+  fun size(bytes: Long) = Formatter.formatShortFileSize(context, bytes)
+  return when (status) {
+    ModelDownloadStatus.Available ->
+      downloadBytes?.let { stringResource(R.string.model_download_status_available, size(it)) }
+        ?: stringResource(R.string.model_download_status_size_unknown)
+    is ModelDownloadStatus.Downloading -> downloadingText(status.progress, ::size)
+    is ModelDownloadStatus.Paused ->
+      stringResource(R.string.model_download_status_paused, size(status.bytesKept))
+    is ModelDownloadStatus.Failed -> {
+      val reason = stringResource(status.reason.label())
+      if (status.bytesKept > 0) {
+        stringResource(R.string.model_download_status_failed, reason, size(status.bytesKept))
+      } else {
+        reason
+      }
+    }
+    ModelDownloadStatus.Downloaded ->
+      if (downloadBytes != null) {
+        stringResource(R.string.model_download_status_downloaded_size, size(downloadBytes))
+      } else {
+        stringResource(R.string.model_download_status_downloaded)
+      }
+  }
+}
+
+@Composable
+private fun downloadingText(progress: DownloadProgress, size: (Long) -> String): String {
+  val fraction = progress.fraction
+  return when {
+    progress.phase == DownloadPhase.VERIFYING ->
+      stringResource(R.string.model_download_status_checking)
+    progress.phase == DownloadPhase.EXTRACTING ->
+      stringResource(R.string.model_download_status_unpacking)
+    fraction != null && progress.bytesTotal > 0 ->
+      stringResource(
+        R.string.model_download_status_downloading,
+        (fraction * PERCENT).toInt(),
+        size(progress.bytesDone),
+        size(progress.bytesTotal),
+      )
+    else ->
+      stringResource(R.string.model_download_status_downloading_bytes, size(progress.bytesDone))
+  }
+}
+
+private fun DownloadFailure.label(): Int =
+  when (this) {
+    DownloadFailure.NETWORK -> R.string.model_download_failure_network
+    DownloadFailure.STORAGE -> R.string.model_download_failure_storage
+    DownloadFailure.CORRUPTED -> R.string.model_download_failure_corrupted
+    DownloadFailure.BACKGROUND_REFUSED -> R.string.model_download_failure_background_refused
+    DownloadFailure.UNKNOWN -> R.string.model_download_failure_unknown
+  }
+
+private const val PERCENT = 100
+
+@Composable
+private fun ModelDownloadProgress(fraction: Float?) {
   val animatedProgress by
     animateFloatAsState(
-      targetValue = progress ?: 0f,
+      targetValue = fraction ?: 0f,
       animationSpec = MotionScheme.expressive().fastEffectsSpec(),
       label = "Model download progress",
     )
-
   val modifier = Modifier.fillMaxWidth().height(4.dp)
 
-  if (progress == null) {
+  if (fraction == null) {
     LinearProgressIndicator(
       modifier = modifier,
       color = MaterialTheme.colorScheme.error,
@@ -206,10 +231,12 @@ private fun ModelDownloadButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   filled: Boolean = false,
+  enabled: Boolean = true,
 ) {
   XelaButton(
     text = text,
     onClick = onClick,
+    state = if (enabled) XelaButtonState.DEFAULT else XelaButtonState.DISABLED,
     type = if (filled) XelaButtonType.PRIMARY else XelaButtonType.SECONDARY,
     background = if (filled) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surface,
     foregroundColor =
@@ -219,70 +246,47 @@ private fun ModelDownloadButton(
   )
 }
 
-@Preview(name = "Available", widthDp = 358)
-@Preview(name = "Available dark", widthDp = 358, uiMode = Configuration.UI_MODE_NIGHT_YES)
+private const val PREVIEW_TOTAL = 1_000_000_000L
+private const val PREVIEW_HALF = 500_000_000L
+
+@Preview(name = "States", widthDp = 358, heightDp = 1400)
+@Preview(
+  name = "States dark",
+  widthDp = 358,
+  heightDp = 1400,
+  uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Preview(name = "States large text", widthDp = 320, heightDp = 2400, fontScale = 2f)
 @Composable
-private fun PreviewAvailableModelDownloadUiItem() {
-  ScottieTheme {
-    ModelDownloadUiItem(
-      name = "Llama 3.2 · 1B",
-      description = "Lightweight help with ideas and conversation.",
-      state = ModelDownloadItemState.AVAILABLE,
-      statusText = "0.9 GB download",
-      labels = PreviewLabels,
-      onDownload = {},
-      onPause = {},
-      onDelete = {},
-      onResume = {},
+private fun PreviewModelDownloadUiItemStates() {
+  val states =
+    listOf(
+      ModelDownloadStatus.Available to true,
+      ModelDownloadStatus.Available to false,
+      ModelDownloadStatus.Downloading(
+        DownloadProgress(PREVIEW_HALF, PREVIEW_TOTAL, fraction = 0.5f)
+      ) to false,
+      ModelDownloadStatus.Downloading(
+        DownloadProgress(PREVIEW_TOTAL, PREVIEW_TOTAL, fraction = 1f, DownloadPhase.EXTRACTING)
+      ) to false,
+      ModelDownloadStatus.Paused(bytesKept = PREVIEW_HALF) to true,
+      ModelDownloadStatus.Failed(DownloadFailure.NETWORK, bytesKept = PREVIEW_HALF) to true,
+      ModelDownloadStatus.Downloaded to true,
     )
+  ScottieTheme {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      states.forEach { (status, canStart) ->
+        ModelDownloadUiItem(
+          name = "Qwen 2.5 · 1.5B",
+          description = "Text",
+          downloadBytes = PREVIEW_TOTAL,
+          status = status,
+          canStart = canStart,
+          onDownload = {},
+          onPause = {},
+          onDelete = {},
+        )
+      }
+    }
   }
 }
-
-@Preview(name = "Downloading", widthDp = 358)
-@Preview(name = "Downloading dark", widthDp = 358, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "Downloading large text", widthDp = 320, fontScale = 2f)
-@Composable
-private fun PreviewDownloadingModelDownloadUiItem() {
-  ScottieTheme {
-    ModelDownloadUiItem(
-      name = "Qwen 2.5 · 1.5B",
-      description = "Everyday writing, answers, and summaries.",
-      state = ModelDownloadItemState.DOWNLOADING,
-      statusText = "Downloading · 50% · 0.5 / 1.0 GB",
-      progress = 0.5f,
-      labels = PreviewLabels,
-      onDownload = {},
-      onPause = {},
-      onDelete = {},
-      onResume = {},
-    )
-  }
-}
-
-@Preview(name = "Downloaded", widthDp = 358)
-@Preview(name = "Downloaded dark", widthDp = 358, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "Downloaded large text", widthDp = 320, fontScale = 2f)
-@Composable
-private fun PreviewDownloadedModelDownloadUiItem() {
-  ScottieTheme {
-    ModelDownloadUiItem(
-      name = "Gemma 3 · 1B",
-      description = "A compact model for quick, simple tasks.",
-      state = ModelDownloadItemState.DOWNLOADED,
-      statusText = "Downloaded · 0.8 GB",
-      labels = PreviewLabels,
-      onDownload = {},
-      onPause = {},
-      onDelete = {},
-      onResume = {},
-    )
-  }
-}
-
-private val PreviewLabels =
-  ModelDownloadItemLabels(
-    download = "Download",
-    pause = "Pause",
-    delete = "Delete",
-    resume = "Resume",
-  )

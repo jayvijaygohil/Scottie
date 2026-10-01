@@ -1,10 +1,52 @@
 <resources>
     <string name="app_name">Scottie</string>
     <string name="back">Back</string>
-    <string name="model_download_title">Download Modals</string>
+    <string name="model_download_title">Download models</string>
     <string name="model_download_intro">Download models to use in Scottie and run them on your device.</string>
     <string name="model_download_download">Download</string>
     <string name="model_download_pause">Pause</string>
     <string name="model_download_resume">Resume</string>
+    <string name="model_download_retry">Retry</string>
     <string name="model_download_delete">Delete</string>
+
+    <string name="model_download_loading">Loading models…</string>
+    <string name="model_download_unavailable">Models can\'t be loaded on this device right now.</string>
+
+    <string name="model_type_text">Text</string>
+    <string name="model_type_multimodal">Text and images</string>
+    <string name="model_type_vision">Vision</string>
+    <string name="model_type_image_generation">Image generation</string>
+    <string name="model_type_embedding">Embedding</string>
+    <string name="model_type_speech_recognition">Speech recognition</string>
+    <string name="model_type_speech_synthesis">Speech synthesis</string>
+    <string name="model_type_voice_activity">Voice activity detection</string>
+    <string name="model_type_segmentation">Image segmentation</string>
+    <string name="model_type_other">Other</string>
+
+    <string name="model_download_status_available">%1$s download</string>
+    <string name="model_download_status_size_unknown">Size unknown</string>
+    <string name="model_download_status_downloading">Downloading · %1$d%% · %2$s / %3$s</string>
+    <string name="model_download_status_downloading_bytes">Downloading · %1$s</string>
+    <string name="model_download_status_checking">Checking download…</string>
+    <string name="model_download_status_unpacking">Unpacking…</string>
+    <string name="model_download_status_paused">Paused · %1$s kept</string>
+    <string name="model_download_status_failed">%1$s · %2$s kept</string>
+    <string name="model_download_status_downloaded">Downloaded</string>
+    <string name="model_download_status_downloaded_size">Downloaded · %1$s</string>
+
+    <string name="model_download_failure_network">Connection lost</string>
+    <string name="model_download_failure_storage">Not enough storage</string>
+    <string name="model_download_failure_corrupted">Download was damaged</string>
+    <string name="model_download_failure_background_refused">Couldn\'t start the download in the background</string>
+    <string name="model_download_failure_unknown">Download failed</string>
+
+    <string name="model_download_delete_failed">Couldn\'t delete %1$s</string>
+    <string name="model_download_dismiss">Dismiss</string>
+
+    <string name="model_download_channel">Model downloads</string>
+    <string name="model_download_notification_starting">Starting download…</string>
+    <string name="model_download_notification_cancel">Cancel</string>
+    <string name="model_download_notification_ready">%1$s is ready</string>
+    <string name="model_download_notification_paused">%1$s download paused</string>
+    <string name="model_download_notification_failed">%1$s download failed</string>
 </resources>

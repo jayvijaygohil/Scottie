@@ -1,4 +1,4 @@
-# Specification Quality Checklist: On-Device Model Downloads
+# Specification Quality Checklist: Offline Model Download
 
 **Purpose**: Validate specification completeness and quality before proceeding to planning
 **Created**: 2026-10-01
@@ -31,7 +31,8 @@
 
 ## Notes
 
-- The Assumptions section names the existing allow-list asset deliberately, to make clear it is
-  excluded from scope. The SDK is named only in the input quote.
-- Planning MUST use the `runanywhere-kotlin` skill and confirm whether the installed SDK supports
-  resuming downloads (FR-011) and exposes access/gating info per model (FR-012).
+- Resolved: model catalog scope (FR-001) — reference catalog across all model types.
+- Resolved: background downloads (FR-012a) — continue in background with progress notification.
+- FR-013/FR-015 reference the design system and automated tests because the user explicitly
+  required them; they constrain outcome, not implementation.
+- Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
