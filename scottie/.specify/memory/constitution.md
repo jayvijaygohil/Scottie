@@ -1,10 +1,10 @@
 <!--
 Sync Impact Report
-- Version: template → 1.0.0 (initial ratification)
-- Principles added: I. Layered Clean Architecture; II. Circuit-Driven Presentation;
-  III. Bounded AI Agents; IV. Verified Changes; V. Simplicity
-- Sections added: Technology Constraints; Development Workflow; Governance
-- Sections removed: none
+- Version: 1.0.0 → 1.1.0 (MINOR: Principle IV gains a governed device-test exception)
+- Modified principles: IV. Verified Changes (device tests may be skipped when a feature spec
+  forbids device execution; the skip MUST be reported)
+- Added sections: none
+- Removed sections: none
 - Deferred TODOs: none
 -->
 
@@ -53,7 +53,8 @@ agent behavior.
   using fakes, not live infrastructure.
 - A change is done only after the checks matching its scope pass:
   `:app:assembleDebug`, `:app:testDebugUnitTest`, `:app:detekt`, `:app:lintDebug`, and
-  `:app:connectedDebugAndroidTest` when device behavior changes.
+  `:app:connectedDebugAndroidTest` when device behavior changes, unless the feature spec forbids
+  device execution, in which case the completion report MUST state the skip and its reason.
 - Completion reports MUST state which evidence exists: inspection, compilation, automated tests,
   debugger evidence, or observed device behavior.
 
@@ -101,4 +102,4 @@ Rationale: the cheapest code to maintain is code never written.
 - Every spec, plan, and review MUST check compliance; any violation MUST be justified in the
   plan's complexity tracking.
 
-**Version**: 1.0.0 | **Ratified**: 2026-10-01 | **Last Amended**: 2026-10-01
+**Version**: 1.1.0 | **Ratified**: 2026-10-01 | **Last Amended**: 2026-10-01
