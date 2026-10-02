@@ -8,28 +8,15 @@ data class Model(
   val downloadBytes: Long?,
   /** Null when the catalog has none. */
   val description: String? = null,
-  val target: HardwareTarget = HardwareTarget.CPU,
   /** RAM needed to run the model; null when unknown. */
   val memoryBytes: Long? = null,
+  /** True when the source needs a Hugging Face account token; such models cannot be downloaded. */
+  val requiresToken: Boolean = false,
 )
-
-/** Where a model executes. */
-enum class HardwareTarget {
-  CPU,
-  NPU,
-}
 
 enum class ModelType {
   TEXT,
-  MULTIMODAL,
-  VISION,
-  IMAGE_GENERATION,
-  EMBEDDING,
   SPEECH_RECOGNITION,
-  SPEECH_SYNTHESIS,
-  VOICE_ACTIVITY,
-  SEGMENTATION,
-  OTHER,
 }
 
 data class DownloadProgress(
@@ -67,7 +54,7 @@ enum class DownloadFailure {
   UNKNOWN,
 }
 
-/** [supported] is false when this device cannot run [model]; such entries cannot be downloaded. */
+/** [supported] is the catalog-load compatibility verdict (memory and storage). */
 data class ModelEntry(val model: Model, val status: ModelDownloadStatus, val supported: Boolean)
 
 sealed interface ModelCatalog {

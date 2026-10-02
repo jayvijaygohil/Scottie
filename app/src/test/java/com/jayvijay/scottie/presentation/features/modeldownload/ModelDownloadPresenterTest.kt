@@ -2,9 +2,7 @@ package com.jayvijay.scottie.presentation.features.modeldownload
 
 import com.jayvijay.scottie.domain.entities.DownloadFailure
 import com.jayvijay.scottie.domain.entities.DownloadProgress
-import com.jayvijay.scottie.domain.entities.HardwareTarget
-import com.jayvijay.scottie.domain.entities.HardwareTarget.CPU
-import com.jayvijay.scottie.domain.entities.HardwareTarget.NPU
+import com.jayvijay.scottie.domain.entities.Compatibility.Shortfall
 import com.jayvijay.scottie.domain.entities.Model
 import com.jayvijay.scottie.domain.entities.ModelCatalog
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus
@@ -13,6 +11,8 @@ import com.jayvijay.scottie.domain.entities.ModelEntry
 import com.jayvijay.scottie.domain.entities.ModelType
 import com.jayvijay.scottie.domain.entities.ModelType.SPEECH_RECOGNITION
 import com.jayvijay.scottie.domain.entities.ModelType.TEXT
+import com.jayvijay.scottie.domain.entities.ShortfallKind.STORAGE
+import com.jayvijay.scottie.domain.repository.DownloadStart
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
 import kotlinx.coroutines.test.runTest
@@ -29,12 +29,12 @@ class ModelDownloadPresenterTest {
     id: String,
     status: ModelDownloadStatus = Available,
     type: ModelType = TEXT,
-    target: HardwareTarget = CPU,
     supported: Boolean = true,
     description: String? = null,
+    requiresToken: Boolean = false,
   ) =
     ModelEntry(
-      Model(id, "Model $id", type, SIZE, description = description, target = target),
+      Model(id, "Model $id", type, SIZE, description = description, requiresToken = requiresToken),
       status,
       supported,
     )
@@ -43,14 +43,11 @@ class ModelDownloadPresenterTest {
 
   private fun ModelDownloadState.sections() = (content as ModelDownloadContent.Models).sections
 
-  private fun ModelDownloadState.models() =
-    sections().flatMap { section -> section.groups.flatMap { it.models } }
+  private fun ModelDownloadState.models() = sections().flatMap { it.models }
 
-  /** Ids grouped as type → target → ids, for compact assertions. */
+  /** Ids grouped by type, for compact assertions. */
   private fun ModelDownloadState.layout() =
-    sections().map { section ->
-      section.type to section.groups.map { group -> group.target to group.models.map { it.id } }
-    }
+    sections().map { section -> section.type to section.models.map { it.id } }
 
   @Test
   fun mapsLoadingAndUnavailable() = runTest {
@@ -73,7 +70,6 @@ class ModelDownloadPresenterTest {
           name = "Model a",
           description = "Chat",
           type = TEXT,
-          target = CPU,
           downloadBytes = SIZE,
           status = downloading,
           supported = true,
@@ -109,54 +105,45 @@ class ModelDownloadPresenterTest {
   }
 
   @Test
-  fun groupsByTypeOrderThenCpuBeforeNpuAndHidesEmpty() = runTest {
+  fun tokenModelIsSupportedButCannotStart() = runTest {
+    repository.catalog.value = ready(entry("t", requiresToken = true))
+    presenter.test {
+      val model = awaitItem().models().single()
+      assertEquals(true to false, model.supported to model.canStart)
+    }
+  }
+
+  @Test
+  fun groupsByTypeOrderAndHidesEmpty() = runTest {
     repository.catalog.value =
-      ready(
-        entry("stt", type = SPEECH_RECOGNITION, target = NPU),
-        entry("npu", target = NPU),
-        entry("cpu1"),
-        entry("cpu2"),
-      )
+      ready(entry("stt", type = SPEECH_RECOGNITION), entry("t1"), entry("t2"))
     presenter.test {
       val state = awaitItem()
       assertEquals(
-        listOf(
-          TEXT to listOf(CPU to listOf("cpu1", "cpu2"), NPU to listOf("npu")),
-          SPEECH_RECOGNITION to listOf(NPU to listOf("stt")),
-        ),
+        listOf(TEXT to listOf("t1", "t2"), SPEECH_RECOGNITION to listOf("stt")),
         state.layout(),
       )
-      assertEquals(listOf(3, 1), state.sections().map { it.count })
+      assertEquals(listOf(2, 1), state.sections().map { it.count })
+      assertEquals(listOf(true, true), state.sections().map { it.expanded })
+
+      repository.catalog.value = ready(entry("stt", type = SPEECH_RECOGNITION))
+      assertEquals(listOf(SPEECH_RECOGNITION to listOf("stt")), awaitItem().layout())
     }
   }
 
   @Test
-  fun npuGroupsStartCollapsedUnlessDeviceCanRunOne() = runTest {
-    repository.catalog.value = ready(entry("cpu"), entry("npu", target = NPU, supported = false))
-    presenter.test {
-      val section = awaitItem().sections().single()
-      assertEquals(true, section.expanded)
-      assertEquals(listOf(true, false), section.groups.map { it.expanded })
-
-      repository.catalog.value = ready(entry("cpu"), entry("npu", target = NPU))
-      assertEquals(listOf(true, true), awaitItem().sections().single().groups.map { it.expanded })
-    }
-  }
-
-  @Test
-  fun togglesFlipSectionsWithoutTouchingDownloads() = runTest {
+  fun toggleCollapsesOnlyThatSectionWithoutTouchingDownloads() = runTest {
     val downloading = ModelDownloadStatus.Downloading(DownloadProgress(1, SIZE, 0.1f))
-    repository.catalog.value = ready(entry("a", downloading))
+    repository.catalog.value = ready(entry("a", downloading), entry("s", type = SPEECH_RECOGNITION))
     presenter.test {
-      awaitItem().eventSink(ModelDownloadAction.ToggleGroup(TEXT, CPU))
-      val groupClosed = awaitItem()
-      assertEquals(false, groupClosed.sections().single().groups.single().expanded)
-
-      groupClosed.eventSink(ModelDownloadAction.ToggleCategory(TEXT))
-      val categoryClosed = awaitItem()
-      assertEquals(false, categoryClosed.sections().single().expanded)
-      assertEquals(downloading, categoryClosed.models().single().status)
+      awaitItem().eventSink(ModelDownloadAction.ToggleCategory(TEXT))
+      val closed = awaitItem()
+      assertEquals(listOf(false, true), closed.sections().map { it.expanded })
+      assertEquals(downloading, closed.models().first().status)
       assertEquals(emptyList<String>(), repository.pauses)
+
+      closed.eventSink(ModelDownloadAction.ToggleCategory(TEXT))
+      assertEquals(listOf(true, true), awaitItem().sections().map { it.expanded })
     }
   }
 
@@ -166,7 +153,7 @@ class ModelDownloadPresenterTest {
       ready(
         entry("qwen3-0.6b-q4_k_m"),
         entry("whisper", type = SPEECH_RECOGNITION, description = "Robust transcription"),
-        entry("npu", target = NPU, supported = false),
+        entry("big", supported = false),
       )
     presenter.test {
       val state = awaitItem()
@@ -177,8 +164,8 @@ class ModelDownloadPresenterTest {
       assertEquals(listOf("qwen3-0.6b-q4_k_m"), idsFor("  Q4_K "))
       assertEquals(listOf("whisper"), idsFor("transcription"))
       assertEquals(listOf("whisper"), idsFor("speech recognition"))
-      assertEquals(listOf("npu"), idsFor("NPU"))
-      assertEquals(listOf("npu"), idsFor("unsupported"))
+      assertEquals(emptyList<String>(), idsFor("npu"))
+      assertEquals(listOf("big"), idsFor("unsupported"))
       assertEquals(listOf("qwen3-0.6b-q4_k_m", "whisper"), idsFor("supported"))
       assertEquals(listOf("whisper"), idsFor("Model whisper"))
     }
@@ -187,7 +174,7 @@ class ModelDownloadPresenterTest {
   @Test
   fun searchExpandsMatchesAndClearingRestoresToggles() = runTest {
     repository.catalog.value =
-      ready(entry("a"), entry("b", type = SPEECH_RECOGNITION), entry("n", target = NPU))
+      ready(entry("a"), entry("b", type = SPEECH_RECOGNITION), entry("n"))
     presenter.test {
       awaitItem().eventSink(ModelDownloadAction.ToggleCategory(TEXT))
       val collapsed = awaitItem()
@@ -218,6 +205,23 @@ class ModelDownloadPresenterTest {
   }
 
   @Test
+  fun refusedDownloadShowsShortfallUntilDismissed() = runTest {
+    repository.catalog.value = ready(entry("a"))
+    repository.downloadResult =
+      DownloadStart.Refused(Shortfall(STORAGE, 2_600_000_000, 1_400_000_000))
+    presenter.test {
+      awaitItem().eventSink(ModelDownloadAction.Download("a"))
+      val refused = awaitItem()
+      assertEquals(
+        ModelDownloadError.Shortfall(STORAGE, 2_600_000_000, 1_400_000_000),
+        refused.error,
+      )
+      refused.eventSink(ModelDownloadAction.DismissError)
+      assertNull(awaitItem().error)
+    }
+  }
+
+  @Test
   fun forwardsDownloadRetryAndPause() = runTest {
     repository.catalog.value = ready(entry("a"))
     presenter.test {
@@ -225,6 +229,7 @@ class ModelDownloadPresenterTest {
       state.eventSink(ModelDownloadAction.Download("a"))
       state.eventSink(ModelDownloadAction.Pause("a"))
       state.eventSink(ModelDownloadAction.Download("a")) // Resume / Retry
+      testScheduler.runCurrent()
       assertEquals(listOf("a", "a"), repository.downloads)
       assertEquals(listOf("a"), repository.pauses)
     }
@@ -245,11 +250,11 @@ class ModelDownloadPresenterTest {
     presenter.test {
       awaitItem().eventSink(ModelDownloadAction.Delete("a"))
       val failed = awaitItem()
-      assertEquals("Model a", failed.deleteFailedModelName)
+      assertEquals(ModelDownloadError.DeleteFailed("Model a"), failed.error)
       assertEquals(listOf("a"), repository.deletes)
 
       failed.eventSink(ModelDownloadAction.DismissError)
-      assertNull(awaitItem().deleteFailedModelName)
+      assertNull(awaitItem().error)
     }
   }
 

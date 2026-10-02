@@ -101,9 +101,7 @@ dependencies {
   implementation(libs.a2ui.model)
 
   implementation(libs.runanywhere.sdk)
-  implementation(libs.runanywhere.llamacpp)
   implementation(libs.runanywhere.onnx)
-  implementation(libs.runanywhere.qhexrt.android)
 
   testImplementation(libs.junit)
 

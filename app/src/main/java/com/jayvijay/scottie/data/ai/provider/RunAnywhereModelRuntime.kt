@@ -1,21 +1,15 @@
 package com.jayvijay.scottie.data.ai.provider
 
 import ai.runanywhere.proto.v1.ErrorCode
-import ai.runanywhere.proto.v1.InferenceFramework
 import ai.runanywhere.proto.v1.ModelFileDescriptor
 import ai.runanywhere.proto.v1.ModelFileRole
 import ai.runanywhere.proto.v1.ModelInfo
-import ai.runanywhere.proto.v1.ModelSource
-import ai.runanywhere.proto.v1.RegisterModelFromUrlRequest
-import android.app.ActivityManager
 import android.content.Context
 import android.util.Log
 import com.jayvijay.scottie.domain.entities.DownloadFailure
 import com.jayvijay.scottie.domain.entities.DownloadPhase
 import com.jayvijay.scottie.domain.entities.DownloadProgress
 import com.runanywhere.sdk.core.onnx.ONNX
-import com.runanywhere.sdk.llm.llamacpp.LlamaCPP
-import com.runanywhere.sdk.npu.qhexrt.QHexRT
 import com.runanywhere.sdk.public.RunAnywhere
 import com.runanywhere.sdk.public.api.DownloadEvent
 import com.runanywhere.sdk.public.api.ModelRegistration
@@ -38,11 +32,9 @@ constructor(@ApplicationContext private val context: Context) : ModelRuntime {
 
   override suspend fun prepare(catalog: List<CatalogModel>): Set<String> =
     withContext(Dispatchers.IO) {
-      // CPU backends before initialize (else load fails); QHexRT needs the SDK-held context.
-      registerBackend("llama.cpp") { LlamaCPP.register() }
+      // Backends before initialize, else load fails.
       registerBackend("onnx") { ONNX.register() }
       RunAnywhere.initialize(context = context)
-      registerBackend("qhexrt") { QHexRT.register() }
       catalog.mapNotNullTo(mutableSetOf()) { row ->
         try {
           register(row)?.id
@@ -59,12 +51,6 @@ constructor(@ApplicationContext private val context: Context) : ModelRuntime {
     withContext(Dispatchers.IO) {
       RunAnywhere.models.list().filter { it.isDownloadedOnDisk }.mapTo(mutableSetOf()) { it.id }
     }
-
-  override suspend fun totalMemoryBytes(): Long? =
-    context
-      .getSystemService(ActivityManager::class.java)
-      ?.let { manager -> ActivityManager.MemoryInfo().also(manager::getMemoryInfo).totalMem }
-      ?.takeIf { it > 0 }
 
   override fun download(modelId: String): Flow<RuntimeDownloadEvent> = flow {
     var last = DownloadProgress(bytesDone = 0, bytesTotal = 0, fraction = null)
@@ -115,28 +101,10 @@ constructor(@ApplicationContext private val context: Context) : ModelRuntime {
     }
   }
 
-  /** Null when the device cannot run [row] or it needs a Hugging Face token. */
+  /** Null for rows this runtime does not own. */
   private suspend fun register(row: CatalogModel): ModelInfo? =
     when (row) {
-      is SingleFileModel ->
-        if (row.framework == InferenceFramework.INFERENCE_FRAMEWORK_QHEXRT) {
-          if (QHexRT.modelRequiresHfAuth(row.id)) null
-          else QHexRT.registerModelForDevice(row.toQHexRTRequest())
-        } else {
-          RunAnywhere.models.register(
-            ModelRegistration.url(
-              id = row.id,
-              name = row.name,
-              url = row.url,
-              framework = row.framework,
-              category = row.category,
-              memoryBytes = row.memoryBytes,
-              downloadBytes = row.downloadBytes,
-              supportsThinking = row.supportsThinking,
-              supportsLora = row.supportsLora,
-            )
-          )
-        }
+      is LiteRtModel -> null
       is ArchiveModel ->
         RunAnywhere.models.register(
           ModelRegistration.archive(
@@ -164,22 +132,6 @@ constructor(@ApplicationContext private val context: Context) : ModelRuntime {
         )
     }
 
-  private fun SingleFileModel.toQHexRTRequest() =
-    RegisterModelFromUrlRequest(
-      id = id,
-      name = name,
-      url = url,
-      framework = framework,
-      category = category,
-      source = ModelSource.MODEL_SOURCE_REMOTE,
-      memory_required_bytes = memoryBytes,
-      download_size_bytes = memoryBytes,
-      context_length = contextLength,
-      supports_thinking = supportsThinking,
-      supports_lora = supportsLora,
-      description = HNPU_DESCRIPTION,
-    )
-
   private fun descriptor(index: Int, file: ModelFile) =
     ModelFileDescriptor(
       url = file.url,
@@ -194,7 +146,6 @@ constructor(@ApplicationContext private val context: Context) : ModelRuntime {
 
   private companion object {
     const val TAG = "ModelRuntime"
-    const val HNPU_DESCRIPTION = "Qualcomm Hexagon NPU model bundle."
   }
 }
 

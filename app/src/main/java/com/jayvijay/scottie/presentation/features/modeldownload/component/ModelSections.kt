@@ -10,7 +10,6 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
-import com.jayvijay.scottie.domain.entities.HardwareTarget
 import com.jayvijay.scottie.domain.entities.ModelType
 import com.jayvijay.scottie.presentation.features.modeldownload.ModelDownloadAction
 import com.jayvijay.scottie.presentation.features.modeldownload.ModelSection
@@ -43,33 +42,20 @@ fun ModelSections(
           modifier = Modifier.animateItem(),
         )
       }
-      if (!section.expanded) return@forEach
-      section.groups.forEach { group ->
-        item(key = "group:${section.type}:${group.target}", contentType = "group") {
-          ScottieAccordionHeader(
-            title = stringResource(group.target.label()),
-            countLabel = countLabel(group.models.size),
-            expanded = group.expanded,
-            onToggle = { onEvent(ModelDownloadAction.ToggleGroup(section.type, group.target)) },
+      if (section.expanded) {
+        items(section.models, key = { it.id }, contentType = { "model" }) { model ->
+          ModelDownloadUiItem(
+            name = model.name,
+            description = model.description,
+            supported = model.supported,
+            downloadBytes = model.downloadBytes,
+            status = model.status,
+            canStart = model.canStart,
+            onDownload = { onDownload(model.id) },
+            onPause = { onEvent(ModelDownloadAction.Pause(model.id)) },
+            onDelete = { onEvent(ModelDownloadAction.Delete(model.id)) },
             modifier = Modifier.animateItem(),
-            level = 1,
           )
-        }
-        if (group.expanded) {
-          items(group.models, key = { it.id }, contentType = { "model" }) { model ->
-            ModelDownloadUiItem(
-              name = model.name,
-              description = model.description,
-              supported = model.supported,
-              downloadBytes = model.downloadBytes,
-              status = model.status,
-              canStart = model.canStart,
-              onDownload = { onDownload(model.id) },
-              onPause = { onEvent(ModelDownloadAction.Pause(model.id)) },
-              onDelete = { onEvent(ModelDownloadAction.Delete(model.id)) },
-              modifier = Modifier.animateItem(),
-            )
-          }
         }
       }
     }
@@ -79,19 +65,5 @@ fun ModelSections(
 private fun ModelType.label(): Int =
   when (this) {
     ModelType.TEXT -> R.string.model_type_text
-    ModelType.MULTIMODAL -> R.string.model_type_multimodal
-    ModelType.VISION -> R.string.model_type_vision
-    ModelType.IMAGE_GENERATION -> R.string.model_type_image_generation
-    ModelType.EMBEDDING -> R.string.model_type_embedding
-    ModelType.SPEECH_RECOGNITION -> R.string.model_type_speech_recognition
-    ModelType.SPEECH_SYNTHESIS -> R.string.model_type_speech_synthesis
-    ModelType.VOICE_ACTIVITY -> R.string.model_type_voice_activity
-    ModelType.SEGMENTATION -> R.string.model_type_segmentation
-    ModelType.OTHER -> R.string.model_type_other
-  }
-
-private fun HardwareTarget.label(): Int =
-  when (this) {
-    HardwareTarget.CPU -> R.string.model_target_cpu
-    HardwareTarget.NPU -> R.string.model_target_npu
+    ModelType.SPEECH_RECOGNITION -> R.string.model_type_speech
   }

@@ -11,9 +11,6 @@ interface ModelRuntime {
 
   suspend fun downloadedIds(): Set<String>
 
-  /** Device total RAM in bytes; null when unknown. */
-  suspend fun totalMemoryBytes(): Long?
-
   fun download(modelId: String): Flow<RuntimeDownloadEvent>
 
   suspend fun delete(modelId: String)

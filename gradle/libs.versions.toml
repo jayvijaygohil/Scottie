@@ -31,7 +31,6 @@ a2ui = "1.0.0-alpha01"
 
 # On-device AI
 runanywhere = "0.20.27"
-runanywhereQherxrt = "0.20.19"
 
 # Testing
 junit = "4.13.2"
@@ -93,9 +92,7 @@ koog-agents-test = { group = "ai.koog", name = "agents-test", version.ref = "koo
 
 # On-device AI
 runanywhere-sdk = { group = "io.github.sanchitmonga22", name = "runanywhere-sdk", version.ref = "runanywhere" }
-runanywhere-llamacpp = { group = "io.github.sanchitmonga22", name = "runanywhere-llamacpp", version.ref = "runanywhere" }
 runanywhere-onnx = { group = "io.github.sanchitmonga22", name = "runanywhere-onnx", version.ref = "runanywhere" }
-runanywhere-qhexrt-android = { group = "io.github.sanchitmonga22", name = "runanywhere-qhexrt-android", version.ref = "runanywhereQherxrt" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }

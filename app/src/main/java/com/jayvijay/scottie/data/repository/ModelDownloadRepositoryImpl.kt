@@ -2,14 +2,15 @@ package com.jayvijay.scottie.data.repository
 
 import android.util.Log
 import com.jayvijay.scottie.data.ai.provider.CatalogModel
+import com.jayvijay.scottie.data.ai.provider.DeviceResources
 import com.jayvijay.scottie.data.ai.provider.DownloadForegroundHost
 import com.jayvijay.scottie.data.ai.provider.ModelRuntime
 import com.jayvijay.scottie.data.ai.provider.RuntimeDownloadEvent
 import com.jayvijay.scottie.data.ai.provider.toModel
 import com.jayvijay.scottie.di.ApplicationScope
+import com.jayvijay.scottie.domain.entities.Compatibility
 import com.jayvijay.scottie.domain.entities.DownloadFailure
 import com.jayvijay.scottie.domain.entities.DownloadProgress
-import com.jayvijay.scottie.domain.entities.Model
 import com.jayvijay.scottie.domain.entities.ModelCatalog
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus.Available
@@ -18,6 +19,8 @@ import com.jayvijay.scottie.domain.entities.ModelDownloadStatus.Downloading
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus.Failed
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus.Paused
 import com.jayvijay.scottie.domain.entities.ModelEntry
+import com.jayvijay.scottie.domain.entities.checkCompatibility
+import com.jayvijay.scottie.domain.repository.DownloadStart
 import com.jayvijay.scottie.domain.repository.ModelDownloadRepository
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -37,6 +40,7 @@ class ModelDownloadRepositoryImpl
 constructor(
   private val runtime: ModelRuntime,
   private val foregroundHost: DownloadForegroundHost,
+  private val resources: DeviceResources,
   private val rows: List<@JvmSuppressWildcards CatalogModel>,
   @ApplicationScope private val scope: CoroutineScope,
 ) : ModelDownloadRepository {
@@ -55,17 +59,21 @@ constructor(
       try {
         val accepted = runtime.prepare(rows)
         val downloaded = runtime.downloadedIds()
-        val totalMemory = runtime.totalMemoryBytes()
+        val memory = resources.availableMemoryBytes()
+        val storage = resources.availableStorageBytes()
         ModelCatalog.Ready(
-          rows.map { row ->
-            val model = row.toModel()
-            ModelEntry(
-              model = model,
-              status = if (row.id in downloaded) Downloaded else Available,
-              // Rejected rows (e.g. NPU bundles for other chips) stay listed but cannot download.
-              supported = row.id in accepted && model.fitsIn(totalMemory),
-            )
-          }
+          rows
+            .filter { it.id in accepted }
+            .map { row ->
+              val model = row.toModel()
+              ModelEntry(
+                model = model,
+                status = if (row.id in downloaded) Downloaded else Available,
+                supported =
+                  checkCompatibility(model.memoryBytes, model.downloadBytes, memory, storage) ==
+                    Compatibility.Compatible,
+              )
+            }
         )
       } catch (e: CancellationException) {
         throw e
@@ -75,30 +83,54 @@ constructor(
       }
   }
 
-  override fun download(modelId: String) {
-    var kept = -1L
-    state.update { catalog ->
-      kept = -1L
-      val entries = (catalog as? ModelCatalog.Ready)?.entries ?: return@update catalog
-      if (entries.any { it.status is Downloading }) return@update catalog
-      val entry = entries.find { it.model.id == modelId }
-      if (entry?.supported != true) return@update catalog
-      kept =
-        when (val status = entry.status) {
-          Available -> 0
-          is Paused -> status.bytesKept
-          is Failed -> status.bytesKept
-          else -> return@update catalog
-        }
-      catalog.withStatus(modelId, Downloading(DownloadProgress(kept, 0, null)))
-    }
-    if (kept < 0) return
+  override suspend fun download(modelId: String): DownloadStart {
+    val model =
+      (state.value as? ModelCatalog.Ready)
+        ?.takeIf { it.bytesToKeep(modelId) != null }
+        ?.entries
+        ?.first { it.model.id == modelId }
+        ?.model ?: return DownloadStart.Ignored
+    val verdict =
+      checkCompatibility(
+        model.memoryBytes,
+        model.downloadBytes,
+        resources.availableMemoryBytes(),
+        resources.availableStorageBytes(),
+      )
+    return if (verdict is Compatibility.Shortfall) DownloadStart.Refused(verdict)
+    else start(modelId)
+  }
 
-    if (!foregroundHost.start()) {
-      setStatus(modelId, Failed(DownloadFailure.BACKGROUND_REFUSED, kept))
-      return
+  private fun start(modelId: String): DownloadStart {
+    // Re-checked atomically: another download may have started while probing.
+    var kept: Long? = null
+    state.update { catalog ->
+      val current = catalog as? ModelCatalog.Ready
+      kept = current?.bytesToKeep(modelId)
+      kept?.let { current?.withStatus(modelId, Downloading(DownloadProgress(it, 0, null))) }
+        ?: catalog
     }
-    active = scope.launch { collect(modelId, kept) }
+    val from = kept ?: return DownloadStart.Ignored
+
+    if (foregroundHost.start()) {
+      active = scope.launch { collect(modelId, from) }
+    } else {
+      setStatus(modelId, Failed(DownloadFailure.BACKGROUND_REFUSED, from))
+    }
+    return DownloadStart.Started
+  }
+
+  /** Bytes a start would resume from; null when [modelId] cannot start now. */
+  private fun ModelCatalog.Ready.bytesToKeep(modelId: String): Long? {
+    val busy = entries.any { it.status is Downloading }
+    val entry =
+      entries.find { it.model.id == modelId }?.takeUnless { busy || it.model.requiresToken }
+    return when (val status = entry?.status) {
+      Available -> 0
+      is Paused -> status.bytesKept
+      is Failed -> status.bytesKept
+      else -> null
+    }
   }
 
   private suspend fun collect(modelId: String, kept: Long) {
@@ -153,10 +185,6 @@ constructor(
 
   private fun ModelCatalog.Ready.withStatus(modelId: String, status: ModelDownloadStatus) =
     copy(entries = entries.map { if (it.model.id == modelId) it.copy(status = status) else it })
-
-  /** Unknown memory on either side never blocks a model. */
-  private fun Model.fitsIn(totalMemory: Long?): Boolean =
-    memoryBytes == null || totalMemory == null || memoryBytes <= totalMemory
 
   private companion object {
     const val TAG = "ModelDownload"

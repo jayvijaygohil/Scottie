@@ -1,15 +1,21 @@
 package com.jayvijay.scottie.data.repository
 
+import ai.runanywhere.proto.v1.ArchiveStructure
+import ai.runanywhere.proto.v1.ArchiveType
 import ai.runanywhere.proto.v1.InferenceFramework
 import ai.runanywhere.proto.v1.ModelCategory
+import com.jayvijay.scottie.data.ai.provider.ArchiveModel
+import com.jayvijay.scottie.data.ai.provider.CatalogModel
+import com.jayvijay.scottie.data.ai.provider.FakeDeviceResources
 import com.jayvijay.scottie.data.ai.provider.FakeDownloadForegroundHost
 import com.jayvijay.scottie.data.ai.provider.FakeModelRuntime
+import com.jayvijay.scottie.data.ai.provider.LiteRtModel
+import com.jayvijay.scottie.data.ai.provider.MultiFileModel
 import com.jayvijay.scottie.data.ai.provider.RuntimeDownloadEvent
-import com.jayvijay.scottie.data.ai.provider.SingleFileModel
+import com.jayvijay.scottie.domain.entities.Compatibility.Shortfall
 import com.jayvijay.scottie.domain.entities.DownloadFailure
 import com.jayvijay.scottie.domain.entities.DownloadPhase
 import com.jayvijay.scottie.domain.entities.DownloadProgress
-import com.jayvijay.scottie.domain.entities.HardwareTarget
 import com.jayvijay.scottie.domain.entities.ModelCatalog
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus.Available
@@ -18,6 +24,8 @@ import com.jayvijay.scottie.domain.entities.ModelDownloadStatus.Downloading
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus.Failed
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus.Paused
 import com.jayvijay.scottie.domain.entities.ModelType
+import com.jayvijay.scottie.domain.entities.ShortfallKind
+import com.jayvijay.scottie.domain.repository.DownloadStart
 import java.io.IOException
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -29,9 +37,14 @@ import org.junit.Test
 class ModelDownloadRepositoryImplTest {
   private val runtime = FakeModelRuntime()
   private val host = FakeDownloadForegroundHost()
+  private val resources = FakeDeviceResources()
 
-  private fun TestScope.repository(): ModelDownloadRepositoryImpl =
-    ModelDownloadRepositoryImpl(runtime, host, ROWS, backgroundScope).also { runCurrent() }
+  private fun TestScope.repository(rows: List<CatalogModel> = ROWS): ModelDownloadRepositoryImpl =
+    ModelDownloadRepositoryImpl(runtime, host, resources, rows, backgroundScope).also {
+      runCurrent()
+    }
+
+  private fun ModelDownloadRepositoryImpl.entries() = (catalog.value as ModelCatalog.Ready).entries
 
   private fun ModelDownloadRepositoryImpl.status(id: String): ModelDownloadStatus =
     (catalog.value as ModelCatalog.Ready).entries.single { it.model.id == id }.status
@@ -42,14 +55,18 @@ class ModelDownloadRepositoryImplTest {
   @Test
   fun catalogLoadsWithDownloadedIdsApplied() = runTest {
     runtime.downloaded += B
-    val repo = ModelDownloadRepositoryImpl(runtime, host, ROWS, backgroundScope)
+    val repo = ModelDownloadRepositoryImpl(runtime, host, resources, ROWS, backgroundScope)
     assertEquals(ModelCatalog.Loading, repo.catalog.value)
     runCurrent()
 
-    val entries = (repo.catalog.value as ModelCatalog.Ready).entries
-    assertEquals(listOf(A, B, NPU), entries.map { it.model.id })
+    val entries = repo.entries()
+    assertEquals(listOf(A, B, TOKEN), entries.map { it.model.id })
     assertEquals(listOf(Available, Downloaded, Available), entries.map { it.status })
-    assertEquals(ModelType.TEXT, entries.first().model.type)
+    assertEquals(
+      listOf(ModelType.SPEECH_RECOGNITION, ModelType.SPEECH_RECOGNITION, ModelType.TEXT),
+      entries.map { it.model.type },
+    )
+    assertEquals(listOf(false, false, true), entries.map { it.model.requiresToken })
   }
 
   @Test
@@ -59,45 +76,97 @@ class ModelDownloadRepositoryImplTest {
   }
 
   @Test
-  fun rejectedRowIsListedAsUnsupported() = runTest {
+  fun rowsTheRuntimeRejectsAreNotListed() = runTest {
     runtime.accepted = setOf(A, B)
-    val entries = (repository().catalog.value as ModelCatalog.Ready).entries
-    assertEquals(listOf(A, B, NPU), entries.map { it.model.id })
-    assertEquals(listOf(true, true, false), entries.map { it.supported })
-    assertEquals(HardwareTarget.NPU, entries.last().model.target)
+    assertEquals(listOf(A, B), repository().entries().map { it.model.id })
   }
 
   @Test
-  fun rowNeedingMoreMemoryThanDeviceIsUnsupported() = runTest {
-    runtime.totalMemory = TOTAL - 1
-    val entries = (repository().catalog.value as ModelCatalog.Ready).entries
-    assertEquals(listOf(false, false, false), entries.map { it.supported })
+  fun supportedFollowsTheCompatibilityRule() = runTest {
+    resources.availableMemory = TOTAL - 1
+    assertEquals(listOf(false, false, false), repository().entries().map { it.supported })
   }
 
   @Test
-  fun unknownDeviceMemoryDoesNotBlock() = runTest {
-    runtime.totalMemory = null
-    val entries = (repository().catalog.value as ModelCatalog.Ready).entries
-    assertTrue(entries.all { it.supported })
+  fun storageShortfallAtLoadIsUnsupported() = runTest {
+    resources.availableStorage = TOTAL - 1
+    assertEquals(listOf(false, false, false), repository().entries().map { it.supported })
   }
 
   @Test
-  fun unsupportedModelCannotDownloadButCanBeDeleted() = runTest {
-    runtime.accepted = setOf(A, B)
-    runtime.downloaded += NPU
+  fun unknownDeviceValuesDoNotBlock() = runTest {
+    assertTrue(repository().entries().all { it.supported })
+  }
+
+  @Test
+  fun unknownDownloadSizePassesTheStorageCheck() = runTest {
+    resources.availableStorage = 1
+    val repo = repository(listOf(ARCHIVE))
+    assertTrue(repo.entries().single().supported)
+    assertEquals(DownloadStart.Started, repo.download(ARCHIVE.id))
+  }
+
+  @Test
+  fun memoryShortfallAtStartRefusesWithoutDownloading() = runTest {
     val repo = repository()
-    repo.download(NPU)
+    resources.availableMemory = TOTAL - 1
+    assertEquals(
+      DownloadStart.Refused(Shortfall(ShortfallKind.MEMORY, TOTAL, TOTAL - 1)),
+      repo.download(A),
+    )
     runCurrent()
-    assertEquals(Downloaded, repo.status(NPU))
-    assertEquals(emptyList<String>(), runtime.downloadCalls)
-
-    assertTrue(repo.delete(NPU).isSuccess)
-    assertEquals(Available, repo.status(NPU))
-    repo.download(NPU)
-    runCurrent()
-    assertEquals(Available, repo.status(NPU))
+    assertEquals(Available, repo.status(A))
     assertEquals(emptyList<String>(), runtime.downloadCalls)
     assertEquals(0, host.startCount)
+  }
+
+  @Test
+  fun storageShortfallAtStartRefusesWithoutDownloading() = runTest {
+    val repo = repository()
+    repo.download(A)
+    runCurrent()
+    repo.pause(A)
+    runCurrent()
+    resources.availableStorage = TOTAL - 1
+    assertEquals(
+      DownloadStart.Refused(Shortfall(ShortfallKind.STORAGE, TOTAL, TOTAL - 1)),
+      repo.download(A),
+    )
+    assertEquals(Paused(0), repo.status(A))
+    assertEquals(listOf(A), runtime.downloadCalls)
+  }
+
+  @Test
+  fun startTimeCheckOverridesLoadVerdict() = runTest {
+    resources.availableMemory = TOTAL - 1
+    val repo = repository()
+    resources.availableMemory = TOTAL
+    assertEquals(DownloadStart.Started, repo.download(A))
+  }
+
+  @Test
+  fun tokenRowIsIgnoredWithoutProbing() = runTest {
+    val repo = repository()
+    val probes = resources.probes
+    assertEquals(DownloadStart.Ignored, repo.download(TOKEN))
+    runCurrent()
+    assertEquals(probes, resources.probes)
+    assertEquals(Available, repo.status(TOKEN))
+    assertEquals(emptyList<String>(), runtime.downloadCalls)
+  }
+
+  @Test
+  fun unknownIdIsIgnored() = runTest {
+    assertEquals(DownloadStart.Ignored, repository().download("missing"))
+  }
+
+  @Test
+  fun downloadedModelCanBeDeleted() = runTest {
+    runtime.downloaded += A
+    val repo = repository()
+    assertEquals(DownloadStart.Ignored, repo.download(A))
+    assertTrue(repo.delete(A).isSuccess)
+    assertEquals(Available, repo.status(A))
   }
 
   @Test
@@ -137,8 +206,8 @@ class ModelDownloadRepositoryImplTest {
   @Test
   fun secondDownloadWhileActiveIsIgnored() = runTest {
     val repo = repository()
-    repo.download(A)
-    repo.download(B)
+    assertEquals(DownloadStart.Started, repo.download(A))
+    assertEquals(DownloadStart.Ignored, repo.download(B))
     runCurrent()
     assertEquals(Available, repo.status(B))
     assertEquals(listOf(A), runtime.downloadCalls)
@@ -274,24 +343,32 @@ class ModelDownloadRepositoryImplTest {
   private companion object {
     const val A = "a"
     const val B = "b"
-    const val NPU = "npu"
+    const val TOKEN = "token.litertlm"
     const val TOTAL = 100L
 
-    val ROWS =
-      listOf(
-        row(A, InferenceFramework.INFERENCE_FRAMEWORK_LLAMA_CPP),
-        row(B, InferenceFramework.INFERENCE_FRAMEWORK_ONNX),
-        row(NPU, InferenceFramework.INFERENCE_FRAMEWORK_QHEXRT),
+    val ARCHIVE =
+      ArchiveModel(
+        "archive",
+        "Archive",
+        "https://example.com/archive.tar.gz",
+        InferenceFramework.INFERENCE_FRAMEWORK_SHERPA,
+        ModelCategory.MODEL_CATEGORY_SPEECH_RECOGNITION,
+        TOTAL,
+        ArchiveType.ARCHIVE_TYPE_TAR_GZ,
+        ArchiveStructure.ARCHIVE_STRUCTURE_NESTED_DIRECTORY,
       )
 
-    fun row(id: String, framework: InferenceFramework) =
-      SingleFileModel(
+    val ROWS: List<CatalogModel> =
+      listOf(stt(A), stt(B), LiteRtModel(TOKEN, "Token", "https://example.com/t", TOTAL, TOTAL, true))
+
+    fun stt(id: String) =
+      MultiFileModel(
         id,
         "Model $id",
-        "https://example.com/$id",
-        framework,
-        ModelCategory.MODEL_CATEGORY_LANGUAGE,
+        InferenceFramework.INFERENCE_FRAMEWORK_SHERPA,
+        ModelCategory.MODEL_CATEGORY_SPEECH_RECOGNITION,
         TOTAL,
+        files = emptyList(),
       )
   }
 }

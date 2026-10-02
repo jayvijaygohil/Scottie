@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
+import android.text.format.Formatter
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -32,9 +33,9 @@ import androidx.core.content.ContextCompat
 import com.jayvijay.scottie.R
 import com.jayvijay.scottie.domain.entities.DownloadFailure
 import com.jayvijay.scottie.domain.entities.DownloadProgress
-import com.jayvijay.scottie.domain.entities.HardwareTarget
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.domain.entities.ModelType
+import com.jayvijay.scottie.domain.entities.ShortfallKind
 import com.jayvijay.scottie.presentation.features.modeldownload.component.ModelSections
 import com.jayvijay.scottie.presentation.ui.ScottieTheme
 import com.jayvijay.scottie.presentation.ui.components.ScottieSearchField
@@ -98,10 +99,10 @@ class ModelDownloadUi @Inject constructor() : Ui<ModelDownloadState> {
         }
       }
 
-      state.deleteFailedModelName?.let { name ->
+      state.error?.let { error ->
         Box(modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)) {
           XelaToast(
-            title = stringResource(R.string.model_download_delete_failed, name),
+            title = errorMessage(error),
             firstActionButtonText = stringResource(R.string.model_download_dismiss),
             onFirstButtonAction = { state.eventSink(ModelDownloadAction.DismissError) },
             background = MaterialTheme.colorScheme.surface,
@@ -113,6 +114,24 @@ class ModelDownloadUi @Inject constructor() : Ui<ModelDownloadState> {
     }
   }
 }
+
+@Composable
+private fun errorMessage(error: ModelDownloadError): String =
+  when (error) {
+    is ModelDownloadError.DeleteFailed ->
+      stringResource(R.string.model_download_delete_failed, error.modelName)
+    is ModelDownloadError.Shortfall -> {
+      val context = LocalContext.current
+      stringResource(
+        when (error.kind) {
+          ShortfallKind.MEMORY -> R.string.model_download_shortfall_memory
+          ShortfallKind.STORAGE -> R.string.model_download_shortfall_storage
+        },
+        Formatter.formatShortFileSize(context, error.requiredBytes),
+        Formatter.formatShortFileSize(context, error.availableBytes),
+      )
+    }
+  }
 
 /**
  * Asks for notification permission on the first download tap (API 33+). The download proceeds
@@ -157,29 +176,21 @@ private fun Message(text: String, loading: Boolean = false) {
 private fun previewState(
   content: ModelDownloadContent,
   query: String = "",
-  deleteFailed: String? = null,
-) =
-  ModelDownloadState(
-    content = content,
-    query = query,
-    deleteFailedModelName = deleteFailed,
-    eventSink = {},
-  )
+  error: ModelDownloadError? = null,
+) = ModelDownloadState(content = content, query = query, error = error, eventSink = {})
 
 private fun previewModel(
   id: String,
   name: String,
   type: ModelType,
-  target: HardwareTarget,
   status: ModelDownloadStatus,
   supported: Boolean = true,
 ) =
   ModelDownloadModel(
     id = id,
     name = name,
-    description = "Alibaba general-purpose chat model; strong quality for its size.",
+    description = "Google general-purpose chat model.",
     type = type,
-    target = target,
     downloadBytes = 1_000_000_000,
     status = status,
     supported = supported,
@@ -193,73 +204,44 @@ private val previewModels =
         type = ModelType.TEXT,
         count = 3,
         expanded = true,
-        groups =
+        models =
           listOf(
-            ModelGroup(
-              target = HardwareTarget.CPU,
-              expanded = true,
-              models =
-                listOf(
-                  previewModel(
-                    "qwen",
-                    "Qwen3.5 2B",
-                    ModelType.TEXT,
-                    HardwareTarget.CPU,
-                    ModelDownloadStatus.Downloading(
-                      DownloadProgress(500_000_000, 1_000_000_000, 0.5f)
-                    ),
-                  ),
-                  previewModel(
-                    "gemma",
-                    "Gemma 4 31B IT",
-                    ModelType.TEXT,
-                    HardwareTarget.CPU,
-                    ModelDownloadStatus.Available,
-                    supported = false,
-                  ),
-                ),
+            previewModel(
+              "qwen",
+              "Qwen3.5 2B",
+              ModelType.TEXT,
+              ModelDownloadStatus.Downloading(DownloadProgress(500_000_000, 1_000_000_000, 0.5f)),
             ),
-            ModelGroup(
-              target = HardwareTarget.NPU,
-              expanded = false,
-              models =
-                listOf(
-                  previewModel(
-                    "qwen_npu",
-                    "Qwen3.5 2B",
-                    ModelType.TEXT,
-                    HardwareTarget.NPU,
-                    ModelDownloadStatus.Available,
-                    supported = false,
-                  )
-                ),
+            previewModel(
+              "gemma4",
+              "Gemma 4 12B",
+              ModelType.TEXT,
+              ModelDownloadStatus.Available,
+              supported = false,
             ),
+            // Token-required: supported, but Download stays disabled.
+            previewModel("gemma3", "Gemma 3 1B", ModelType.TEXT, ModelDownloadStatus.Available),
           ),
       ),
       ModelSection(
         type = ModelType.SPEECH_RECOGNITION,
         count = 1,
-        expanded = false,
-        groups =
+        expanded = true,
+        models =
           listOf(
-            ModelGroup(
-              target = HardwareTarget.CPU,
-              expanded = true,
-              models =
-                listOf(
-                  previewModel(
-                    "whisper",
-                    "Whisper Tiny EN",
-                    ModelType.SPEECH_RECOGNITION,
-                    HardwareTarget.CPU,
-                    ModelDownloadStatus.Failed(DownloadFailure.STORAGE, 12_000_000),
-                  )
-                ),
+            previewModel(
+              "whisper",
+              "Whisper Tiny EN",
+              ModelType.SPEECH_RECOGNITION,
+              ModelDownloadStatus.Failed(DownloadFailure.STORAGE, 12_000_000),
             )
           ),
       ),
     )
   )
+
+private val previewShortfall =
+  ModelDownloadError.Shortfall(ShortfallKind.STORAGE, 2_600_000_000, 1_400_000_000)
 
 @Preview(name = "Download models", widthDp = 390, heightDp = 844)
 @Preview(
@@ -274,11 +256,15 @@ private fun ModelDownloadPreview() {
   ScottieTheme { ModelDownloadUi().Content(previewState(previewModels), Modifier) }
 }
 
-@Preview(name = "Delete failed", widthDp = 390, heightDp = 844)
+@Preview(name = "Storage shortfall", widthDp = 390, heightDp = 844)
 @Composable
-private fun ModelDownloadDeleteFailedPreview() {
+private fun ModelDownloadShortfallPreview() {
   ScottieTheme {
-    ModelDownloadUi().Content(previewState(previewModels, deleteFailed = "Gemma 4 E2B"), Modifier)
+    ModelDownloadUi()
+      .Content(
+        previewState(previewModels, error = previewShortfall),
+        Modifier,
+      )
   }
 }
 

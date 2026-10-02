@@ -11,11 +11,10 @@ class FakeModelRuntime : ModelRuntime {
   /** Ids the device accepts; null accepts every row. */
   var accepted: Set<String>? = null
   val downloaded = mutableSetOf<String>()
-  /** Device RAM; null when unknown. */
-  var totalMemory: Long? = null
   var downloadError: Exception? = null
   var deleteError: Exception? = null
 
+  val prepared = mutableListOf<String>()
   val downloadCalls = mutableListOf<String>()
   val cancelled = mutableListOf<String>()
   val deleted = mutableListOf<String>()
@@ -23,12 +22,11 @@ class FakeModelRuntime : ModelRuntime {
 
   override suspend fun prepare(catalog: List<CatalogModel>): Set<String> {
     prepareError?.let { throw it }
+    prepared += catalog.map { it.id }
     return accepted ?: catalog.mapTo(mutableSetOf()) { it.id }
   }
 
   override suspend fun downloadedIds(): Set<String> = downloaded.toSet()
-
-  override suspend fun totalMemoryBytes(): Long? = totalMemory
 
   override fun download(modelId: String): Flow<RuntimeDownloadEvent> = flow {
     downloadCalls += modelId
