@@ -30,11 +30,15 @@ class LiteRtModelRuntimeTest {
 
   private val dir by lazy { folder.newFolder("litert") }
   private val runtime by lazy { LiteRtModelRuntime(dir) { url -> FakeConnection(url, server) } }
-  private val part get() = File(dir, "$ID.part")
-  private val target get() = File(dir, ID)
+  private val part
+    get() = File(dir, "$ID.part")
 
-  private suspend fun prepared(size: Long = body.size.toLong()) =
-    runtime.also { it.prepare(listOf(LiteRtModel(ID, "M", "https://x/$ID", size, size, false))) }
+  private val target
+    get() = File(dir, ID)
+
+  private suspend fun prepared(size: Long = body.size.toLong()) = runtime.also {
+    it.prepare(listOf(LiteRtModel(ID, "M", "https://x/$ID", size, size, false)))
+  }
 
   @Test
   fun freshDownloadProgressesThenCompletes() = runTest {

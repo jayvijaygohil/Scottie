@@ -359,7 +359,11 @@ class ModelDownloadRepositoryImplTest {
       )
 
     val ROWS: List<CatalogModel> =
-      listOf(stt(A), stt(B), LiteRtModel(TOKEN, "Token", "https://example.com/t", TOTAL, TOTAL, true))
+      listOf(
+        stt(A),
+        stt(B),
+        LiteRtModel(TOKEN, "Token", "https://example.com/t", TOTAL, TOTAL, true),
+      )
 
     fun stt(id: String) =
       MultiFileModel(

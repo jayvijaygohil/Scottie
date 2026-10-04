@@ -62,8 +62,7 @@ class ModelCatalogTest {
 
   @Test
   fun onlyGatedReposRequireATokenAndUrlsArePinned() {
-    val gated =
-      liteRt(null).filter { it.requiresToken }.mapTo(mutableSetOf()) { it.id }
+    val gated = liteRt(null).filter { it.requiresToken }.mapTo(mutableSetOf()) { it.id }
     assertEquals(
       setOf(
         "gemma3-1b-it-int4.litertlm",
@@ -117,7 +116,10 @@ class ModelCatalogTest {
       "Small Gemma tuned for on-device function calling.",
       models.getValue("mobile_actions_q8_ekv1024.litertlm").description,
     )
-    assertEquals("OpenBMB compact chat model.", models.getValue("MiniCPM5-2B_int4.litertlm").description)
+    assertEquals(
+      "OpenBMB compact chat model.",
+      models.getValue("MiniCPM5-2B_int4.litertlm").description,
+    )
     assertNull(familyDescription("unknown-model"))
   }
 
@@ -130,9 +132,22 @@ class ModelCatalogTest {
   private companion object {
     val SOCS = listOf("SM8750", "TENSOR_G5", "TENSOR_G6", "SM8650", "SM8850", "SM8550", null)
     val PINNED_URL =
-      Regex("""https://huggingface\.co/litert-community/[^/]+/resolve/[0-9a-f]{40}/[^/]+\.litertlm""")
+      Regex(
+        """https://huggingface\.co/litert-community/[^/]+/resolve/[0-9a-f]{40}/[^/]+\.litertlm"""
+      )
     val REMOVED =
-      listOf("vision", "vlm", "embed", "rerank", "segformer", "vad", "tts", "piper", "kokoro", "diffusion")
+      listOf(
+        "vision",
+        "vlm",
+        "embed",
+        "rerank",
+        "segformer",
+        "vad",
+        "tts",
+        "piper",
+        "kokoro",
+        "diffusion",
+      )
     val BANNED_TITLE_TOKEN =
       Regex("""\bQ\d_|UD-|INT8|fp32|HNPU|Sherpa|ONNX|\(CPU\)|heavy|\.litertlm|\.onnx""")
   }

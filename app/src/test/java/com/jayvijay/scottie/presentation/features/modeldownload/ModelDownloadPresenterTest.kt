@@ -1,8 +1,8 @@
 package com.jayvijay.scottie.presentation.features.modeldownload
 
+import com.jayvijay.scottie.domain.entities.Compatibility.Shortfall
 import com.jayvijay.scottie.domain.entities.DownloadFailure
 import com.jayvijay.scottie.domain.entities.DownloadProgress
-import com.jayvijay.scottie.domain.entities.Compatibility.Shortfall
 import com.jayvijay.scottie.domain.entities.Model
 import com.jayvijay.scottie.domain.entities.ModelCatalog
 import com.jayvijay.scottie.domain.entities.ModelDownloadStatus
@@ -173,8 +173,7 @@ class ModelDownloadPresenterTest {
 
   @Test
   fun searchExpandsMatchesAndClearingRestoresToggles() = runTest {
-    repository.catalog.value =
-      ready(entry("a"), entry("b", type = SPEECH_RECOGNITION), entry("n"))
+    repository.catalog.value = ready(entry("a"), entry("b", type = SPEECH_RECOGNITION), entry("n"))
     presenter.test {
       awaitItem().eventSink(ModelDownloadAction.ToggleCategory(TEXT))
       val collapsed = awaitItem()
