@@ -34,6 +34,8 @@ import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaButtonMedium
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaButtonSmall
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaCaption
 
+private const val DISABLED_ALPHA = 0.4f
+
 @Composable
 fun XelaCheckbox(
   checkboxIcon: Int,
@@ -78,7 +80,7 @@ fun XelaCheckbox(
               Modifier
             }
           }
-          .alpha(if (disabled) 0.4f else 1f),
+          .alpha(if (disabled) DISABLED_ALPHA else 1f),
     ) {
       Row(
         verticalAlignment = Alignment.CenterVertically,

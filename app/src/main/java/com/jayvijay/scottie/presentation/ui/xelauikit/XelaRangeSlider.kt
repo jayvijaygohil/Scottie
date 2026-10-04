@@ -37,13 +37,16 @@ import com.jayvijay.scottie.presentation.ui.xelauikit.models.XelaColor
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+private const val DEFAULT_MAX_RANGE = 100f
+private const val DISABLED_ALPHA = 0.48f
+
 @Composable
 fun XelaRangeSlider(
   valueLeft: Float,
   valueRight: Float,
   onValueLeftChange: (Float) -> Unit,
   onValueRightChange: (Float) -> Unit,
-  range: ClosedFloatingPointRange<Float> = 0f..100f,
+  range: ClosedFloatingPointRange<Float> = 0f..DEFAULT_MAX_RANGE,
   step: Float = 0.1f,
   primaryColor: Color = XelaColor.Blue3,
   secondaryColor: Color = XelaColor.Gray11,
@@ -91,7 +94,7 @@ fun XelaRangeSlider(
       Modifier.padding(horizontal = 16.dp)
         .height(32.dp)
         .fillMaxWidth()
-        .alpha(if (disabled) 0.48f else 1f),
+        .alpha(if (disabled) DISABLED_ALPHA else 1f),
   ) {
     Box(
       modifier =

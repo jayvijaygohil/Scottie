@@ -33,6 +33,8 @@ import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaButtonLarge
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaButtonMedium
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaButtonSmall
 
+private const val DISABLED_ALPHA = 0.48f
+
 @Composable
 fun XelaButton(
   text: String,
@@ -91,7 +93,7 @@ fun XelaButton(
   Box(
     modifier =
       modifier
-        .alpha(if (state == XelaButtonState.DISABLED) 0.48f else 1f)
+        .alpha(if (state == XelaButtonState.DISABLED) DISABLED_ALPHA else 1f)
         .then(borderModifier)
         .clip(shape)
         .background(background)
@@ -175,16 +177,14 @@ private fun calculateHorizontalPadding(
   hasIcon: Boolean,
   size: XelaButtonSize,
   textIsEmpty: Boolean,
-): Dp {
-  if (removePaddings) return 0.dp
-  if (hasIcon) {
-    return when (size) {
-      XelaButtonSize.MEDIUM -> 16.dp
-      XelaButtonSize.SMALL -> 8.dp
-      XelaButtonSize.LARGE -> 24.dp
-    }
+): Dp = when {
+  removePaddings -> 0.dp
+  hasIcon -> when (size) {
+    XelaButtonSize.MEDIUM -> 16.dp
+    XelaButtonSize.SMALL -> 8.dp
+    XelaButtonSize.LARGE -> 24.dp
   }
-  return when (size) {
+  else -> when (size) {
     XelaButtonSize.SMALL -> if (textIsEmpty) 8.dp else 16.dp
     XelaButtonSize.MEDIUM -> 16.dp
     XelaButtonSize.LARGE -> 24.dp
@@ -194,9 +194,9 @@ private fun calculateHorizontalPadding(
 private fun calculateVerticalPadding(
   removePaddings: Boolean,
   size: XelaButtonSize,
-): Dp {
-  if (removePaddings) return 0.dp
-  return when (size) {
+): Dp = when {
+  removePaddings -> 0.dp
+  else -> when (size) {
     XelaButtonSize.LARGE,
     XelaButtonSize.MEDIUM -> 16.dp
     XelaButtonSize.SMALL -> 8.dp
@@ -207,16 +207,14 @@ private fun calculateIconPadding(
   textIsEmpty: Boolean,
   otherIconIsNull: Boolean,
   size: XelaButtonSize,
-): Dp {
-  if (!textIsEmpty) {
-    return when (size) {
-      XelaButtonSize.LARGE -> 18.dp
-      XelaButtonSize.MEDIUM -> 14.dp
-      XelaButtonSize.SMALL -> 9.dp
-    }
+): Dp = when {
+  !textIsEmpty -> when (size) {
+    XelaButtonSize.LARGE -> 18.dp
+    XelaButtonSize.MEDIUM -> 14.dp
+    XelaButtonSize.SMALL -> 9.dp
   }
-  if (otherIconIsNull) return 0.dp
-  return when (size) {
+  otherIconIsNull -> 0.dp
+  else -> when (size) {
     XelaButtonSize.LARGE,
     XelaButtonSize.MEDIUM -> 10.dp
     XelaButtonSize.SMALL -> 5.dp

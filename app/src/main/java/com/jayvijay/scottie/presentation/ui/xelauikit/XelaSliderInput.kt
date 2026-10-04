@@ -40,11 +40,14 @@ import com.jayvijay.scottie.presentation.ui.xelauikit.models.XelaColor
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
+private const val DEFAULT_MAX_RANGE = 100f
+private const val DISABLED_ALPHA = 0.48f
+
 @Composable
 fun XelaSliderInput(
   value: Float,
   onValueChange: (Float) -> Unit,
-  range: ClosedFloatingPointRange<Float> = 0f..100f,
+  range: ClosedFloatingPointRange<Float> = 0f..DEFAULT_MAX_RANGE,
   step: Float = 0.1f,
   vertical: Boolean = false,
   primaryColor: Color = XelaColor.Blue3,
@@ -84,7 +87,7 @@ fun XelaSliderInput(
         Modifier.padding(vertical = 16.dp)
           .width(32.dp)
           .fillMaxHeight()
-          .alpha(if (disabled.value) 0.48f else 1f),
+          .alpha(if (disabled.value) DISABLED_ALPHA else 1f),
     ) {
       Box(
         modifier =
@@ -193,7 +196,7 @@ fun XelaSliderInput(
         Modifier.padding(horizontal = 16.dp)
           .height(32.dp)
           .fillMaxWidth()
-          .alpha(if (disabled.value) 0.48f else 1f),
+          .alpha(if (disabled.value) DISABLED_ALPHA else 1f),
     ) {
       Box(
         modifier =

@@ -280,6 +280,9 @@ fun XelaSteps(
   }
 }
 
+private const val TICK_X_MID_FACTOR = 0.4f
+private const val TICK_Y_END_FACTOR = 0.8f
+
 @Composable
 fun XelaIconTick(
   color: Color = Color.White,
@@ -295,12 +298,12 @@ fun XelaIconTick(
       drawLine(
         color,
         Offset(x = 0f, y = height * 0.5f),
-        Offset(x = width * 0.4f, height * 0.8f),
+        Offset(x = width * TICK_X_MID_FACTOR, height * TICK_Y_END_FACTOR),
         strokeWidth = strokeWidth.toPx(),
       )
       drawLine(
         color,
-        Offset(x = width * 0.4f, height * 0.8f),
+        Offset(x = width * TICK_X_MID_FACTOR, height * TICK_Y_END_FACTOR),
         Offset(x = width, y = height * 0.2f),
         strokeWidth = strokeWidth.toPx(),
       )

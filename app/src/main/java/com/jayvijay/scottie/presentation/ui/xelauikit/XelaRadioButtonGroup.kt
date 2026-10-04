@@ -32,6 +32,8 @@ import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaButtonLarge
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaButtonMedium
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaCaption
 
+private const val DISABLED_ALPHA = 0.4f
+
 @Composable
 fun XelaRadioButtonGroup(
   items: List<XelaRadioButtonItem>,
@@ -76,7 +78,7 @@ fun XelaRadioButtonGroup(
               )
               .fillMaxWidth()
               .padding(if (itemBorder) 16.dp else 0.dp)
-              .alpha(if (item.state == XelaRadioButtonState.DISABLED) 0.4f else 1f),
+              .alpha(if (item.state == XelaRadioButtonState.DISABLED) DISABLED_ALPHA else 1f),
         ) {
           Row(
             verticalAlignment = Alignment.CenterVertically

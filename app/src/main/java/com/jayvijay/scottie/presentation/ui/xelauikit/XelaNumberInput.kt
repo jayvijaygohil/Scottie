@@ -37,6 +37,8 @@ import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaButtonMedium
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaCaption
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaSmallBody
 
+private const val PRESSED_ALPHA = 0.5f
+
 @Composable
 fun XelaNumberInput(
   value: MutableState<Int>,
@@ -223,7 +225,7 @@ fun decreaseNumberInputBtn(
           .padding(vertical = if (controls == XelaNumberInputControls.LEFTRIGHT) 16.dp else 6.dp)
           .size(15.dp)
           .offset(y = if (controls == XelaNumberInputControls.LEFTRIGHT) 0.dp else (-4).dp)
-          .alpha(if (isPressed) 0.5f else 1f),
+          .alpha(if (isPressed) PRESSED_ALPHA else 1f),
     )
   }
 }
@@ -258,7 +260,7 @@ fun increaseNumberInputBtn(
           .padding(vertical = if (controls == XelaNumberInputControls.LEFTRIGHT) 16.dp else 6.dp)
           .size(15.dp)
           .offset(y = if (controls == XelaNumberInputControls.LEFTRIGHT) 0.dp else 4.dp)
-          .alpha(if (isPressed) 0.5f else 1f),
+          .alpha(if (isPressed) PRESSED_ALPHA else 1f),
     )
   }
 }

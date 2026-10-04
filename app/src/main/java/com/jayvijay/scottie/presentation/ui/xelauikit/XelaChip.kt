@@ -28,6 +28,8 @@ import com.jayvijay.scottie.presentation.ui.xelauikit.models.XelaColor
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.chip.XelaChipSize
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaCaption
 
+private const val DISABLED_ALPHA = 0.48f
+
 @Composable
 fun XelaChip(
   text: String,
@@ -53,7 +55,7 @@ fun XelaChip(
     modifier =
       Modifier.clip(RoundedCornerShape(99.dp))
         .background(if (selectedChip.value) selectedBackgroundColor else defaultBackgroundColor)
-        .alpha(if (disabled) 0.48f else 1f)
+        .alpha(if (disabled) DISABLED_ALPHA else 1f)
         .border(
           borderWidth,
           if (selectedChip.value) selectedBorderColor else defaultBorderColor,

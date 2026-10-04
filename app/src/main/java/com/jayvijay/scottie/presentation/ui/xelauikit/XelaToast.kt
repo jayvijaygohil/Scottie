@@ -126,10 +126,9 @@ fun XelaToast(
         }
       }
 
-      if (
-        !(firstActionButtonText != null && secondActionButtonText != null) &&
-          (firstActionButtonText != null || secondActionButtonText != null)
-      ) {
+      val hasFirstAction = firstActionButtonText != null
+      val hasSecondAction = secondActionButtonText != null
+      if (hasFirstAction != hasSecondAction) {
         if (firstActionButtonText != null) {
           Text(
             text = firstActionButtonText,

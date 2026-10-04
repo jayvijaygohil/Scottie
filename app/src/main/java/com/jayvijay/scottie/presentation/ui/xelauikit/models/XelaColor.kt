@@ -2,8 +2,7 @@ package com.jayvijay.scottie.presentation.ui.xelauikit.models
 
 import androidx.compose.ui.graphics.Color
 
-class XelaColor {
-  companion object {
+object XelaColor {
     val Blue = Color(0xFF003CFF)
     val Pink = Color(0xFFFA0082)
     val Green = Color(0xFF1EE9B6)
@@ -117,4 +116,3 @@ class XelaColor {
     val Purple11 = Color(0xfff7e2fe)
     val Purple12 = Color(0xfffbf1fe)
   }
-}

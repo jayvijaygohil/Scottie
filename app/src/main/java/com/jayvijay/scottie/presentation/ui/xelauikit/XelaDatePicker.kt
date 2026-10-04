@@ -41,6 +41,31 @@ import java.text.DateFormatSymbols
 import java.time.LocalDate
 import java.time.format.TextStyle
 
+private const val DAYS_PER_WEEK = 7
+private const val HEIGHT_RATIO = 0.75f
+
+private fun isDateSelected(
+  dayDate: LocalDate,
+  selectedDate: LocalDate?,
+  selectedDates: List<LocalDate>,
+  startDate: LocalDate?,
+  endDate: LocalDate?,
+): Boolean {
+  val isSingleSelected = dayDate == selectedDate || selectedDates.contains(dayDate)
+  val isRangeEndpoint = dayDate == startDate || dayDate == endDate
+  return isSingleSelected || isRangeEndpoint
+}
+
+private fun isBetweenStartAndEnd(
+  dayDate: LocalDate,
+  startDate: LocalDate?,
+  endDate: LocalDate?,
+): Boolean = if (startDate != null && endDate != null) {
+  dayDate.isAfter(startDate) && dayDate.isBefore(endDate)
+} else {
+  false
+}
+
 @Composable
 fun XelaDatePicker(
   minDate: LocalDate = LocalDate.now(),
@@ -73,7 +98,7 @@ fun XelaDatePicker(
   nextMonthIcon: Int? = null,
   onTapDateAction: ((LocalDate) -> Unit)? = null,
 ) {
-  val daysPerWeek = 7
+  val daysPerWeek = DAYS_PER_WEEK
 
   val weekdays: MutableList<String> = arrayListOf()
 
@@ -247,17 +272,21 @@ fun XelaDatePicker(
                     .background(
                       if (isEnabledDate) {
                         if (
-                          dayDate == selectedDate.value ||
-                            selectedDates.contains(dayDate) ||
-                            dayDate == startDate.value ||
-                            dayDate == endDate.value
+                          isDateSelected(
+                            dayDate,
+                            selectedDate.value,
+                            selectedDates,
+                            startDate.value,
+                            endDate.value,
+                          )
                         ) {
                           selectedBackground
                         } else if (
-                          startDate.value != null &&
-                            endDate.value != null &&
-                            dayDate.isAfter(startDate.value) &&
-                            dayDate.isBefore(endDate.value)
+                          isBetweenStartAndEnd(
+                            dayDate,
+                            startDate.value,
+                            endDate.value,
+                          )
                         ) {
                           Color.Transparent
                         } else if (dayDate == LocalDate.now()) {
@@ -317,16 +346,17 @@ fun XelaDatePicker(
                       )
                       .height(
                         with(LocalDensity.current) {
-                          (dateCellWidth.value.toFloat() * 0.75f).toDp()
+                          (dateCellWidth.value.toFloat() * HEIGHT_RATIO).toDp()
                         }
                       )
                       .background(
                         if (
                           isEnabledDate &&
-                            startDate.value != null &&
-                            endDate.value != null &&
-                            dayDate.isAfter(startDate.value) &&
-                            dayDate.isBefore(endDate.value)
+                            isBetweenStartAndEnd(
+                              dayDate,
+                              startDate.value,
+                              endDate.value,
+                            )
                         ) {
                           betweenStartAndEndBackground
                         } else {
@@ -341,17 +371,21 @@ fun XelaDatePicker(
                   color =
                     if (isEnabledDate) {
                       if (
-                        dayDate == selectedDate.value ||
-                          selectedDates.contains(dayDate) ||
-                          dayDate == startDate.value ||
-                          dayDate == endDate.value
+                        isDateSelected(
+                          dayDate,
+                          selectedDate.value,
+                          selectedDates,
+                          startDate.value,
+                          endDate.value,
+                        )
                       ) {
                         selectedColor
                       } else if (
-                        startDate.value != null &&
-                          endDate.value != null &&
-                          dayDate.isAfter(startDate.value) &&
-                          dayDate.isBefore(endDate.value)
+                        isBetweenStartAndEnd(
+                          dayDate,
+                          startDate.value,
+                          endDate.value,
+                        )
                       ) {
                         betweenStartAndEndColor
                       } else if (dayDate == LocalDate.now()) {

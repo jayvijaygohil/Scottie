@@ -41,6 +41,11 @@ import com.jayvijay.scottie.presentation.ui.xelauikit.models.divider.XelaDivider
 import com.jayvijay.scottie.presentation.ui.xelauikit.models.xelaCaption
 import kotlin.math.roundToInt
 
+private const val STROKE_MULTIPLIER = 4
+private const val HEIGHT_FACTOR = 0.25f
+private const val BASE_CORNER_RADIUS = 14
+private const val DATASET_CORNER_FACTOR = 4
+
 @Composable
 fun XelaChart(
   type: XelaChartType,
@@ -140,10 +145,10 @@ fun XelaDoughnutChartBody(
                 Size(
                   size.value.width.toFloat() -
                     0.dp.toPx() -
-                    (doughnutStrokeWidth * 4).toPx() * datasetIndex,
+                    (doughnutStrokeWidth * STROKE_MULTIPLIER).toPx() * datasetIndex,
                   size.value.height.toFloat() -
                     0.dp.toPx() -
-                    (doughnutStrokeWidth * 4).toPx() * datasetIndex,
+                    (doughnutStrokeWidth * STROKE_MULTIPLIER).toPx() * datasetIndex,
                 ),
             )
           }
@@ -227,7 +232,7 @@ fun XelaBarChartBody(
       fromStep -= dataStep
     }
 
-    val labelHeight = size.value.height / steps.size - steps.size * 0.25f
+    val labelHeight = size.value.height / steps.size - steps.size * HEIGHT_FACTOR
 
     Column(modifier = Modifier) {
       for (step in steps) {
@@ -281,7 +286,11 @@ fun XelaBarChartBody(
                     .padding(horizontal = 2.dp)
                     .clip(
                       RoundedCornerShape(
-                        if (datasets.size > 2) 4.dp else (14 - (datasets.size * 4)).dp
+                        if (datasets.size > 2) {
+                          4.dp
+                        } else {
+                          (BASE_CORNER_RADIUS - (datasets.size * DATASET_CORNER_FACTOR)).dp
+                        }
                       )
                     )
                     .background(chartBorderColor)
@@ -294,7 +303,11 @@ fun XelaBarChartBody(
                   modifier =
                     Modifier.clip(
                         RoundedCornerShape(
-                          if (datasets.size > 2) 4.dp else (14 - (datasets.size * 4)).dp
+                          if (datasets.size > 2) {
+                            4.dp
+                          } else {
+                            (BASE_CORNER_RADIUS - (datasets.size * DATASET_CORNER_FACTOR)).dp
+                          }
                         )
                       )
                       .background(dataset.fillColor)

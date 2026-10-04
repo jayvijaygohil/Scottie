@@ -8,7 +8,7 @@ class XelaStepItem(
   val id: Int,
   val title: String = "",
   val caption: String = "",
-  private val _state: XelaStepsState = XelaStepsState.DEFAULT,
+  initialState: XelaStepsState = XelaStepsState.DEFAULT,
 ) {
-  var state by mutableStateOf(_state)
+  var state by mutableStateOf(initialState)
 }
