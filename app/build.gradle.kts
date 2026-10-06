@@ -93,6 +93,8 @@ dependencies {
 
   implementation(libs.koog.agents)
   implementation(libs.koog.agents.additions)
+  // Already resolved transitively by the Koog LiteRT client; declared so `Backend` is compilable.
+  implementation(libs.litertlm.android)
 
   implementation(libs.a2ui.material3)
   implementation(libs.a2ui.compose.runtime)

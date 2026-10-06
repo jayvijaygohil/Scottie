@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssistantIntent",
+  "description": "The only structure the on-device model returns. Everything else is resolved deterministically by the presenter from the banking service.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["intent"],
+  "properties": {
+    "intent": { "type": "string", "enum": ["BALANCE", "SEND", "REQUEST", "OTHER"] },
+    "amount": { "type": ["number", "null"], "exclusiveMinimum": 0, "description": "Amount in CAD exactly as the user typed it; null when not given." },
+    "recipientQuery": { "type": ["string", "null"], "description": "Raw recipient fragment: a name, email, or phone. Never an id." },
+    "accountHint": { "type": ["string", "null"], "description": "Raw account phrase from the user, e.g. 'savings', 'Everyday Chequing', 'ending 4821', 'TFSA'." },
+    "memo": { "type": ["string", "null"], "description": "Request memo, e.g. 'dinner'." },
+    "channelHint": { "type": ["string", "null"], "enum": ["EMAIL", "SMS", null], "description": "Only when the user explicitly named the channel." },
+    "reply": { "type": ["string", "null"], "description": "One short sentence for the user. Required when intent is OTHER." }
+  },
+  "examples": [
+    { "input": "What's my balance?", "output": { "intent": "BALANCE" } },
+    { "input": "How much is in my savings?", "output": { "intent": "BALANCE", "accountHint": "savings" } },
+    { "input": "What's in my TFSA?", "output": { "intent": "BALANCE", "accountHint": "TFSA" } },
+    { "input": "Send 50 to Alice", "output": { "intent": "SEND", "amount": 50, "recipientQuery": "Alice" } },
+    { "input": "Send $20 to bob from my savings", "output": { "intent": "SEND", "amount": 20, "recipientQuery": "bob", "accountHint": "savings" } },
+    { "input": "Send money to charlie.c@example.ca", "output": { "intent": "SEND", "recipientQuery": "charlie.c@example.ca" } },
+    { "input": "e-Transfer 75 to 416-555-0143", "output": { "intent": "SEND", "amount": 75, "recipientQuery": "416-555-0143" } },
+    { "input": "Send 40 to Charly", "output": { "intent": "SEND", "amount": 40, "recipientQuery": "Charly" } },
+    { "input": "Send money", "output": { "intent": "SEND" } },
+    { "input": "Request $30 from Jane for dinner", "output": { "intent": "REQUEST", "amount": 30, "recipientQuery": "Jane", "memo": "dinner" } },
+    { "input": "Ask Alicia for 25 bucks", "output": { "intent": "REQUEST", "amount": 25, "recipientQuery": "Alicia" } },
+    { "input": "Request $30 from Alice into savings for dinner", "output": { "intent": "REQUEST", "amount": 30, "recipientQuery": "Alice", "accountHint": "savings", "memo": "dinner" } },
+    { "input": "What's the weather?", "output": { "intent": "OTHER", "reply": "I can check your balances, send an Interac e-Transfer, or request money." } }
+  ]
+}

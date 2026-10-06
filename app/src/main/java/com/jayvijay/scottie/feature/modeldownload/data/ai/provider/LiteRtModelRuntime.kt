@@ -2,6 +2,7 @@ package com.jayvijay.scottie.feature.modeldownload.data.ai.provider
 
 import android.content.Context
 import android.util.Log
+import com.jayvijay.scottie.core.ai.OnDeviceTextModels
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadFailure
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadProgress
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -33,7 +34,7 @@ internal constructor(
 ) : ModelRuntime {
 
   @Inject
-  constructor(@ApplicationContext context: Context) : this(File(context.filesDir, "models/litert"))
+  constructor(@ApplicationContext context: Context) : this(OnDeviceTextModels.dir(context))
 
   private val rows = ConcurrentHashMap<String, LiteRtModel>()
 

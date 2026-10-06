@@ -38,13 +38,21 @@ data class InteracContact(
     get() = email != null && phoneNumber != null
 }
 
+/** Who receives a send or request: a saved contact or a typed destination. */
+sealed interface Recipient {
+  data class Saved(val contactId: String) : Recipient
+
+  /** At least one of [email] or [phoneNumber] must be non-null; the service enforces it. */
+  data class Manual(val email: String?, val phoneNumber: String?) : Recipient
+}
+
 @Serializable
 enum class TransferStatus {
   SENT,
   PENDING_SECURITY_ANSWER,
 }
 
-/** Never carries the security answer (FR-012). */
+/** Never carries the security answer (FR-010). */
 @Serializable
 data class TransferResult(
   val referenceId: String,
@@ -72,4 +80,5 @@ data class MoneyRequestResult(
   val destination: String,
   val depositAccount: String,
   val timestamp: String,
+  val memo: String? = null,
 )

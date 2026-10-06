@@ -4,17 +4,29 @@ import com.jayvijay.scottie.feature.interacbanking.domain.entities.Account
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChannel
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.InteracContact
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.MoneyRequestResult
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.Recipient
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransferResult
 
-/** Interac e-Transfer actions available to agents. Failures throw [IllegalArgumentException]. */
+/**
+ * Interac e-Transfer banking service. Failures throw [IllegalArgumentException] whose message is
+ * the user-facing text. Only [getAccountBalances] and [findContacts] are model tools;
+ * [executeSendTransfer], [executeRequestMoney], and [saveContact] are called by the presenter.
+ */
 interface InteracBankingTools {
   fun getAccountBalances(): List<Account>
 
+  /** Ranked fuzzy search; null or blank returns every contact. */
   fun findContacts(query: String? = null): List<InteracContact>
+
+  /** Saved contacts have Autodeposit off and live until the process restarts. */
+  fun saveContact(name: String, email: String?, phoneNumber: String?): InteracContact
+
+  /** The exact text the service uses when [amount] exceeds [account]'s balance. */
+  fun insufficientBalanceMessage(account: Account, amount: Double): String
 
   fun executeSendTransfer(
     fromAccountId: String,
-    recipientId: String,
+    recipient: Recipient,
     amount: Double,
     deliveryChannel: DeliveryChannel,
     securityQuestion: String? = null,
@@ -22,7 +34,7 @@ interface InteracBankingTools {
   ): TransferResult
 
   fun executeRequestMoney(
-    fromContactId: String,
+    recipient: Recipient,
     depositAccountId: String,
     amount: Double,
     deliveryChannel: DeliveryChannel,

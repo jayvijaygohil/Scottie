@@ -73,4 +73,7 @@ sealed interface ModelDownloadAction : CircuitUiEvent {
 
   /** Ignored while searching, when every matching section is shown expanded. */
   data class ToggleCategory(val type: ModelType) : ModelDownloadAction
+
+  /** Opens the screen that runs a downloaded text model. */
+  data class UseModel(val modelId: String) : ModelDownloadAction
 }

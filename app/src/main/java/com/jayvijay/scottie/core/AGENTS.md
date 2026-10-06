@@ -6,7 +6,9 @@
 - `ui/xelauikit/`: Design system components and their models.
 - `ai/`: AI infrastructure used by two or more features, such as model runtimes and device
   inspection. Create it when a second feature needs that code; until then it stays in the owning
-  feature's `data/ai/`. Keep its contracts free of feature domain types.
+  feature's `data/ai/`. Keep its contracts free of feature domain types. Today it holds the
+  on-device text-generation seam (`OnDeviceTextModels`: model directory, Koog `LLModel` for a
+  downloaded file, LiteRT backend constant) shared by model download and the Interac assistant.
 
 ## Shared UI
 

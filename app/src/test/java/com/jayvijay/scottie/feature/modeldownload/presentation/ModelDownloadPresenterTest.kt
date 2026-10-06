@@ -13,9 +13,11 @@ import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType.SPEE
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType.TEXT
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ShortfallKind.STORAGE
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.DownloadStart
+import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
 import kotlinx.coroutines.test.runTest
+import kotlinx.parcelize.Parcelize
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -23,7 +25,8 @@ import org.junit.Test
 class ModelDownloadPresenterTest {
   private val repository = FakeModelDownloadRepository()
   private val navigator = FakeNavigator(ModelDownloadScreen)
-  private val presenter = ModelDownloadPresenter(navigator, repository)
+  private val presenter =
+    ModelDownloadPresenter(navigator, repository) { FakeTextModelScreen(it) }
 
   private fun entry(
     id: String,
@@ -235,6 +238,15 @@ class ModelDownloadPresenterTest {
   }
 
   @Test
+  fun useModelNavigatesToTheBoundDestination() = runTest {
+    repository.catalog.value = ready(entry("a", ModelDownloadStatus.Downloaded))
+    presenter.test {
+      awaitItem().eventSink(ModelDownloadAction.UseModel("a"))
+      assertEquals(FakeTextModelScreen("a"), navigator.awaitNextScreen())
+    }
+  }
+
+  @Test
   fun backPopsNavigator() = runTest {
     presenter.test {
       awaitItem().eventSink(ModelDownloadAction.Back)
@@ -261,3 +273,5 @@ class ModelDownloadPresenterTest {
     const val SIZE = 100L
   }
 }
+
+@Parcelize private data class FakeTextModelScreen(val modelId: String) : ParcelableScreen

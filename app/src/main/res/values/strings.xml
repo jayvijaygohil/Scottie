@@ -54,4 +54,53 @@
         <item quantity="one">%1$d model</item>
         <item quantity="other">%1$d models</item>
     </plurals>
+
+    <!-- Interac assistant -->
+    <string name="assistant_title">Interac assistant</string>
+    <string name="assistant_composer_hint">Ask to check balances, send, or request money</string>
+    <string name="assistant_send">Send</string>
+    <string name="assistant_thinking">Thinking…</string>
+    <string name="assistant_fallback">I couldn\'t build that form. Please try again.</string>
+    <string name="assistant_model_missing">Download a text model first, then open the assistant from its card.</string>
+    <string name="assistant_off_topic">I can check your balances, send an Interac e-Transfer, or request money.</string>
+    <string name="assistant_use_model">Use with Interac assistant</string>
+    <string name="assistant_form_send_title">Send an Interac e-Transfer</string>
+    <string name="assistant_form_request_title">Request money via Interac</string>
+    <string name="assistant_field_amount">Amount (CAD)</string>
+    <string name="assistant_field_recipient">Recipient</string>
+    <string name="assistant_field_manual_email">Email</string>
+    <string name="assistant_field_manual_phone">Phone number</string>
+    <string name="assistant_save_contact">Save as contact</string>
+    <string name="assistant_field_account_source">From account</string>
+    <string name="assistant_field_account_deposit">Deposit account</string>
+    <string name="assistant_channel">Send by</string>
+    <string name="assistant_channel_email">Email</string>
+    <string name="assistant_channel_sms">SMS</string>
+    <string name="assistant_field_security_question">Security question</string>
+    <string name="assistant_field_security_answer">Security answer</string>
+    <string name="assistant_field_memo">Memo (optional)</string>
+    <string name="assistant_submit_send">Send transfer</string>
+    <string name="assistant_submit_request">Send request</string>
+    <string name="assistant_badge_autodeposit">Autodeposit Active</string>
+    <string name="assistant_account_type_chequing">Chequing</string>
+    <string name="assistant_account_type_savings">Savings</string>
+    <string name="assistant_account_type_credit">Credit</string>
+    <string name="assistant_account_type_loc">Line of credit</string>
+    <string name="assistant_status_sent">Sent</string>
+    <string name="assistant_status_pending">Pending security answer</string>
+    <string name="assistant_status_request_sent">Request sent</string>
+    <string name="assistant_conf_reference">Reference</string>
+    <string name="assistant_conf_amount">Amount</string>
+    <string name="assistant_conf_recipient">Recipient</string>
+    <string name="assistant_conf_requestee">Requestee</string>
+    <string name="assistant_conf_channel">Channel</string>
+    <string name="assistant_conf_account_source">From account</string>
+    <string name="assistant_conf_account_deposit">Deposit account</string>
+    <string name="assistant_conf_memo">Memo</string>
+    <string name="assistant_conf_time">Time</string>
+    <string name="assistant_account_not_found">I couldn\'t find an account matching \"%1$s\". Here are all your accounts.</string>
+    <string name="assistant_no_account_covers">None of your accounts can cover %1$s.</string>
+    <string name="assistant_alert_title_error">Couldn\'t complete that</string>
+    <string name="assistant_alert_title_info">Heads up</string>
+    <string name="assistant_latency_debug">first card %1$d ms</string>
 </resources>

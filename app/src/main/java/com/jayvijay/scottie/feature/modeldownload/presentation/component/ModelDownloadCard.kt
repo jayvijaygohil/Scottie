@@ -60,6 +60,8 @@ fun ModelDownloadUiItem(
   onPause: () -> Unit,
   onDelete: () -> Unit,
   modifier: Modifier = Modifier,
+  /** Shown for downloaded text models; null hides the button. */
+  onUse: (() -> Unit)? = null,
 ) {
   val downloadLabel = stringResource(R.string.model_download_download)
   val density = LocalDensity.current
@@ -147,12 +149,21 @@ fun ModelDownloadUiItem(
               onClick = onPause,
               modifier = buttonModifier,
             )
-          ModelDownloadStatus.Downloaded ->
+          ModelDownloadStatus.Downloaded -> {
+            if (onUse != null) {
+              ModelDownloadButton(
+                text = stringResource(R.string.assistant_use_model),
+                onClick = onUse,
+                filled = true,
+                modifier = buttonModifier,
+              )
+            }
             ModelDownloadButton(
               text = stringResource(R.string.model_download_delete),
               onClick = onDelete,
               modifier = buttonModifier,
             )
+          }
         }
       }
     }

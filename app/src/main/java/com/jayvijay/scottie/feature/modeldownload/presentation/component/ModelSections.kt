@@ -55,6 +55,12 @@ fun ModelSections(
             onPause = { onEvent(ModelDownloadAction.Pause(model.id)) },
             onDelete = { onEvent(ModelDownloadAction.Delete(model.id)) },
             modifier = Modifier.animateItem(),
+            onUse =
+              if (model.type == ModelType.TEXT) {
+                { onEvent(ModelDownloadAction.UseModel(model.id)) }
+              } else {
+                null
+              },
           )
         }
       }

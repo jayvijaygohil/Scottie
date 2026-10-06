@@ -26,6 +26,7 @@ class ModelDownloadPresenter
 constructor(
   @Assisted private val navigator: Navigator,
   private val repository: ModelDownloadRepository,
+  private val destination: TextModelDestination,
 ) : Presenter<ModelDownloadState> {
 
   @Composable
@@ -65,6 +66,7 @@ constructor(
           if (query.isBlank()) {
             expansion = expansion + (action.type to !(expansion[action.type] ?: true))
           }
+        is ModelDownloadAction.UseModel -> navigator.goTo(destination.screen(action.modelId))
       }
     }
   }
