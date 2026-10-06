@@ -1,6 +1,6 @@
 # Data Model: Mock Interac Banking Tools
 
-All types live in `domain/entities/InteracBanking.kt` and are `@Serializable`.
+All types live in `feature/interacbanking/domain/entities/InteracBanking.kt` and are `@Serializable`.
 
 ## Enums
 

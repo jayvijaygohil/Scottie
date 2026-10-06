@@ -2,7 +2,7 @@
 
 ## Domain
 
-### `domain/entities/ModelDownload.kt`
+### `feature/modeldownload/domain/entities/ModelDownload.kt`
 
 - `ModelType`: `TEXT`, `SPEECH_RECOGNITION`. Every other value is removed.
 - `Model`: drops `target` and adds `requiresToken: Boolean`, which is true when the source needs a
@@ -13,7 +13,7 @@
   (FR-013).
 - `ModelCatalog`, `ModelDownloadStatus`, `DownloadProgress`, `DownloadFailure`: unchanged.
 
-### `domain/entities/ModelCompatibility.kt` (new)
+### `feature/modeldownload/domain/entities/ModelCompatibility.kt` (new)
 
 ```text
 enum ShortfallKind            MEMORY, STORAGE
@@ -30,7 +30,7 @@ checkCompatibility(memoryNeed: Long?, downloadBytes: Long?,
   `available ≥ required`. No headroom is added.
 - **Order**: memory is checked first, then storage. The first failure is returned.
 
-### `domain/repository/ModelDownloadRepository.kt`
+### `feature/modeldownload/domain/repository/ModelDownloadRepository.kt`
 
 ```text
 sealed DownloadStart
@@ -43,7 +43,7 @@ suspend fun download(modelId): DownloadStart
 
 ## Data
 
-### `data/ai/provider/ModelCatalog.kt`
+### `feature/modeldownload/data/ai/provider/ModelCatalog.kt`
 
 ```text
 CatalogModel (sealed)          id, name, memoryBytes, downloadBytes, type: ModelType
@@ -66,14 +66,14 @@ LiteRtBuild                    url, sizeBytes, memoryBytes
 - **Local layout**: `<filesDir>/models/litert/<fileName>` is the complete file and `.part` the
   partial one. A row counts as downloaded only when the complete file exists.
 
-### `data/ai/provider/DeviceChip.kt`
+### `feature/modeldownload/data/ai/provider/DeviceChip.kt`
 
 - `NPU_ELIGIBLE = {"SM8650", "SM8750", "SM8850", "TENSOR_G5", "TENSOR_G6"}`.
 - `BOARD_PLATFORMS = {"SUN" → "SM8750", "PINEAPPLE" → "SM8650"}`.
 - `socModel()` returns the normalized `Build.SOC_MODEL` on API 31+, else `BOARD_PLATFORMS[Build.BOARD]`,
   else null.
 
-### `data/ai/provider/DeviceResources.kt`
+### `feature/modeldownload/data/ai/provider/DeviceResources.kt`
 
 - `availableMemoryBytes(): Long?` tries `availMem`, then `MemAvailable` × 1024, then returns null.
 - `availableStorageBytes(): Long?` returns `StatFs(filesDir).availableBytes`, or null on error.

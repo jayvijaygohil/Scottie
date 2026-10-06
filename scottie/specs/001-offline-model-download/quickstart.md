@@ -5,8 +5,8 @@ Run from the repository root (`Scottie/`).
 ## Automated (no network, no device)
 
 ```sh
-./gradlew :app:testDebugUnitTest --tests "com.jayvijay.scottie.data.repository.ModelDownloadRepositoryImplTest"
-./gradlew :app:testDebugUnitTest --tests "com.jayvijay.scottie.presentation.features.modeldownload.ModelDownloadPresenterTest"
+./gradlew :app:testDebugUnitTest --tests "com.jayvijay.scottie.feature.modeldownload.data.repository.ModelDownloadRepositoryImplTest"
+./gradlew :app:testDebugUnitTest --tests "com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadPresenterTest"
 ./gradlew :app:testDebugUnitTest
 ./gradlew :app:assembleDebug :app:detekt :app:lintDebug
 ```

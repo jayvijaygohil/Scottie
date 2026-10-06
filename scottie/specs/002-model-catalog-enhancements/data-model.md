@@ -1,8 +1,8 @@
 # Data Model: Model Catalog Enhancements
 
-Changes are additive to `domain/entities/ModelDownload.kt` and the presentation contract.
+Changes are additive to `feature/modeldownload/domain/entities/ModelDownload.kt` and the presentation contract.
 
-## Domain (`domain/entities/`)
+## Domain (`feature/modeldownload/domain/entities/`)
 
 ### Model (changed)
 
@@ -33,7 +33,7 @@ unsupported still allows `delete(id)`.
 
 `ModelCatalog`, `ModelDownloadStatus`, `DownloadProgress` are unchanged.
 
-## Data (`data/ai/provider/`)
+## Data (`feature/modeldownload/data/ai/provider/`)
 
 - `CatalogModel` interface gains `memoryBytes: Long` (already on all subtypes).
 - `ModelRuntime` gains `suspend fun totalMemoryBytes(): Long?`.

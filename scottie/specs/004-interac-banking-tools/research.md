@@ -68,7 +68,7 @@ debugRuntimeClasspath`, which resolves `koog-agents:1.3.0`, `agents-tools:1.3.0`
 
 ## R6. Agent instructions placement
 
-- **Decision**: Use a `const val` system prompt in `domain/agent/workflow/` and a class-level
+- **Decision**: Use a `const val` system prompt in `feature/interacbanking/domain/agent/workflow/` and a class-level
   `@LLMDescription` on the ToolSet. Per-tool and per-parameter descriptions also state the
   channel and security rules.
 - **Rationale**: The rules have to reach the model through both the system prompt and the tool

@@ -93,7 +93,7 @@ Gating rules mirror the RunAnywhere SDK; see [references/runanywhere-gating.md](
   - **Storage**: `StatFs(context.filesDir).availableBytes`. LiteRT and RunAnywhere both store
     models on internal storage.
 - **Rationale**: The rule is policy, so it lives in the domain as a function without Android
-  imports. The probes are infrastructure, so they live in `data/ai/provider`.
+  imports. The probes are infrastructure, so they live in `feature/modeldownload/data/ai/provider`.
   `ModelRuntime.totalMemoryBytes` is removed because total RAM no longer gates anything.
 - **Alternatives**:
   - Keeping total RAM (002) was rejected; FR-013 supersedes it.

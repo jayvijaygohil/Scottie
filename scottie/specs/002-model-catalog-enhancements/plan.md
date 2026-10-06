@@ -48,7 +48,7 @@ components, one extended toolbar.
 
 | Principle | Status | Notes |
 |---|---|---|
-| I. Layered Clean Architecture | Pass | New domain fields/enum are plain Kotlin. RAM and NPU acceptance stay in `data/ai/provider`; repository computes `supported`. No new use case (no multi-repository policy). |
+| I. Layered Clean Architecture | Pass | New domain fields/enum are plain Kotlin. RAM and NPU acceptance stay in `feature/modeldownload/data/ai/provider`; repository computes `supported`. No new use case (no multi-repository policy). |
 | II. Circuit-Driven Presentation | Pass | Search/toggle are presenter actions; state carries sections; UI renders and dispatches only; strings in resources; theme only. |
 | III. Bounded AI Agents | N/A | No agent work. |
 | IV. Verified Changes | Pass | Catalog, repository, and presenter tests with fakes; assemble/test/detekt/lint. Instrumented tests not required by spec (Assumptions); skip will be reported. |
@@ -75,33 +75,32 @@ specs/002-model-catalog-enhancements/
 
 ```text
 app/src/main/java/com/jayvijay/scottie/
-├── domain/entities/ModelDownload.kt            # + HardwareTarget, Model fields, ModelEntry.supported
-├── data/ai/provider/
+├── feature/modeldownload/domain/entities/ModelDownload.kt            # + HardwareTarget, Model fields, ModelEntry.supported
+├── feature/modeldownload/data/ai/provider/
 │   ├── ModelCatalog.kt                         # memoryBytes on CatalogModel; toModel() fills new fields
 │   ├── ModelPresentation.kt                    # NEW: title sanitizer + overrides, family descriptions
 │   ├── ModelRuntime.kt                         # + totalMemoryBytes()
 │   └── RunAnywhereModelRuntime.kt              # ActivityManager total RAM
-├── data/repository/ModelDownloadRepositoryImpl.kt  # keep all rows, compute supported, gate download
-└── presentation/
-    ├── ui/components/
-    │   ├── ScottieToolbar.kt                   # + optional search slot
-    │   ├── ScottieSearchField.kt               # NEW
-    │   └── ScottieAccordionHeader.kt           # NEW
-    └── features/modeldownload/
-        ├── ModelDownloadScreen.kt              # sections, new actions
-        ├── ModelDownloadPresenter.kt           # query, expansion, grouping/filtering
-        ├── ModelDownloadUi.kt                  # flattened LazyColumn, search, empty state
-        └── component/ModelDownloadCard.kt      # description + support badge, gating
+├── feature/modeldownload/data/repository/ModelDownloadRepositoryImpl.kt  # keep all rows, compute supported, gate download
+├── core/ui/components/
+│   ├── ScottieToolbar.kt                       # + optional search slot
+│   ├── ScottieSearchField.kt                   # NEW
+│   └── ScottieAccordionHeader.kt               # NEW
+└── feature/modeldownload/presentation/
+    ├── ModelDownloadScreen.kt              # sections, new actions
+    ├── ModelDownloadPresenter.kt           # query, expansion, grouping/filtering
+    ├── ModelDownloadUi.kt                  # flattened LazyColumn, search, empty state
+    └── component/ModelDownloadCard.kt      # description + support badge, gating
 app/src/main/res/values/strings.xml             # new strings + plural
 app/src/main/res/drawable/                      # ic_search, ic_close, ic_chevron_down (vector)
 app/src/test/java/com/jayvijay/scottie/
-├── data/ai/provider/{ModelCatalogTest,FakeModelRuntime}.kt
-├── data/repository/ModelDownloadRepositoryImplTest.kt
-└── presentation/features/modeldownload/{ModelDownloadPresenterTest,FakeModelDownloadRepository}.kt
+├── feature/modeldownload/data/ai/provider/{ModelCatalogTest,FakeModelRuntime}.kt
+├── feature/modeldownload/data/repository/ModelDownloadRepositoryImplTest.kt
+└── feature/modeldownload/presentation/{ModelDownloadPresenterTest,FakeModelDownloadRepository}.kt
 ```
 
 **Structure Decision**: Existing single-module layout. Title/description mapping is catalog data, so
-it lives beside `ModelCatalog.kt` in `data/ai/provider`. Grouping and search are presentation
+it lives beside `ModelCatalog.kt` in `feature/modeldownload/data/ai/provider`. Grouping and search are presentation
 concerns kept in the presenter file as pure functions. Shared components go to `ui/components/`
 because FR-015 requires reusable design-system components.
 

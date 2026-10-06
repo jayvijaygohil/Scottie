@@ -37,7 +37,7 @@ already installed (plan.md, "Nothing is added").
 **Purpose**: Entities, the domain contract, and the empty ToolSet shell with mock data that every
 story extends.
 
-- [x] T001 [P] Create `SRC/domain/entities/InteracBanking.kt` with every type `@Serializable`:
+- [x] T001 [P] Create `SRC/feature/interacbanking/domain/entities/InteracBanking.kt` with every type `@Serializable`:
   - `enum AccountType { CHEQUING, SAVINGS, CREDIT, LINE_OF_CREDIT }` and
     `enum DeliveryChannel { EMAIL, PHONE }`.
   - `Account(accountId: String, name: String, type: AccountType, accountNumberMask: String,
@@ -51,7 +51,7 @@ story extends.
   - `MoneyRequestStatus { REQUEST_SENT }` and `MoneyRequestResult(referenceId, status, amount,
     requestee, deliveryChannel, destination, depositAccount, timestamp)`.
   - No Koog import.
-- [x] T002 [P] Create `SRC/domain/agent/tools/InteracBankingTools.kt`. It is an interface with
+- [x] T002 [P] Create `SRC/feature/interacbanking/domain/agent/tools/InteracBankingTools.kt`. It is an interface with
   four declarations and no default bodies:
   - `getAccountBalances(): List<Account>`
   - `findContacts(query: String? = null): List<InteracContact>`
@@ -62,7 +62,7 @@ story extends.
     deliveryChannel: DeliveryChannel, memo: String? = null): MoneyRequestResult`
 
   No Koog import.
-- [x] T003 Create `SRC/data/ai/tools/MockInteracBankingTools.kt` (depends on T001, T002):
+- [x] T003 Create `SRC/feature/interacbanking/data/ai/tools/MockInteracBankingTools.kt` (depends on T001, T002):
   - Declare `@Singleton class MockInteracBankingTools @Inject constructor() :
     InteracBankingTools, ToolSet`.
   - Put the class-level `@LLMDescription("Interac e-Transfer tools for the signed-in user's mock
@@ -95,7 +95,7 @@ story extends.
 
 **Independent test**: quickstart scenarios 1–9 and 12 pass on a fresh `MockInteracBankingTools()`.
 
-- [x] T004 [US1] Create `TEST/data/ai/tools/MockInteracBankingToolsTest.kt` (JUnit 4, a fresh
+- [x] T004 [US1] Create `TEST/feature/interacbanking/data/ai/tools/MockInteracBankingToolsTest.kt` (JUnit 4, a fresh
   instance per test) covering quickstart scenarios:
   1. Alice, EMAIL, no Q&A → `SENT`, `alice.m@example.com`, `TRF-[A-Z0-9]{8}`, and
      `Instant.parse(timestamp)` succeeds.
@@ -114,7 +114,7 @@ story extends.
   Also cover the edge case that Q&A sent to Alice is ignored and the status is `SENT`. Use
   `assertThrows(IllegalArgumentException::class.java)` and check the message. The tests must
   fail first.
-- [x] T005 [US1] Implement `executeSendTransfer` in `SRC/data/ai/tools/MockInteracBankingTools.kt`
+- [x] T005 [US1] Implement `executeSendTransfer` in `SRC/feature/interacbanking/data/ai/tools/MockInteracBankingTools.kt`
   as an `@Tool @Synchronized override fun`.
   - Check order per data-model.md:
     1. `amount > 0`
@@ -130,7 +130,7 @@ story extends.
   - Status is `SENT` when Autodeposit is on and `PENDING_SECURITY_ANSWER` otherwise.
   - Never place the answer in the result.
 - [x] T006 [US1] Add `@LLMDescription` to `executeSendTransfer` and to each of its parameters in
-  `SRC/data/ai/tools/MockInteracBankingTools.kt` (FR-016):
+  `SRC/feature/interacbanking/data/ai/tools/MockInteracBankingTools.kt` (FR-016):
   - `recipientId` is a contactId from `findContacts`.
   - `deliveryChannel` must exist on the contact.
   - `securityQuestion` and `securityAnswer` say: "Required when the recipient's
@@ -150,7 +150,7 @@ scope, so this story delivers instruction text only.
 **Independent test**: The text contains all four contract rules; this is checked by inspection
 (quickstart, "Not covered here").
 
-- [x] T007 [P] [US2] Create `SRC/domain/agent/workflow/InteracAgentInstructions.kt` with
+- [x] T007 [P] [US2] Create `SRC/feature/interacbanking/domain/agent/workflow/InteracAgentInstructions.kt` with
   `const val INTERAC_AGENT_INSTRUCTIONS`. The text holds the four rules from
   contracts/interac-tools.md, "Agent instructions":
   1. Resolve IDs only through `getAccountBalances` and `findContacts`; never invent them.
@@ -173,12 +173,12 @@ scope, so this story delivers instruction text only.
 
 **Independent test**: quickstart scenario 10 and the US3 balance listing.
 
-- [x] T008 [US3] Add tests to `TEST/data/ai/tools/MockInteracBankingToolsTest.kt`:
+- [x] T008 [US3] Add tests to `TEST/feature/interacbanking/data/ai/tools/MockInteracBankingToolsTest.kt`:
   - `getAccountBalances()` returns both accounts with name, type, mask, balance, and currency
     `"CAD"`.
   - `findContacts("char")` → Charlie, `("EXAMPLE.CA")` → Charlie, `("416-555")` → Bob,
     `(null)` and `("")` → all 3, `("zzz")` → empty.
-- [x] T009 [US3] Implement both tools in `SRC/data/ai/tools/MockInteracBankingTools.kt`.
+- [x] T009 [US3] Implement both tools in `SRC/feature/interacbanking/data/ai/tools/MockInteracBankingTools.kt`.
   - `getAccountBalances` is `@Tool @Synchronized override fun`. It maps the mock accounts with
     `availableBalance = balances.getValue(id)`. Its `@LLMDescription` covers resolving phrases
     such as "from my chequing" and checking that an amount fits.
@@ -196,14 +196,14 @@ scope, so this story delivers instruction text only.
 
 **Independent test**: quickstart scenario 11 and the request cases of scenarios 7–9.
 
-- [x] T010 [US4] Add tests to `TEST/data/ai/tools/MockInteracBankingToolsTest.kt`:
+- [x] T010 [US4] Add tests to `TEST/feature/interacbanking/data/ai/tools/MockInteracBankingToolsTest.kt`:
   - $30 from Alice into `acc_sav_202` via EMAIL → `REQUEST_SENT`, `REQ-[A-Z0-9]{8}`,
     `alice.m@example.com`, deposit account "High-Interest Savings", balances unchanged.
   - Request from Alice via PHONE → channel-mismatch error.
   - Amount ≤ 0 → amount error.
   - Unknown deposit account or contact → a not-found error that names the ID.
 - [x] T011 [US4] Implement `executeRequestMoney` as `@Tool override fun` in
-  `SRC/data/ai/tools/MockInteracBankingTools.kt`.
+  `SRC/feature/interacbanking/data/ai/tools/MockInteracBankingTools.kt`.
   - Check order: `amount > 0` → the deposit account exists → the contact exists → the channel
     has a destination.
   - No balance check or change. `memo` is accepted but not echoed.
@@ -216,7 +216,7 @@ scope, so this story delivers instruction text only.
 
 ## Phase 7: Polish & Cross-Cutting
 
-- [x] T012 Add quickstart scenario 13 to `TEST/data/ai/tools/MockInteracBankingToolsTest.kt`:
+- [x] T012 Add quickstart scenario 13 to `TEST/feature/interacbanking/data/ai/tools/MockInteracBankingToolsTest.kt`:
   - `asTools().map { it.name }.toSet()` equals the 4 method names.
   - Call `getTool("executeSendTransfer")`, then
     `decodeArgs(JSONObject(mapOf("fromAccountId" to JSONPrimitive("acc_chk_101"),
@@ -236,12 +236,12 @@ scope, so this story delivers instruction text only.
 
 **Purpose**: Close the coverage gaps found by `/speckit-analyze` (G1, G3).
 
-- [x] T015 Add a concurrency test to `TEST/data/ai/tools/MockInteracBankingToolsTest.kt` (FR-012a):
+- [x] T015 Add a concurrency test to `TEST/feature/interacbanking/data/ai/tools/MockInteracBankingToolsTest.kt` (FR-012a):
   - Start 10 threads that each send $200 from `acc_chk_101` to Alice. Use a `CountDownLatch` so
     they start together, and catch `IllegalArgumentException`.
   - Assert exactly 7 sends succeed and the final balance is 140.25, never below 0.
 - [x] T016 In the Bob `PENDING_SECURITY_ANSWER` test in
-  `TEST/data/ai/tools/MockInteracBankingToolsTest.kt`, assert the chequing balance reads 1520.25
+  `TEST/feature/interacbanking/data/ai/tools/MockInteracBankingToolsTest.kt`, assert the chequing balance reads 1520.25
   (Edge Cases: a pending send debits immediately).
 - [x] T017 Run `./gradlew :app:testDebugUnitTest --tests '*MockInteracBankingToolsTest'`.
 

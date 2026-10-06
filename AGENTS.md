@@ -38,16 +38,17 @@ Within that source package:
 
 - Application class: Hilt entry point annotated with `@HiltAndroidApp` and registered
   in `app/src/main/AndroidManifest.xml`.
-- `presentation/`: Activity, Circuit screens and presenters, rendering, and shared theme.
-- `domain/`: Business models, repository contracts, and use cases when warranted.
-- `data/`: Repository implementations and local, remote, and AI infrastructure.
+- Host Activity: lives beside the application class and hosts the Circuit UI.
+- `feature/<name>/`: Feature vertical slices containing internal `domain/`, `data/`, and
+  `presentation/` layers. Create only the layers a feature needs.
+- `core/`: Code shared by two or more features: theme and shared components (`core/ui/`),
+  design system components (`core/ui/xelauikit/`), and shared AI infrastructure (`core/ai/`).
 - `di/`: Application-level Hilt modules, bindings, and provider wiring.
 
-Read the relevant layer's `AGENTS.md` before editing it:
+Read the relevant `AGENTS.md` before editing that area:
 
-- @app/src/main/java/com/jayvijay/scottie/presentation/AGENTS.md
-- @app/src/main/java/com/jayvijay/scottie/domain/AGENTS.md
-- @app/src/main/java/com/jayvijay/scottie/data/AGENTS.md
+- @app/src/main/java/com/jayvijay/scottie/feature/AGENTS.md
+- @app/src/main/java/com/jayvijay/scottie/core/AGENTS.md
 - @app/src/main/java/com/jayvijay/scottie/di/AGENTS.md
 
 Android resources belong in `app/src/main/res/`, host tests in `app/src/test/`,

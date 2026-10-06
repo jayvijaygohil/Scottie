@@ -28,7 +28,7 @@
             android:name="libedgetpu_litert.so"
             android:required="false" />
         <activity
-            android:name=".presentation.MainActivity"
+            android:name=".MainActivity"
             android:enableOnBackInvokedCallback="true"
             android:exported="true"
             android:theme="@style/Theme.Scottie"
@@ -40,7 +40,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".data.ai.provider.ModelDownloadService"
+            android:name=".feature.modeldownload.data.ai.provider.ModelDownloadService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
     </application>

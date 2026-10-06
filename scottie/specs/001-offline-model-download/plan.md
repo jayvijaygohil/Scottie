@@ -47,7 +47,7 @@ service.
 |-----------|--------|----------|
 | I. Layered architecture | PASS | Domain entities/repository contract are SDK-free; SDK, catalog, service in `data/`; bindings in `di/`. No use case (no multi-repository policy). |
 | II. Circuit presentation | PASS | `ModelDownloadPresenter` with assisted `Navigator`; `@CircuitInject` factories; UI renders state, strings from resources, Xela components. |
-| III. Bounded AI agents | N/A | No agents; inference client wrapper lives in `data/ai/provider/`. |
+| III. Bounded AI agents | N/A | No agents; inference client wrapper lives in `feature/modeldownload/data/ai/provider/`. |
 | IV. Verified changes | PASS | Repository and presenter tests with fakes; assemble/test/detekt/lint gates. Device tests: spec forbids real downloads in tests, so `connectedDebugAndroidTest` adds none; manual device check in quickstart. Skip must be reported at completion. |
 | V. Simplicity | PASS (see tracking) | Two seam interfaces justified for testability; no WorkManager, no mocking library, no persistence of paused state. |
 
@@ -73,34 +73,34 @@ specs/001-offline-model-download/
 app/src/main/AndroidManifest.xml                 # permissions + ModelDownloadService
 app/src/main/res/values/strings.xml              # statuses, types, failures, notification copy
 app/src/main/java/com/jayvijay/scottie/
-├── domain/
-│   ├── entities/ModelDownload.kt                # Model, ModelType, DownloadProgress, statuses, catalog
-│   └── repository/ModelDownloadRepository.kt
-├── data/
-│   ├── ai/provider/
-│   │   ├── ModelCatalog.kt                       # ported static catalog (CatalogModel rows)
-│   │   ├── ModelRuntime.kt                       # seam + RuntimeDownloadEvent
-│   │   ├── RunAnywhereModelRuntime.kt            # SDK init, registration, event/error mapping
-│   │   ├── DownloadForegroundHost.kt             # seam + ServiceDownloadForegroundHost
-│   │   └── ModelDownloadService.kt               # dataSync FGS: notifications, wake lock, cancel
-│   └── repository/ModelDownloadRepositoryImpl.kt
+├── MainActivity.kt                               # root = ModelDownloadScreen; drop StaticScreen
 ├── di/DataModule.kt                              # bindings, application CoroutineScope
-└── presentation/
-    ├── MainActivity.kt                           # root = ModelDownloadScreen; drop StaticScreen
-    └── features/modeldownload/
+└── feature/modeldownload/
+    ├── domain/
+    │   ├── entities/ModelDownload.kt            # Model, ModelType, DownloadProgress, statuses, catalog
+    │   └── repository/ModelDownloadRepository.kt
+    ├── data/
+    │   ├── ai/provider/
+    │   │   ├── ModelCatalog.kt                   # ported static catalog (CatalogModel rows)
+    │   │   ├── ModelRuntime.kt                   # seam + RuntimeDownloadEvent
+    │   │   ├── RunAnywhereModelRuntime.kt        # SDK init, registration, event/error mapping
+    │   │   ├── DownloadForegroundHost.kt         # seam + ServiceDownloadForegroundHost
+    │   │   └── ModelDownloadService.kt           # dataSync FGS: notifications, wake lock, cancel
+    │   └── repository/ModelDownloadRepositoryImpl.kt
+    └── presentation/
         ├── ModelDownloadScreen.kt                # state/actions per contract
         ├── ModelDownloadPresenter.kt
         ├── ModelDownloadUi.kt                    # loading/unavailable/list, toast, notif permission
         └── component/ModelDownloadCard.kt        # + FAILED/Retry, phase, disabled start
 
 app/src/test/java/com/jayvijay/scottie/
-├── data/repository/ModelDownloadRepositoryImplTest.kt
-├── data/ai/provider/FakeModelRuntime.kt, FakeDownloadForegroundHost.kt, ModelCatalogTest.kt
-└── presentation/features/modeldownload/ModelDownloadPresenterTest.kt (+ FakeModelDownloadRepository)
+├── feature/modeldownload/data/repository/ModelDownloadRepositoryImplTest.kt
+├── feature/modeldownload/data/ai/provider/FakeModelRuntime.kt, FakeDownloadForegroundHost.kt, ModelCatalogTest.kt
+└── feature/modeldownload/presentation/ModelDownloadPresenterTest.kt (+ FakeModelDownloadRepository)
 ```
 
 **Structure Decision**: Existing single `:app` module and layer packages. Service and SDK wrapper sit
-in `data/ai/provider/` (inference provider infrastructure per data `AGENTS.md`). Placeholder
+in `feature/modeldownload/data/ai/provider/` (inference provider infrastructure per data `AGENTS.md`). Placeholder
 `StaticScreen` is removed in favor of the real root screen.
 
 ## Complexity Tracking

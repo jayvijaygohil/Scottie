@@ -3,7 +3,7 @@
 Internal app contracts only; there is no external API. Signatures are indicative; follow
 `.editorconfig` and existing naming.
 
-## Repository (`domain/repository/ModelDownloadRepository`)
+## Repository (`feature/modeldownload/domain/repository/ModelDownloadRepository`)
 
 Signature unchanged. Behavior additions:
 
@@ -12,7 +12,7 @@ Signature unchanged. Behavior additions:
 - `download(modelId)` is a no-op when the entry is not `supported`.
 - `delete(modelId)` works regardless of `supported`.
 
-## Runtime seam (`data/ai/provider/ModelRuntime`)
+## Runtime seam (`feature/modeldownload/data/ai/provider/ModelRuntime`)
 
 ```kotlin
 /** Device total RAM in bytes; null when unknown. */
@@ -32,7 +32,7 @@ sealed interface ModelDownloadAction : CircuitUiEvent {
 
 `ModelDownloadContent.Models(sections, query)` per [data-model.md](../data-model.md).
 
-## Shared UI components (`presentation/ui/components/`)
+## Shared UI components (`core/ui/components/`)
 
 ```kotlin
 @Composable

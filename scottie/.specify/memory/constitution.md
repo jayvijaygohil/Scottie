@@ -1,8 +1,8 @@
 <!--
 Sync Impact Report
-- Version: 1.0.0 → 1.1.0 (MINOR: Principle IV gains a governed device-test exception)
-- Modified principles: IV. Verified Changes (device tests may be skipped when a feature spec
-  forbids device execution; the skip MUST be reported)
+- Version: 1.1.0 → 2.0.0 (MAJOR: Principle I redefines the source layout as feature slices)
+- Modified principles: I. Layered Clean Architecture (layers live inside `feature/<name>/`; shared
+  code lives in `core/`); III. Bounded AI Agents and V. Simplicity (paths follow the new layout)
 - Added sections: none
 - Removed sections: none
 - Deferred TODOs: none
@@ -14,11 +14,15 @@ Sync Impact Report
 
 ### I. Layered Clean Architecture
 
-- Source MUST live in `presentation/`, `domain/`, `data/`, and `di/` under the app package.
+- Feature code MUST live in `feature/<name>/` vertical slices with internal `domain/`, `data/`,
+  and `presentation/` layers, created only when the feature needs them. Code shared by two or
+  more features lives in `core/` (`core/ui/`, `core/ui/xelauikit/`, `core/ai/`); application
+  wiring lives in `di/` and the entry points at the app package root.
 - Dependencies MUST point inward: presentation and data depend on domain; domain MUST NOT import
-  Android framework, Compose, network, database, or AI-provider APIs.
+  Android framework, Compose, network, database, or AI-provider APIs. Features MUST NOT import
+  each other, and `core/` MUST NOT import `feature/`.
 - Repository interfaces in `domain/repository/` MUST contain declarations only; implementations
-  live in `data/repository/`.
+  live in the same feature's `data/repository/`.
 - Use cases MUST exist only when they hold policy or coordinate multiple repositories.
 
 Rationale: inward dependencies keep business rules testable on the JVM and swappable infrastructure.
@@ -37,12 +41,13 @@ Rationale: unidirectional state/action flow makes screens predictable and presen
 
 ### III. Bounded AI Agents
 
-- Agent orchestration, prompts, guardrails, and fallbacks MUST live in `domain/agent/workflow/`
+- Agent orchestration, prompts, guardrails, and fallbacks MUST live in a feature's
+  `domain/agent/workflow/`
   and MUST NOT import API clients, inference runtimes, or embedding libraries.
 - Agent tools MUST have strongly typed inputs and outputs; interfaces in `domain/agent/tools/`,
   implementations in `data/ai/tools/`.
-- Inference clients belong in `data/ai/provider/`; vector storage and embedding dependencies MUST
-  stay encapsulated in `data/ai/memory/`.
+- Inference clients belong in `data/ai/provider/` (or `core/ai/` once shared); vector storage and
+  embedding dependencies MUST stay encapsulated in `data/ai/memory/`.
 
 Rationale: isolating model infrastructure lets on-device runtimes change without rewriting
 agent behavior.
@@ -66,7 +71,7 @@ Rationale: explicit evidence prevents "should work" from passing as verified.
   scaffolding, placeholder screens, and configuration for fixed values are prohibited.
 - Reuse existing code, the standard library, platform features, and installed dependencies before
   adding new code or libraries.
-- Shared UI components move to `ui/components/` only after real reuse.
+- Shared UI components move to `core/ui/components/` only after real reuse.
 
 Rationale: the cheapest code to maintain is code never written.
 
@@ -85,7 +90,7 @@ Rationale: the cheapest code to maintain is code never written.
 
 ## Development Workflow
 
-- Read the root and layer `AGENTS.md` before changing a layer.
+- Read the root, `feature/`, `core/`, and `di/` `AGENTS.md` before changing those areas.
 - Keep changes scoped to the requested outcome; preserve unrelated and staged user changes.
 - Commits and branch operations happen only on explicit request, as focused commits with clear
   messages.
@@ -102,4 +107,4 @@ Rationale: the cheapest code to maintain is code never written.
 - Every spec, plan, and review MUST check compliance; any violation MUST be justified in the
   plan's complexity tracking.
 
-**Version**: 1.1.0 | **Ratified**: 2026-10-01 | **Last Amended**: 2026-10-01
+**Version**: 2.0.0 | **Ratified**: 2026-10-01 | **Last Amended**: 2026-10-06

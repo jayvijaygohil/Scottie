@@ -60,9 +60,9 @@ Autodeposit rules.
 
 | Principle | Status | Notes |
 |---|---|---|
-| I. Layered Clean Architecture | Pass | Entities are in `domain/entities/`. The tool contract is in `domain/agent/tools/`, and the mock implementation with its Koog annotations is in `data/ai/tools/`. The domain imports only kotlinx.serialization. |
+| I. Layered Clean Architecture | Pass | Entities are in `feature/interacbanking/domain/entities/`. The tool contract is in `feature/interacbanking/domain/agent/tools/`, and the mock implementation with its Koog annotations is in `feature/interacbanking/data/ai/tools/`. The domain imports only kotlinx.serialization. |
 | II. Circuit-Driven Presentation | N/A | No screen. |
-| III. Bounded AI Agents | Pass | The typed tool interface is in `domain/agent/tools/` and its implementation in `data/ai/tools/`. The agent instructions are a plain string in `domain/agent/workflow/` with no Koog import. |
+| III. Bounded AI Agents | Pass | The typed tool interface is in `feature/interacbanking/domain/agent/tools/` and its implementation in `feature/interacbanking/data/ai/tools/`. The agent instructions are a plain string in `feature/interacbanking/domain/agent/workflow/` with no Koog import. |
 | IV. Verified Changes | Pass | JVM tests cover every acceptance scenario. Checks: assemble, unit tests, detekt, lint. Device tests are skipped because no device behavior changes; the completion report must state this. |
 | V. Simplicity | Pass | No new dependencies, no DI module, no repository, no use case, no clock or ID injection. The interface exists only because Principle III requires it; AGENTS.md accepts single-implementation contracts. |
 
@@ -86,20 +86,20 @@ scottie/specs/004-interac-banking-tools/
 ### Source Code (repository root)
 
 ```text
-app/src/main/java/com/jayvijay/scottie/
+app/src/main/java/com/jayvijay/scottie/feature/interacbanking/
 ├── domain/
 │   ├── entities/InteracBanking.kt              # enums, Account, InteracContact, results
 │   └── agent/
 │       ├── tools/InteracBankingTools.kt        # interface: 4 typed operations
 │       └── workflow/InteracAgentInstructions.kt # system prompt const (FR-014, FR-015)
-└── data/ai/tools/MockInteracBankingTools.kt     # ToolSet + mock data + in-memory balances
+└── data/ai/tools/MockInteracBankingTools.kt    # ToolSet + mock data + in-memory balances
 
-app/src/test/java/com/jayvijay/scottie/data/ai/tools/
+app/src/test/java/com/jayvijay/scottie/feature/interacbanking/data/ai/tools/
 └── MockInteracBankingToolsTest.kt
 ```
 
-**Structure Decision**: These are the layer folders the constitution requires; `domain/agent/` and
-`data/ai/tools/` are new. The mock data is private to the implementation because nothing else reads
+**Structure Decision**: These are the layer folders the constitution requires; `feature/interacbanking/domain/agent/` and
+`feature/interacbanking/data/ai/tools/` are new. The mock data is private to the implementation because nothing else reads
 it.
 
 ## Complexity Tracking

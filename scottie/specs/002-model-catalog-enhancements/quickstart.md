@@ -5,9 +5,9 @@
 From the repository root:
 
 ```sh
-./gradlew :app:testDebugUnitTest --tests "com.jayvijay.scottie.data.ai.provider.ModelCatalogTest"
-./gradlew :app:testDebugUnitTest --tests "com.jayvijay.scottie.data.repository.ModelDownloadRepositoryImplTest"
-./gradlew :app:testDebugUnitTest --tests "com.jayvijay.scottie.presentation.features.modeldownload.ModelDownloadPresenterTest"
+./gradlew :app:testDebugUnitTest --tests "com.jayvijay.scottie.feature.modeldownload.data.ai.provider.ModelCatalogTest"
+./gradlew :app:testDebugUnitTest --tests "com.jayvijay.scottie.feature.modeldownload.data.repository.ModelDownloadRepositoryImplTest"
+./gradlew :app:testDebugUnitTest --tests "com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadPresenterTest"
 ./gradlew :app:assembleDebug :app:testDebugUnitTest :app:detekt :app:lintDebug
 ```
 

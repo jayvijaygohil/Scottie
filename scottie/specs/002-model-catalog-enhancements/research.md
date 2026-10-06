@@ -72,7 +72,7 @@ All Technical Context unknowns are resolved below. Sources: current `:app` sourc
 
 - **Decision**: One `LazyColumn` flattened into category-header, subsection-header, and model items.
   Headers render a new shared `ScottieAccordionHeader` (title, count, expanded, nesting level,
-  `onToggle`) in `presentation/ui/components/`. Expansion state lives in the presenter.
+  `onToggle`) in `core/ui/components/`. Expansion state lives in the presenter.
 - **Rationale**: ~115 rows with live progress need lazy composition. The vendored `XelaAccordion`
   owns its own `MutableState`, is not lazy, takes no `Modifier`, and renders its content twice when
   open, so it cannot be nested inside a `LazyColumn` or driven by presenter state.

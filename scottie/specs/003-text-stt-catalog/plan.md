@@ -67,7 +67,7 @@ is simplified, and about 1,000 catalog lines are deleted.
 
 | Principle | Status | Notes |
 |---|---|---|
-| I. Layered Clean Architecture | Pass | The compatibility rule (`checkCompatibility`, `Shortfall`) is pure domain code. Probes, chip identity, build resolution, and the file download are in `data/ai/provider`. No use case is needed because there is a single repository. |
+| I. Layered Clean Architecture | Pass | The compatibility rule (`checkCompatibility`, `Shortfall`) is pure domain code. Probes, chip identity, build resolution, and the file download are in `feature/modeldownload/data/ai/provider`. No use case is needed because there is a single repository. |
 | II. Circuit-Driven Presentation | Pass | The presenter launches `download` and maps a `Refused` result to state. The UI renders the toast from string resources. |
 | III. Bounded AI Agents | N/A | No agent or inference work. |
 | IV. Verified Changes | Pass | Unit tests cover the rule, resolution, routing, file runtime, repository preflight, and presenter. Device steps (API 26 and current) are in quickstart; any skip is reported. |
@@ -97,11 +97,11 @@ specs/003-text-stt-catalog/
 gradle/libs.versions.toml                       # − llamacpp, qhexrt aliases, runanywhereQherxrt
 app/build.gradle.kts                            # − llamacpp, qhexrt deps
 app/src/main/java/com/jayvijay/scottie/
-├── domain/entities/
+├── feature/modeldownload/domain/entities/
 │   ├── ModelDownload.kt                        # ModelType {TEXT, SPEECH_RECOGNITION}; − HardwareTarget/target; + requiresToken
 │   └── ModelCompatibility.kt                   # NEW: checkCompatibility, Compatibility, Shortfall, ShortfallKind
-├── domain/repository/ModelDownloadRepository.kt # download(): suspend → DownloadStart {Started, Ignored, Refused}
-├── data/ai/provider/
+├── feature/modeldownload/domain/repository/ModelDownloadRepository.kt # download(): suspend → DownloadStart {Started, Ignored, Refused}
+├── feature/modeldownload/data/ai/provider/
 │   ├── ModelCatalog.kt                         # LiteRtModel/LiteRtSpec/LiteRtBuild; − SingleFileModel & non-text/STT rows; forDevice(soc)
 │   ├── DeviceChip.kt                           # NEW: socModel(), normalizeSoc, BOARD_PLATFORMS, NPU_ELIGIBLE
 │   ├── DeviceResources.kt                      # NEW: interface + AndroidDeviceResources (availMem/MemAvailable, StatFs)
@@ -110,19 +110,19 @@ app/src/main/java/com/jayvijay/scottie/
 │   ├── ModelRuntime.kt                         # − totalMemoryBytes
 │   ├── RunAnywhereModelRuntime.kt              # − LlamaCPP, QHexRT, SingleFileModel branch, totalMemoryBytes
 │   └── ModelPresentation.kt                    # prune descriptions
-├── data/repository/ModelDownloadRepositoryImpl.kt  # accepted-only rows; supported via rule; preflight in download()
+├── feature/modeldownload/data/repository/ModelDownloadRepositoryImpl.kt  # accepted-only rows; supported via rule; preflight in download()
 ├── di/DataModule.kt                            # forDevice(socModel()); bind router + DeviceResources
-└── presentation/features/modeldownload/
+└── feature/modeldownload/presentation/
     ├── ModelDownloadScreen.kt                  # − ModelGroup/ToggleGroup/target; error: ModelDownloadError?
     ├── ModelDownloadPresenter.kt               # flat sections; canStart excludes requiresToken; launch download → error
     ├── ModelDownloadUi.kt                      # toast renders either error
     └── component/ModelSections.kt              # one header + rows per section
 app/src/main/res/values/strings.xml             # − removed type/target labels; + model_type_speech, shortfall messages
 app/src/test/java/com/jayvijay/scottie/
-├── domain/entities/ModelCompatibilityTest.kt
-├── data/ai/provider/{ModelCatalogTest,DeviceChipTest,LiteRtModelRuntimeTest,RoutingModelRuntimeTest,FakeModelRuntime,FakeDeviceResources}.kt
-├── data/repository/ModelDownloadRepositoryImplTest.kt
-└── presentation/features/modeldownload/{ModelDownloadPresenterTest,FakeModelDownloadRepository}.kt
+├── feature/modeldownload/domain/entities/ModelCompatibilityTest.kt
+├── feature/modeldownload/data/ai/provider/{ModelCatalogTest,DeviceChipTest,LiteRtModelRuntimeTest,RoutingModelRuntimeTest,FakeModelRuntime,FakeDeviceResources}.kt
+├── feature/modeldownload/data/repository/ModelDownloadRepositoryImplTest.kt
+└── feature/modeldownload/presentation/{ModelDownloadPresenterTest,FakeModelDownloadRepository}.kt
 ```
 
 **Structure Decision**:

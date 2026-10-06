@@ -1,6 +1,6 @@
 # Data Model: Offline Model Download
 
-Domain types live in `domain/entities/` and import no Android, Compose, or SDK types.
+Domain types live in `feature/modeldownload/domain/entities/` and import no Android, Compose, or SDK types.
 
 ## Model
 

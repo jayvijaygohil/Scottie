@@ -2,7 +2,7 @@
 
 Signatures are design intent; types are defined in [data-model.md](../data-model.md).
 
-## Domain: `ModelDownloadRepository` (`domain/repository/`)
+## Domain: `ModelDownloadRepository` (`feature/modeldownload/domain/repository/`)
 
 ```kotlin
 interface ModelDownloadRepository {
@@ -17,10 +17,10 @@ interface ModelDownloadRepository {
 }
 ```
 
-Implementation `ModelDownloadRepositoryImpl` (`data/repository/`), `@Singleton`, owns the download
+Implementation `ModelDownloadRepositoryImpl` (`feature/modeldownload/data/repository/`), `@Singleton`, owns the download
 coroutine in an injected application scope.
 
-## Data seam: `ModelRuntime` (`data/ai/provider/`)
+## Data seam: `ModelRuntime` (`feature/modeldownload/data/ai/provider/`)
 
 ```kotlin
 interface ModelRuntime {
@@ -42,7 +42,7 @@ sealed interface RuntimeDownloadEvent {
 Production: `RunAnywhereModelRuntime`. `Started` is dropped; verifying/extracting become `Progress`
 with the matching phase. Throws on `prepare` failure.
 
-## Data seam: `DownloadForegroundHost` (`data/ai/provider/`)
+## Data seam: `DownloadForegroundHost` (`feature/modeldownload/data/ai/provider/`)
 
 ```kotlin
 interface DownloadForegroundHost {
@@ -55,7 +55,7 @@ Production: `ServiceDownloadForegroundHost` → `ContextCompat.startForegroundSe
 `ModelDownloadService` observes `catalog` for the `Downloading` entry and calls `pause` from its
 notification Cancel action and `onTimeout`.
 
-## Presentation: Circuit contract (`presentation/features/modeldownload/`)
+## Presentation: Circuit contract (`feature/modeldownload/presentation/`)
 
 ```kotlin
 @Parcelize data object ModelDownloadScreen : ParcelableScreen   // navigation root

@@ -42,10 +42,10 @@ Single-module Android app. Main source: `app/src/main/java/com/jayvijay/scottie/
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [X] T003 Add `enum class HardwareTarget { CPU, NPU }`; add to `Model` the fields `description: String?` ("Null → no description shown"), `target: HardwareTarget` ("NPU for QHexRT rows, else CPU"), `memoryBytes: Long?` ("Required RAM; null when unknown"); add `supported: Boolean` to `ModelEntry` in app/src/main/java/com/jayvijay/scottie/domain/entities/ModelDownload.kt
-- [X] T004 Promote `memoryBytes: Long` to the `CatalogModel` interface and make `CatalogModel.toModel()` set `target` from `framework` (QHexRT → NPU) and `memoryBytes` (≤ 0 → null), `description = null` for now, in app/src/main/java/com/jayvijay/scottie/data/ai/provider/ModelCatalog.kt
-- [X] T005 Add `description: String?`, `target: HardwareTarget`, `supported: Boolean` to `ModelDownloadModel` in app/src/main/java/com/jayvijay/scottie/presentation/features/modeldownload/ModelDownloadScreen.kt, map them in app/src/main/java/com/jayvijay/scottie/presentation/features/modeldownload/ModelDownloadPresenter.kt, and update previews in ModelDownloadUi.kt
-- [X] T006 Construct `ModelEntry(..., supported = true)` temporarily in app/src/main/java/com/jayvijay/scottie/data/repository/ModelDownloadRepositoryImpl.kt and update test fakes/fixtures in app/src/test/java/com/jayvijay/scottie/presentation/features/modeldownload/FakeModelDownloadRepository.kt and ModelDownloadPresenterTest.kt so `./gradlew :app:testDebugUnitTest` compiles and passes
+- [X] T003 Add `enum class HardwareTarget { CPU, NPU }`; add to `Model` the fields `description: String?` ("Null → no description shown"), `target: HardwareTarget` ("NPU for QHexRT rows, else CPU"), `memoryBytes: Long?` ("Required RAM; null when unknown"); add `supported: Boolean` to `ModelEntry` in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/domain/entities/ModelDownload.kt
+- [X] T004 Promote `memoryBytes: Long` to the `CatalogModel` interface and make `CatalogModel.toModel()` set `target` from `framework` (QHexRT → NPU) and `memoryBytes` (≤ 0 → null), `description = null` for now, in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/data/ai/provider/ModelCatalog.kt
+- [X] T005 Add `description: String?`, `target: HardwareTarget`, `supported: Boolean` to `ModelDownloadModel` in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/presentation/ModelDownloadScreen.kt, map them in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/presentation/ModelDownloadPresenter.kt, and update previews in ModelDownloadUi.kt
+- [X] T006 Construct `ModelEntry(..., supported = true)` temporarily in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/data/repository/ModelDownloadRepositoryImpl.kt and update test fakes/fixtures in app/src/test/java/com/jayvijay/scottie/feature/modeldownload/presentation/FakeModelDownloadRepository.kt and ModelDownloadPresenterTest.kt so `./gradlew :app:testDebugUnitTest` compiles and passes
 
 **Checkpoint**: Build and existing 001 tests green; behavior unchanged
 
@@ -61,16 +61,16 @@ listed, badged Unsupported, and `download()` is a no-op for them; others downloa
 
 ### Tests for User Story 1
 
-- [X] T007 [P] [US1] Add `totalMemory: Long?` knob to app/src/test/java/com/jayvijay/scottie/data/ai/provider/FakeModelRuntime.kt
-- [X] T008 [US1] Repository tests in app/src/test/java/com/jayvijay/scottie/data/repository/ModelDownloadRepositoryImplTest.kt: non-accepted row listed with `supported = false`; row with `memoryBytes > totalMem` unsupported; unknown total RAM does not block; `download()` on unsupported id leaves status `Available` and never calls runtime; downloaded unsupported row still deletes
-- [X] T009 [P] [US1] Presenter tests in app/src/test/java/com/jayvijay/scottie/presentation/features/modeldownload/ModelDownloadPresenterTest.kt: unsupported entry → `supported = false`, `canStart = false`; supported entry with no active download → `canStart = true`
+- [X] T007 [P] [US1] Add `totalMemory: Long?` knob to app/src/test/java/com/jayvijay/scottie/feature/modeldownload/data/ai/provider/FakeModelRuntime.kt
+- [X] T008 [US1] Repository tests in app/src/test/java/com/jayvijay/scottie/feature/modeldownload/data/repository/ModelDownloadRepositoryImplTest.kt: non-accepted row listed with `supported = false`; row with `memoryBytes > totalMem` unsupported; unknown total RAM does not block; `download()` on unsupported id leaves status `Available` and never calls runtime; downloaded unsupported row still deletes
+- [X] T009 [P] [US1] Presenter tests in app/src/test/java/com/jayvijay/scottie/feature/modeldownload/presentation/ModelDownloadPresenterTest.kt: unsupported entry → `supported = false`, `canStart = false`; supported entry with no active download → `canStart = true`
 
 ### Implementation for User Story 1
 
-- [X] T010 [US1] Add `suspend fun totalMemoryBytes(): Long?` to app/src/main/java/com/jayvijay/scottie/data/ai/provider/ModelRuntime.kt and implement via `ActivityManager.MemoryInfo.totalMem` (null on failure or 0) in RunAnywhereModelRuntime.kt
-- [X] T011 [US1] In app/src/main/java/com/jayvijay/scottie/data/repository/ModelDownloadRepositoryImpl.kt `load()`: keep all rows, set `supported = id in accepted && (memoryBytes == null || totalMem == null || memoryBytes <= totalMem)`; make `download()` ignore unsupported ids; leave `delete()` ungated (FR-010); update the repository KDoc in domain/repository/ModelDownloadRepository.kt
-- [X] T012 [US1] Set `canStart = supported && !busy` in app/src/main/java/com/jayvijay/scottie/presentation/features/modeldownload/ModelDownloadPresenter.kt
-- [X] T013 [US1] Render the support badge with `XelaBadge` using theme colors (primary/error containers) and `contentDescription`-friendly text, no reason text, and disable Download/Resume/Retry when unsupported while keeping Delete, in app/src/main/java/com/jayvijay/scottie/presentation/features/modeldownload/component/ModelDownloadCard.kt; add Supported/Unsupported previews (light + dark)
+- [X] T010 [US1] Add `suspend fun totalMemoryBytes(): Long?` to app/src/main/java/com/jayvijay/scottie/feature/modeldownload/data/ai/provider/ModelRuntime.kt and implement via `ActivityManager.MemoryInfo.totalMem` (null on failure or 0) in RunAnywhereModelRuntime.kt
+- [X] T011 [US1] In app/src/main/java/com/jayvijay/scottie/feature/modeldownload/data/repository/ModelDownloadRepositoryImpl.kt `load()`: keep all rows, set `supported = id in accepted && (memoryBytes == null || totalMem == null || memoryBytes <= totalMem)`; make `download()` ignore unsupported ids; leave `delete()` ungated (FR-010); update the repository KDoc in feature/modeldownload/domain/repository/ModelDownloadRepository.kt
+- [X] T012 [US1] Set `canStart = supported && !busy` in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/presentation/ModelDownloadPresenter.kt
+- [X] T013 [US1] Render the support badge with `XelaBadge` using theme colors (primary/error containers) and `contentDescription`-friendly text, no reason text, and disable Download/Resume/Retry when unsupported while keeping Delete, in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/presentation/component/ModelDownloadCard.kt; add Supported/Unsupported previews (light + dark)
 
 **Checkpoint**: US1 tests pass; NPU rows appear (flat list) with correct badges
 
@@ -86,14 +86,14 @@ groups collapsed when no NPU row is supported, toggles flip state without touchi
 
 ### Tests for User Story 2
 
-- [X] T014 [US2] Presenter tests in app/src/test/java/com/jayvijay/scottie/presentation/features/modeldownload/ModelDownloadPresenterTest.kt: sections in `ModelType` order, empty categories/groups hidden, CPU before NPU, counts; default expansion (NPU group collapsed iff no supported NPU entry); `ToggleCategory`/`ToggleGroup` flip state; toggling during a download leaves its status/progress unchanged
+- [X] T014 [US2] Presenter tests in app/src/test/java/com/jayvijay/scottie/feature/modeldownload/presentation/ModelDownloadPresenterTest.kt: sections in `ModelType` order, empty categories/groups hidden, CPU before NPU, counts; default expansion (NPU group collapsed iff no supported NPU entry); `ToggleCategory`/`ToggleGroup` flip state; toggling during a download leaves its status/progress unchanged
 
 ### Implementation for User Story 2
 
-- [X] T015 [P] [US2] Create `ScottieAccordionHeader(title, count, expanded, onToggle, modifier, level = 0)` with chevron rotation, theme typography/colors, `Modifier` on root, `stateDescription` + plural count for accessibility, and light/dark previews in app/src/main/java/com/jayvijay/scottie/presentation/ui/components/ScottieAccordionHeader.kt
-- [X] T016 [US2] Add `ModelSection`, `ModelGroup`, change `ModelDownloadContent.Models` to `Models(sections, query)`, and add `ToggleCategory(type)` / `ToggleGroup(type, target)` actions in app/src/main/java/com/jayvijay/scottie/presentation/features/modeldownload/ModelDownloadScreen.kt
-- [X] T017 [US2] In app/src/main/java/com/jayvijay/scottie/presentation/features/modeldownload/ModelDownloadPresenter.kt retain expansion overrides (`rememberRetained`), group entries into sections via a pure function, apply defaults, and handle toggle actions
-- [X] T018 [US2] Render a single flattened `LazyColumn` (category header items, group header items, model items with stable keys) using `ScottieAccordionHeader` and `model_type_*` / `model_target_*` titles in app/src/main/java/com/jayvijay/scottie/presentation/features/modeldownload/ModelDownloadUi.kt; update previews
+- [X] T015 [P] [US2] Create `ScottieAccordionHeader(title, count, expanded, onToggle, modifier, level = 0)` with chevron rotation, theme typography/colors, `Modifier` on root, `stateDescription` + plural count for accessibility, and light/dark previews in app/src/main/java/com/jayvijay/scottie/core/ui/components/ScottieAccordionHeader.kt
+- [X] T016 [US2] Add `ModelSection`, `ModelGroup`, change `ModelDownloadContent.Models` to `Models(sections, query)`, and add `ToggleCategory(type)` / `ToggleGroup(type, target)` actions in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/presentation/ModelDownloadScreen.kt
+- [X] T017 [US2] In app/src/main/java/com/jayvijay/scottie/feature/modeldownload/presentation/ModelDownloadPresenter.kt retain expansion overrides (`rememberRetained`), group entries into sections via a pure function, apply defaults, and handle toggle actions
+- [X] T018 [US2] Render a single flattened `LazyColumn` (category header items, group header items, model items with stable keys) using `ScottieAccordionHeader` and `model_type_*` / `model_target_*` titles in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/presentation/ModelDownloadUi.kt; update previews
 
 **Checkpoint**: US1 + US2 work together; downloads continue when sections collapse
 
@@ -108,13 +108,13 @@ type + target; descriptions appear only where mapped.
 
 ### Tests for User Story 3
 
-- [X] T019 [P] [US3] Catalog tests in app/src/test/java/com/jayvijay/scottie/data/ai/provider/ModelCatalogTest.kt: every `toModel().name` non-blank, free of `Q\d`, `UD-`, `TQ1_0`, `INT8`, `fp32`, `HNPU`, `Sherpa`, `ONNX`, `(CPU)`, `(heavy)`, file extensions and hashes; unique within (`type`, `target`); every row maps to exactly one type and target; sample rows get expected descriptions and an unmapped id gets null
+- [X] T019 [P] [US3] Catalog tests in app/src/test/java/com/jayvijay/scottie/feature/modeldownload/data/ai/provider/ModelCatalogTest.kt: every `toModel().name` non-blank, free of `Q\d`, `UD-`, `TQ1_0`, `INT8`, `fp32`, `HNPU`, `Sherpa`, `ONNX`, `(CPU)`, `(heavy)`, file extensions and hashes; unique within (`type`, `target`); every row maps to exactly one type and target; sample rows get expected descriptions and an unmapped id gets null
 
 ### Implementation for User Story 3
 
-- [X] T020 [US3] Create title sanitizer (tag-stripping rules + id→title overrides) and family description map keyed by id prefix in app/src/main/java/com/jayvijay/scottie/data/ai/provider/ModelPresentation.kt; source wording may be informed by reference/ but must be copied in, not linked
-- [X] T021 [US3] Use them in `CatalogModel.toModel()` for `name` and `description` in app/src/main/java/com/jayvijay/scottie/data/ai/provider/ModelCatalog.kt
-- [X] T022 [US3] Show the description (max 2 lines, ellipsis) under the title and omit the space when null, replacing the type label line, in app/src/main/java/com/jayvijay/scottie/presentation/features/modeldownload/component/ModelDownloadCard.kt and its call site in ModelDownloadUi.kt
+- [X] T020 [US3] Create title sanitizer (tag-stripping rules + id→title overrides) and family description map keyed by id prefix in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/data/ai/provider/ModelPresentation.kt; source wording may be informed by reference/ but must be copied in, not linked
+- [X] T021 [US3] Use them in `CatalogModel.toModel()` for `name` and `description` in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/data/ai/provider/ModelCatalog.kt
+- [X] T022 [US3] Show the description (max 2 lines, ellipsis) under the title and omit the space when null, replacing the type label line, in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/presentation/component/ModelDownloadCard.kt and its call site in ModelDownloadUi.kt
 
 **Checkpoint**: Titles/descriptions visible across all sections
 
@@ -131,14 +131,14 @@ empty results, and restore-on-clear.
 
 ### Tests for User Story 4
 
-- [X] T023 [US4] Presenter tests in app/src/test/java/com/jayvijay/scottie/presentation/features/modeldownload/ModelDownloadPresenterTest.kt: match by id-only, description, category keyword, `npu`, `unsupported`; `"  QWEN "` matches; matched sections forced expanded and unmatched hidden; no match → empty `sections` with query; clearing restores prior overrides; search during download leaves status unchanged
+- [X] T023 [US4] Presenter tests in app/src/test/java/com/jayvijay/scottie/feature/modeldownload/presentation/ModelDownloadPresenterTest.kt: match by id-only, description, category keyword, `npu`, `unsupported`; `"  QWEN "` matches; matched sections forced expanded and unmatched hidden; no match → empty `sections` with query; clearing restores prior overrides; search during download leaves status unchanged
 
 ### Implementation for User Story 4
 
-- [X] T024 [P] [US4] Create `ScottieSearchField(value, onValueChange, placeholder, clearLabel, modifier)` on `BasicTextField` with search/clear icons, theme colors and typography, single line, IME search action, and light/dark previews in app/src/main/java/com/jayvijay/scottie/presentation/ui/components/ScottieSearchField.kt
-- [X] T025 [P] [US4] Add optional `search: (@Composable () -> Unit)? = null` slot rendered below the title row to app/src/main/java/com/jayvijay/scottie/presentation/ui/components/ScottieToolbar.kt with a preview
-- [X] T026 [US4] Add `Search(query)` action in ModelDownloadScreen.kt; in ModelDownloadPresenter.kt retain query, filter with trimmed case-insensitive substring over title, id, description, category keyword (enum name lowercased, `_`→space), `cpu`/`npu`, `supported`/`unsupported`, force-expand while searching, ignore toggles while searching; add `// ponytail: English keywords only…` ceiling comment (both in app/src/main/java/com/jayvijay/scottie/presentation/features/modeldownload/)
-- [X] T027 [US4] Wire `ScottieSearchField` into the toolbar slot and render `model_download_search_empty` when filtered sections are empty in app/src/main/java/com/jayvijay/scottie/presentation/features/modeldownload/ModelDownloadUi.kt; add a search preview
+- [X] T024 [P] [US4] Create `ScottieSearchField(value, onValueChange, placeholder, clearLabel, modifier)` on `BasicTextField` with search/clear icons, theme colors and typography, single line, IME search action, and light/dark previews in app/src/main/java/com/jayvijay/scottie/core/ui/components/ScottieSearchField.kt
+- [X] T025 [P] [US4] Add optional `search: (@Composable () -> Unit)? = null` slot rendered below the title row to app/src/main/java/com/jayvijay/scottie/core/ui/components/ScottieToolbar.kt with a preview
+- [X] T026 [US4] Add `Search(query)` action in ModelDownloadScreen.kt; in ModelDownloadPresenter.kt retain query, filter with trimmed case-insensitive substring over title, id, description, category keyword (enum name lowercased, `_`→space), `cpu`/`npu`, `supported`/`unsupported`, force-expand while searching, ignore toggles while searching; add `// ponytail: English keywords only…` ceiling comment (both in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/presentation/)
+- [X] T027 [US4] Wire `ScottieSearchField` into the toolbar slot and render `model_download_search_empty` when filtered sections are empty in app/src/main/java/com/jayvijay/scottie/feature/modeldownload/presentation/ModelDownloadUi.kt; add a search preview
 
 **Checkpoint**: All stories functional
 
@@ -179,8 +179,8 @@ Tests first (expect failures), then data → presenter → UI.
 ## Parallel Example: User Story 4
 
 ```text
-Task: "Create ScottieSearchField in presentation/ui/components/ScottieSearchField.kt"
-Task: "Add search slot to presentation/ui/components/ScottieToolbar.kt"
+Task: "Create ScottieSearchField in core/ui/components/ScottieSearchField.kt"
+Task: "Add search slot to core/ui/components/ScottieToolbar.kt"
 ```
 
 ## Implementation Strategy
