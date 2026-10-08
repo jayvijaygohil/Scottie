@@ -118,8 +118,9 @@ class InteracAssistantPresenterTest {
       extractor.enqueueFailure(IllegalStateException("engine"))
       s.eventSink(InteracAssistantAction.InputChanged("x"))
       awaitState { it.input == "x" }.eventSink(InteracAssistantAction.Send)
-      val failed =
-        awaitState { it.turns.size == 3 && it.turns.last().reply is TurnReply.Fallback && !it.busy }
+      val failed = awaitState {
+        it.turns.size == 3 && it.turns.last().reply is TurnReply.Fallback && !it.busy
+      }
       assertEquals(listOf("What's the weather?", "weather", "x"), extractor.calls)
       assertTrue(bridge.accepted.value.isEmpty())
       failed.eventSink(InteracAssistantAction.Back)

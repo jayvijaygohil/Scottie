@@ -72,14 +72,13 @@ constructor(
 
     LaunchedEffect(surfaces) {
       val now = System.currentTimeMillis()
-      turns =
-        turns.map { turn ->
-          val shown = turn.reply is TurnReply.Surface && surfaces.any { it.id == turn.surfaceId }
-          if (!shown || turn.firstCardMs != null) return@map turn
-          val ms = now - (startedAt[turn.surfaceId] ?: now)
-          Log.i(TAG, "first_card_ms=$ms")
-          turn.copy(firstCardMs = ms)
-        }
+      turns = turns.map { turn ->
+        val shown = turn.reply is TurnReply.Surface && surfaces.any { it.id == turn.surfaceId }
+        if (!shown || turn.firstCardMs != null) return@map turn
+        val ms = now - (startedAt[turn.surfaceId] ?: now)
+        Log.i(TAG, "first_card_ms=$ms")
+        turn.copy(firstCardMs = ms)
+      }
     }
 
     LaunchedEffect(bridge) {
@@ -124,12 +123,13 @@ constructor(
           turns = turns + turn
           startedAt[turn.surfaceId] = System.currentTimeMillis()
           scope.launch {
-            val reply =
-              runCatching { respond(text, turn.surfaceId, bridge) }
-                .getOrElse {
-                  Log.w(TAG, "turn failed", it)
-                  TurnReply.Fallback
-                }
+            val reply = runCatching {
+              respond(text, turn.surfaceId, bridge)
+            }
+              .getOrElse {
+                Log.w(TAG, "turn failed", it)
+                TurnReply.Fallback
+              }
             update(turn.surfaceId, reply)
             busy = false
           }
@@ -256,12 +256,12 @@ constructor(
     val recipient = Recipient.Saved(contact.contactId)
     return banking {
       runCatching {
-          if (mode == InteracForm.MODE_SEND) {
-            executeSendTransfer(accountId, recipient, amount, channel)
-          } else {
-            executeRequestMoney(recipient, accountId, amount, channel, intent.memo)
-          }
+        if (mode == InteracForm.MODE_SEND) {
+          executeSendTransfer(accountId, recipient, amount, channel)
+        } else {
+          executeRequestMoney(recipient, accountId, amount, channel, intent.memo)
         }
+      }
         .exceptionOrNull()
         ?.message
     }
@@ -427,7 +427,10 @@ constructor(
         val mode = text("mode").ifEmpty { InteracForm.MODE_SEND }
         val amount = InteracResolution.validateAmount(text("amount")) ?: return null
         val channel = DeliveryChannel.entries.find { it.name == text("channel") } ?: return null
-        val accountId = text("accountId").ifEmpty { return null }
+        val accountId =
+          text("accountId").ifEmpty {
+            return null
+          }
         val recipientId = text("recipientId")
         val email = text("manualEmail").ifEmpty { null }
         val phone = text("manualPhone").ifEmpty { null }

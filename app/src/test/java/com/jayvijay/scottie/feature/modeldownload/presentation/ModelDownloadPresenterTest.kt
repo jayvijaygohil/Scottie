@@ -25,8 +25,7 @@ import org.junit.Test
 class ModelDownloadPresenterTest {
   private val repository = FakeModelDownloadRepository()
   private val navigator = FakeNavigator(ModelDownloadScreen)
-  private val presenter =
-    ModelDownloadPresenter(navigator, repository) { FakeTextModelScreen(it) }
+  private val presenter = ModelDownloadPresenter(navigator, repository) { FakeTextModelScreen(it) }
 
   private fun entry(
     id: String,

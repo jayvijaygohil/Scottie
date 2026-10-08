@@ -260,9 +260,21 @@ object InteracSurfaceTemplates {
 
   private val FORM_FIELDS =
     listOf(
-      "amount", "recipientQuery", "recipientId", "manualEmail", "manualPhone", "saveContact",
-      "accountId", "channel", "channelLocked", "securityRequired", "securityQuestion",
-      "securityAnswer", "memo", "valid", "busy",
+      "amount",
+      "recipientQuery",
+      "recipientId",
+      "manualEmail",
+      "manualPhone",
+      "saveContact",
+      "accountId",
+      "channel",
+      "channelLocked",
+      "securityRequired",
+      "securityQuestion",
+      "securityAnswer",
+      "memo",
+      "valid",
+      "busy",
     )
 }
 

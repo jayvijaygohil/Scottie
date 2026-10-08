@@ -3,12 +3,12 @@ package com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow
 import ai.koog.agents.core.tools.Tool
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.agents.core.tools.annotations.LLMDescription
-import ai.koog.serialization.typeToken
 import ai.koog.agents.testing.tools.getMockExecutor
 import ai.koog.prompt.executor.clients.litert.LiteRTLLMProvider
 import ai.koog.prompt.executor.model.PromptExecutor
 import ai.koog.prompt.llm.LLMCapability
 import ai.koog.prompt.llm.LLModel
+import ai.koog.serialization.typeToken
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.ChannelHint
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.Intent
 import kotlinx.coroutines.test.runTest
@@ -34,10 +34,11 @@ class InteracAssistantAgentTest {
     InteracAssistantAgent(executor, registry) { model }
 
   private fun answering(json: String) = getMockExecutor {
-    mockLLMAnswer(json) onCondition {
-      captured += it
-      true
-    }
+    mockLLMAnswer(json) onCondition
+      {
+        captured += it
+        true
+      }
   }
 
   @Test
@@ -45,11 +46,14 @@ class InteracAssistantAgentTest {
     val examples =
       listOf(
         "What's my balance?" to """{"intent":"BALANCE"}""" to AssistantIntent(Intent.BALANCE),
-        "How much is in my savings?" to """{"intent":"BALANCE","accountHint":"savings"}""" to
+        "How much is in my savings?" to
+          """{"intent":"BALANCE","accountHint":"savings"}""" to
           AssistantIntent(Intent.BALANCE, accountHint = "savings"),
-        "What's in my TFSA?" to """{"intent":"BALANCE","accountHint":"TFSA"}""" to
+        "What's in my TFSA?" to
+          """{"intent":"BALANCE","accountHint":"TFSA"}""" to
           AssistantIntent(Intent.BALANCE, accountHint = "TFSA"),
-        "Send 50 to Alice" to """{"intent":"SEND","amount":50,"recipientQuery":"Alice"}""" to
+        "Send 50 to Alice" to
+          """{"intent":"SEND","amount":50,"recipientQuery":"Alice"}""" to
           AssistantIntent(Intent.SEND, 50.0, "Alice"),
         "Send $20 to bob from my savings" to
           """{"intent":"SEND","amount":20,"recipientQuery":"bob","accountHint":"savings"}""" to
@@ -60,7 +64,8 @@ class InteracAssistantAgentTest {
         "e-Transfer 75 to 416-555-0143" to
           """{"intent":"SEND","amount":75,"recipientQuery":"416-555-0143"}""" to
           AssistantIntent(Intent.SEND, 75.0, "416-555-0143"),
-        "Send 40 to Charly" to """{"intent":"SEND","amount":40,"recipientQuery":"Charly"}""" to
+        "Send 40 to Charly" to
+          """{"intent":"SEND","amount":40,"recipientQuery":"Charly"}""" to
           AssistantIntent(Intent.SEND, 40.0, "Charly"),
         "Send money" to """{"intent":"SEND"}""" to AssistantIntent(Intent.SEND),
         "Request $30 from Jane for dinner" to
@@ -73,7 +78,8 @@ class InteracAssistantAgentTest {
           """{"intent":"REQUEST","amount":30,"recipientQuery":"Alice",""" +
             """"accountHint":"savings","memo":"dinner"}""" to
           AssistantIntent(Intent.REQUEST, 30.0, "Alice", "savings", "dinner"),
-        "What's the weather?" to """{"intent":"OTHER","reply":"$OFF_TOPIC"}""" to
+        "What's the weather?" to
+          """{"intent":"OTHER","reply":"$OFF_TOPIC"}""" to
           AssistantIntent(Intent.OTHER, reply = OFF_TOPIC),
         "Request $30 from Alice by text" to
           """{"intent":"REQUEST","amount":30,"recipientQuery":"Alice","channelHint":"SMS"}""" to

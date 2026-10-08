@@ -12,8 +12,8 @@ lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
 
 # Compose
-compose = "1.13.0-alpha03"
-composeMaterial3 = "1.5.0-alpha29"
+compose = "1.13.0-beta01"
+composeMaterial3 = "1.5.0-beta01"
 composeMaterialIcons = "1.7.8"
 
 # Circuit

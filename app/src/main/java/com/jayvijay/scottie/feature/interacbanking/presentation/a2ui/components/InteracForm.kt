@@ -43,6 +43,7 @@ import com.jayvijay.scottie.core.ui.xelauikit.models.radiobutton.XelaRadioButton
 import com.jayvijay.scottie.core.ui.xelauikit.models.radiobutton.XelaRadioButtonSize
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChannel
 import com.jayvijay.scottie.feature.interacbanking.domain.usecase.InteracResolution
+import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.InteracForm.Valid
 import kotlinx.coroutines.delay
 
 /**
@@ -87,9 +88,28 @@ object InteracForm : A2uiComponent {
   override val description = "Interac e-Transfer send or request form with built-in validation."
   override val properties: List<A2uiProperty<*>> =
     listOf(
-      Mode, Amount, RecipientQuery, RecipientId, ManualEmail, ManualPhone, SaveContact, AccountId,
-      Channel, ChannelLocked, SecurityRequired, SecurityQuestion, SecurityAnswer, Memo, Valid, Busy,
-      Suggestions, Recipients, Accounts, OnQuery, OnSelectRecipient, OnSubmit,
+      Mode,
+      Amount,
+      RecipientQuery,
+      RecipientId,
+      ManualEmail,
+      ManualPhone,
+      SaveContact,
+      AccountId,
+      Channel,
+      ChannelLocked,
+      SecurityRequired,
+      SecurityQuestion,
+      SecurityAnswer,
+      Memo,
+      Valid,
+      Busy,
+      Suggestions,
+      Recipients,
+      Accounts,
+      OnQuery,
+      OnSelectRecipient,
+      OnSubmit,
     )
 
   @Composable

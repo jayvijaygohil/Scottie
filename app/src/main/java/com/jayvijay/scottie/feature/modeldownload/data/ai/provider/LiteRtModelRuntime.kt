@@ -33,8 +33,7 @@ internal constructor(
   private val open: (URL) -> HttpURLConnection = { it.openConnection() as HttpURLConnection },
 ) : ModelRuntime {
 
-  @Inject
-  constructor(@ApplicationContext context: Context) : this(OnDeviceTextModels.dir(context))
+  @Inject constructor(@ApplicationContext context: Context) : this(OnDeviceTextModels.dir(context))
 
   private val rows = ConcurrentHashMap<String, LiteRtModel>()
 

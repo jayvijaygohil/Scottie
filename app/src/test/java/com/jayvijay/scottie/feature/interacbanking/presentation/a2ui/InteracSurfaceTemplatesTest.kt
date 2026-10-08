@@ -180,7 +180,16 @@ class InteracSurfaceTemplatesTest {
   fun confirmationIncludesMemoOnlyWhenPresent() {
     fun confirmation(kind: String, memo: String?) =
       ConfirmationData(
-        kind, "SENT", "REF-1", "30.00", "Alice", "EMAIL", "a@b.c", "Acc", "now", memo,
+        kind,
+        "SENT",
+        "REF-1",
+        "30.00",
+        "Alice",
+        "EMAIL",
+        "a@b.c",
+        "Acc",
+        "now",
+        memo,
       )
     fun result(memo: String?) =
       parse(InteracSurfaceTemplates.confirmation("c", confirmation("request", memo)))

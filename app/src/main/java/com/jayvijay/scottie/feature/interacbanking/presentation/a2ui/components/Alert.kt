@@ -11,6 +11,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.jayvijay.scottie.R
 import com.jayvijay.scottie.core.ui.xelauikit.XelaAlert
+import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.Alert.NoticeArg
+import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.Alert.NoticeKind
+import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.Alert.Text
 
 /**
  * Shows either a verbatim service message ([Text]) or an app notice resolved from resources

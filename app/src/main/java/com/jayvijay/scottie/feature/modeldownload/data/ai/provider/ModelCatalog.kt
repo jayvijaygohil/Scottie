@@ -22,9 +22,7 @@ sealed interface CatalogModel {
   val downloadBytes: Long?
 }
 
-/**
- * A LiteRT build resolved for this device. [id] is the local file name and the Koog `LLModel.id`.
- */
+/** A LiteRT general (CPU) build. [id] is the local file name and the Koog `LLModel.id`. */
 data class LiteRtModel(
   override val id: String,
   override val name: String,
@@ -35,23 +33,6 @@ data class LiteRtModel(
 ) : CatalogModel {
   override val type: ModelType
     get() = ModelType.TEXT
-}
-
-data class LiteRtBuild(val url: String, val sizeBytes: Long, val memoryBytes: Long)
-
-/** One text model with a general build and per-chip NPU builds, all saved as [fileName]. */
-data class LiteRtSpec(
-  val name: String,
-  val fileName: String,
-  val requiresToken: Boolean = false,
-  val general: LiteRtBuild?,
-  val npu: Map<String, LiteRtBuild> = emptyMap(),
-) {
-  /** The NPU build only for an eligible [soc], otherwise the general build; null when neither. */
-  fun resolve(soc: String?): LiteRtModel? =
-    (soc?.takeIf { it in NPU_ELIGIBLE }?.let(npu::get) ?: general)?.let { build ->
-      LiteRtModel(fileName, name, build.url, build.sizeBytes, build.memoryBytes, requiresToken)
-    }
 }
 
 data class ModelFile(
@@ -102,210 +83,103 @@ fun CatalogModel.toModel(): Model =
   )
 
 object StaticModelCatalog {
-  /** LiteRT text rows resolved for [soc], then the speech-to-text rows. */
-  fun forDevice(soc: String?): List<CatalogModel> = litert.mapNotNull { it.resolve(soc) } + stt
-
   private val SHERPA = InferenceFramework.INFERENCE_FRAMEWORK_SHERPA
   private val STT = ModelCategory.MODEL_CATEGORY_SPEECH_RECOGNITION
   private val TAR_GZ = ArchiveType.ARCHIVE_TYPE_TAR_GZ
 
   /** A pinned `litert-community` file; sizes are the repo's `lfs.size`. */
-  private fun hf(repo: String, commit: String, file: String, sizeBytes: Long) =
-    LiteRtBuild(
+  private fun hf(
+    name: String,
+    repo: String,
+    commit: String,
+    file: String,
+    sizeBytes: Long,
+    requiresToken: Boolean = false,
+  ) =
+    LiteRtModel(
+      id = file,
+      name = name,
       url = "https://huggingface.co/litert-community/$repo/resolve/$commit/$file",
-      sizeBytes = sizeBytes,
+      downloadBytes = sizeBytes,
       // ponytail: heuristic until LiteRT publishes RAM needs
       memoryBytes = (sizeBytes * 13) / 10,
+      requiresToken = requiresToken,
     )
 
-  private const val GEMMA4_E2B = "gemma-4-E2B-it-litert-lm"
-  private const val GEMMA4_E2B_SHA = "b3ca0d2f076785a8f4b2219ddbd2bdb99954eae1"
-  private const val GEMMA3_1B = "Gemma3-1B-IT"
-  private const val GEMMA3_1B_SHA = "a6306a4e292016480083b73b8dc6f3f939ae04c3"
-  private const val GEMMA3_270M = "gemma-3-270m-it"
-  private const val GEMMA3_270M_SHA = "9d2093270fb5aa49a986b49b5779d763dde7b630"
-  private const val FUNCTION_GEMMA = "functiongemma-270m-ft-mobile-actions"
-  private const val FUNCTION_GEMMA_SHA = "f752a74080682b379823794defdbbdf8c2663609"
-
-  private val litert =
+  private val litert: List<CatalogModel> =
     listOf(
-      LiteRtSpec(
-        name = "Gemma 4 E2B",
-        fileName = "gemma-4-E2B-it.litertlm",
-        general = hf(GEMMA4_E2B, GEMMA4_E2B_SHA, "gemma-4-E2B-it.litertlm", 2_588_147_712),
-        npu =
-          mapOf(
-            "SM8750" to
-              hf(
-                GEMMA4_E2B,
-                GEMMA4_E2B_SHA,
-                "gemma-4-E2B-it_qualcomm_sm8750.litertlm",
-                3_016_294_400,
-              ),
-            "TENSOR_G5" to
-              hf(
-                GEMMA4_E2B,
-                GEMMA4_E2B_SHA,
-                "gemma-4-E2B-it_Google_Tensor_G5.litertlm",
-                3_113_545_589,
-              ),
-            "TENSOR_G6" to
-              hf(
-                GEMMA4_E2B,
-                GEMMA4_E2B_SHA,
-                "gemma-4-E2B-it_Google_Tensor_G6.litertlm",
-                3_313_938_293,
-              ),
-          ),
+      hf(
+        "Gemma 4 E2B",
+        "gemma-4-E2B-it-litert-lm",
+        "b3ca0d2f076785a8f4b2219ddbd2bdb99954eae1",
+        "gemma-4-E2B-it.litertlm",
+        2_588_147_712,
       ),
-      LiteRtSpec(
-        name = "Gemma 4 E4B",
-        fileName = "gemma-4-E4B-it.litertlm",
-        general =
-          hf(
-            "gemma-4-E4B-it-litert-lm",
-            "2eee7ac325f20eb8c9ac1d0e972f7c84663062da",
-            "gemma-4-E4B-it.litertlm",
-            3_659_530_240,
-          ),
+      hf(
+        "Gemma 4 E4B",
+        "gemma-4-E4B-it-litert-lm",
+        "2eee7ac325f20eb8c9ac1d0e972f7c84663062da",
+        "gemma-4-E4B-it.litertlm",
+        3_659_530_240,
       ),
-      LiteRtSpec(
-        name = "Gemma 4 12B",
-        fileName = "gemma-4-12B-it.litertlm",
-        general =
-          hf(
-            "gemma-4-12B-it-litert-lm",
-            "7a0b1ce0ea821bcd01c5f72af84155e02191152f",
-            "gemma-4-12B-it.litertlm",
-            6_883_278_368,
-          ),
+      hf(
+        "Gemma 4 12B",
+        "gemma-4-12B-it-litert-lm",
+        "7a0b1ce0ea821bcd01c5f72af84155e02191152f",
+        "gemma-4-12B-it.litertlm",
+        6_883_278_368,
       ),
-      LiteRtSpec(
-        name = "Qwen3 0.6B",
-        fileName = "Qwen3-0.6B.litertlm",
-        general =
-          hf(
-            "Qwen3-0.6B",
-            "a3c5d805ae362dff7f580bc25f2dfb9a5a7eaa76",
-            "Qwen3-0.6B.litertlm",
-            614_236_160,
-          ),
+      hf(
+        "Qwen3 0.6B",
+        "Qwen3-0.6B",
+        "a3c5d805ae362dff7f580bc25f2dfb9a5a7eaa76",
+        "Qwen3-0.6B.litertlm",
+        614_236_160,
       ),
-      LiteRtSpec(
-        name = "Qwen3.5 2B",
-        fileName = "Qwen3.5-2B_int8.litertlm",
-        general =
-          hf(
-            "Qwen3.5-2B",
-            "4327b7425533c26da2aec1d7b915e9742eead2cb",
-            "Qwen3.5-2B_int8.litertlm",
-            2_116_592_816,
-          ),
+      hf(
+        "Qwen3.5 2B",
+        "Qwen3.5-2B",
+        "4327b7425533c26da2aec1d7b915e9742eead2cb",
+        "Qwen3.5-2B_int8.litertlm",
+        2_116_592_816,
       ),
-      LiteRtSpec(
-        name = "DeepSeek R1 Distill Qwen 1.5B",
-        fileName = "DeepSeek-R1-Distill-Qwen-1.5B_multi-prefill-seq_q8_ekv4096.litertlm",
-        general =
-          hf(
-            "DeepSeek-R1-Distill-Qwen-1.5B",
-            "2f8b8ee90d8f93b15305b699e8772b277d074a9a",
-            "DeepSeek-R1-Distill-Qwen-1.5B_multi-prefill-seq_q8_ekv4096.litertlm",
-            1_833_451_520,
-          ),
+      hf(
+        "DeepSeek R1 Distill Qwen 1.5B",
+        "DeepSeek-R1-Distill-Qwen-1.5B",
+        "2f8b8ee90d8f93b15305b699e8772b277d074a9a",
+        "DeepSeek-R1-Distill-Qwen-1.5B_multi-prefill-seq_q8_ekv4096.litertlm",
+        1_833_451_520,
       ),
-      LiteRtSpec(
-        name = "MiniCPM5 2B",
-        fileName = "MiniCPM5-2B_int4.litertlm",
-        general =
-          hf(
-            "MiniCPM5-2B",
-            "f6dd64ef6e117fc6e8af6891ae2096caa3e85a4e",
-            "MiniCPM5-2B_int4.litertlm",
-            1_553_670_064,
-          ),
+      hf(
+        "MiniCPM5 2B",
+        "MiniCPM5-2B",
+        "f6dd64ef6e117fc6e8af6891ae2096caa3e85a4e",
+        "MiniCPM5-2B_int4.litertlm",
+        1_553_670_064,
       ),
-      LiteRtSpec(
-        name = "Gemma 3 1B",
-        fileName = "gemma3-1b-it-int4.litertlm",
+      hf(
+        "Gemma 3 1B",
+        "Gemma3-1B-IT",
+        "a6306a4e292016480083b73b8dc6f3f939ae04c3",
+        "gemma3-1b-it-int4.litertlm",
+        584_417_280,
         requiresToken = true,
-        general = hf(GEMMA3_1B, GEMMA3_1B_SHA, "gemma3-1b-it-int4.litertlm", 584_417_280),
-        npu =
-          mapOf(
-            "SM8650" to
-              hf(GEMMA3_1B, GEMMA3_1B_SHA, "Gemma3-1B-IT_q4_ekv1280_sm8650.litertlm", 690_094_080),
-            "SM8750" to
-              hf(GEMMA3_1B, GEMMA3_1B_SHA, "Gemma3-1B-IT_q4_ekv1280_sm8750.litertlm", 689_291_264),
-            "SM8850" to
-              hf(GEMMA3_1B, GEMMA3_1B_SHA, "Gemma3-1B-IT_q4_ekv1280_sm8850.litertlm", 693_747_712),
-            "TENSOR_G5" to
-              hf(
-                GEMMA3_1B,
-                GEMMA3_1B_SHA,
-                "Gemma3-1B-IT_q8_ekv1280_Google_Tensor_G5.litertlm",
-                1_678_542_365,
-              ),
-            "TENSOR_G6" to
-              hf(
-                GEMMA3_1B,
-                GEMMA3_1B_SHA,
-                "Gemma3-1B-IT_q8_ekv1280_Google_Tensor_G6.litertlm",
-                2_043_971_366,
-              ),
-          ),
       ),
-      LiteRtSpec(
-        name = "Gemma 3 270M",
-        fileName = "gemma3-270m-it-q8.litertlm",
+      hf(
+        "Gemma 3 270M",
+        "gemma-3-270m-it",
+        "9d2093270fb5aa49a986b49b5779d763dde7b630",
+        "gemma3-270m-it-q8.litertlm",
+        304_005_120,
         requiresToken = true,
-        general = hf(GEMMA3_270M, GEMMA3_270M_SHA, "gemma3-270m-it-q8.litertlm", 304_005_120),
-        npu =
-          mapOf(
-            "SM8650" to
-              hf(
-                GEMMA3_270M,
-                GEMMA3_270M_SHA,
-                "gemma3-270m-it-q8.qualcomm.sm8650.litertlm",
-                461_766_656,
-              ),
-            "SM8750" to
-              hf(
-                GEMMA3_270M,
-                GEMMA3_270M_SHA,
-                "gemma3-270m-it-q8.qualcomm.sm8750.litertlm",
-                461_340_672,
-              ),
-            "SM8850" to
-              hf(
-                GEMMA3_270M,
-                GEMMA3_270M_SHA,
-                "gemma3-270m-it-q8.qualcomm.sm8850.litertlm",
-                463_011_840,
-              ),
-          ),
       ),
-      LiteRtSpec(
-        name = "FunctionGemma 270M",
-        fileName = "mobile_actions_q8_ekv1024.litertlm",
+      hf(
+        "FunctionGemma 270M",
+        "functiongemma-270m-ft-mobile-actions",
+        "f752a74080682b379823794defdbbdf8c2663609",
+        "mobile_actions_q8_ekv1024.litertlm",
+        288_964_608,
         requiresToken = true,
-        general =
-          hf(FUNCTION_GEMMA, FUNCTION_GEMMA_SHA, "mobile_actions_q8_ekv1024.litertlm", 288_964_608),
-        npu =
-          mapOf(
-            "TENSOR_G5" to
-              hf(
-                FUNCTION_GEMMA,
-                FUNCTION_GEMMA_SHA,
-                "functiongemma-270m-ft-mobile-actions_Google_Tensor_G5.litertlm",
-                573_936_705,
-              ),
-            "TENSOR_G6" to
-              hf(
-                FUNCTION_GEMMA,
-                FUNCTION_GEMMA_SHA,
-                "functiongemma-270m-ft-mobile-actions_Google_Tensor_G6.litertlm",
-                569_545_793,
-              ),
-          ),
       ),
     )
 
@@ -487,4 +361,7 @@ object StaticModelCatalog {
         ArchiveStructure.ARCHIVE_STRUCTURE_NESTED_DIRECTORY,
       ),
     )
+
+  /** LiteRT text rows, then the speech-to-text rows. */
+  val models: List<CatalogModel> = litert + stt
 }

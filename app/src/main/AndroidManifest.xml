@@ -19,14 +19,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Scottie">
-        <!--
-            Allows LiteRT's Google Tensor NPU dispatch library to access the device-provided Edge
-            TPU runtime. This library is not bundled with the app. Optional so the app can install
-            on devices without it and use GPU/CPU fallback.
-        -->
-        <uses-native-library
-            android:name="libedgetpu_litert.so"
-            android:required="false" />
         <activity
             android:name=".MainActivity"
             android:enableOnBackInvokedCallback="true"

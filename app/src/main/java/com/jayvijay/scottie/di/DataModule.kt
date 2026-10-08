@@ -10,7 +10,6 @@ import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.RoutingModelR
 import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.RunAnywhereModelRuntime
 import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.ServiceDownloadForegroundHost
 import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.StaticModelCatalog
-import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.socModel
 import com.jayvijay.scottie.feature.modeldownload.data.repository.ModelDownloadRepositoryImpl
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.ModelDownloadRepository
 import dagger.Binds
@@ -43,7 +42,7 @@ object DataModule {
   fun provideApplicationScope(): CoroutineScope =
     CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
-  @Provides fun provideModelCatalog(): List<CatalogModel> = StaticModelCatalog.forDevice(socModel())
+  @Provides fun provideModelCatalog(): List<CatalogModel> = StaticModelCatalog.models
 
   @Provides
   @Singleton

@@ -39,7 +39,8 @@ object Badge : A2uiComponent {
     when (tone) {
       "success" ->
         MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
-      "warning", "error" ->
+      "warning",
+      "error" ->
         MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
       else ->
         MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer

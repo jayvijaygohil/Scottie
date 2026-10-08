@@ -25,8 +25,17 @@ const val INTERAC_CATALOG_ID = "com.jayvijay.scottie/a2ui/interac/v1"
 /** Media and basic inputs the assistant never emits; the catalog must not advertise them. */
 private val REMOVED =
   setOf(
-    "Image", "Video", "AudioPlayer", "TextField", "CheckBox", "ChoicePicker", "Slider",
-    "DateTimeInput", "Button", "Tabs", "Modal",
+    "Image",
+    "Video",
+    "AudioPlayer",
+    "TextField",
+    "CheckBox",
+    "ChoicePicker",
+    "Slider",
+    "DateTimeInput",
+    "Button",
+    "Tabs",
+    "Modal",
   )
 
 /** Material layout/text basics plus the Xela-backed Interac components. */

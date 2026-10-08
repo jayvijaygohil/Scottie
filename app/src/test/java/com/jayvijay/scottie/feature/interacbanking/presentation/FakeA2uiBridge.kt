@@ -38,9 +38,11 @@ class FakeA2uiBridge : A2uiBridge {
     events.emit(A2uiClientErrorMessage("RUNTIME", surfaceId, "boom"))
 
   fun showSurface(id: String) {
-    surfaces.value = surfaces.value + object : A2uiSurfaceModel {
-      override val id = id
-    }
+    surfaces.value =
+      surfaces.value +
+        object : A2uiSurfaceModel {
+          override val id = id
+        }
   }
 
   /** Waits until a line matching [predicate] has been accepted and returns it. */

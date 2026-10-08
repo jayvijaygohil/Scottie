@@ -48,8 +48,9 @@ object InteracModule {
 
   /** The only place both features' presentation types meet. */
   @Provides
-  fun textModelDestination(): TextModelDestination =
-    TextModelDestination { InteracAssistantScreen(it) }
+  fun textModelDestination(): TextModelDestination = TextModelDestination {
+    InteracAssistantScreen(it)
+  }
 }
 
 @Module

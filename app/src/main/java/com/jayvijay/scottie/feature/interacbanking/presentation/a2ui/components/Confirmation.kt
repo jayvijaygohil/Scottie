@@ -37,7 +37,16 @@ object Confirmation : A2uiComponent {
   override val description = "Result of a completed send or request."
   override val properties: List<A2uiProperty<*>> =
     listOf(
-      Kind, StatusCode, Reference, Amount, Party, ChannelCode, Destination, Account, Time, Memo,
+      Kind,
+      StatusCode,
+      Reference,
+      Amount,
+      Party,
+      ChannelCode,
+      Destination,
+      Account,
+      Time,
+      Memo,
     )
 
   @Composable

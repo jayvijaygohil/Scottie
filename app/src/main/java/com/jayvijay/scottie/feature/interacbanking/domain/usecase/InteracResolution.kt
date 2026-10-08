@@ -42,9 +42,14 @@ object InteracResolution {
 
   /** Positive amount with at most two decimals, else null. */
   fun validateAmount(text: String): Double? =
-    text.trim().replace(",", "").toBigDecimalOrNull()?.takeIf {
-      it > BigDecimal.ZERO && it.scale() <= 2
-    }?.toDouble()
+    text
+      .trim()
+      .replace(",", "")
+      .toBigDecimalOrNull()
+      ?.takeIf {
+        it > BigDecimal.ZERO && it.scale() <= 2
+      }
+      ?.toDouble()
 
   /** A single candidate, or a top score ≥ 80 with a clear gap to the runner-up. */
   fun clearMatch(ranked: List<Pair<InteracContact, Int>>): InteracContact? {
