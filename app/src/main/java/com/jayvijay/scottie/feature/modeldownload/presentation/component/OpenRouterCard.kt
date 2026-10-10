@@ -4,14 +4,19 @@ import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,10 +30,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -36,10 +43,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
 import com.jayvijay.scottie.core.ui.ScottieTheme
+import com.jayvijay.scottie.core.ui.components.ScottieSearchField
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.AvailableModel
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.FetchFailure
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterField
 import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadAction
 import com.jayvijay.scottie.feature.modeldownload.presentation.OpenRouterSection
+import com.jayvijay.scottie.feature.modeldownload.presentation.RemoteModels
 
 /** Draft OpenRouter settings; Save validates in the presenter, Delete appears once saved. */
 @Composable
@@ -69,18 +80,6 @@ fun OpenRouterCard(
           },
       )
       ApiKeyField(section.apiKey) { onEvent(ModelDownloadAction.EditOpenRouterApiKey(it)) }
-      SettingsField(
-        value = section.modelsText,
-        onValueChange = { onEvent(ModelDownloadAction.EditOpenRouterModels(it)) },
-        label = R.string.model_download_openrouter_models,
-        tag = OpenRouterCardTags.MODELS,
-        singleLine = false,
-        placeholder = R.string.model_download_openrouter_models_hint,
-        error =
-          R.string.model_download_openrouter_error_models.takeIf {
-            OpenRouterField.MODELS in section.errors
-          },
-      )
       if (section.savedModelCount > 0) {
         Text(
           text =
@@ -104,7 +103,7 @@ fun OpenRouterCard(
           filled = true,
           modifier = Modifier.testTag(OpenRouterCardTags.SAVE),
         )
-        if (section.savedModelCount > 0) {
+        if (section.list != RemoteModels.Hidden) {
           ModelDownloadButton(
             text = stringResource(R.string.model_download_delete),
             onClick = { onEvent(ModelDownloadAction.DeleteOpenRouter) },
@@ -112,11 +111,102 @@ fun OpenRouterCard(
           )
         }
       }
+      RemoteModelList(section.list, section.query, onEvent)
     }
   }
 }
 
-/** Confirms removing the saved key and model list. */
+/** Rows are plain children of the card's lazy item, so no nested lazy list. */
+@Composable
+private fun RemoteModelList(
+  list: RemoteModels,
+  query: String,
+  onEvent: (ModelDownloadAction) -> Unit,
+) {
+  when (list) {
+    RemoteModels.Hidden -> Unit
+    RemoteModels.Loading ->
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.testTag(OpenRouterCardTags.MODELS_LOADING),
+      ) {
+        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+        Note(stringResource(R.string.model_download_openrouter_models_loading))
+      }
+    is RemoteModels.Failed ->
+      Column(modifier = Modifier.testTag(OpenRouterCardTags.MODELS_ERROR)) {
+        val message =
+          when (list.reason) {
+            FetchFailure.NO_CONNECTION -> R.string.model_download_openrouter_models_offline
+            FetchFailure.AUTH -> R.string.model_download_openrouter_models_auth
+            FetchFailure.OTHER -> R.string.model_download_openrouter_models_failed
+          }
+        Text(
+          text = stringResource(message),
+          style = MaterialTheme.typography.bodyMedium,
+          color = MaterialTheme.colorScheme.error,
+        )
+        TextButton(
+          onClick = { onEvent(ModelDownloadAction.RetryRemoteModels) },
+          modifier = Modifier.testTag(OpenRouterCardTags.MODELS_RETRY),
+        ) {
+          Text(stringResource(R.string.model_download_openrouter_models_retry))
+        }
+      }
+    is RemoteModels.Loaded ->
+      if (list.total == 0) {
+        Note(stringResource(R.string.model_download_openrouter_models_empty))
+      } else {
+        ScottieSearchField(
+          value = query,
+          onValueChange = { onEvent(ModelDownloadAction.SearchRemoteModels(it)) },
+          placeholder = stringResource(R.string.model_download_openrouter_models_search),
+          clearLabel = stringResource(R.string.model_download_openrouter_models_search_clear),
+          modifier = Modifier.testTag(OpenRouterCardTags.MODEL_SEARCH),
+        )
+        if (list.visible.isEmpty()) {
+          Note(stringResource(R.string.model_download_openrouter_models_no_match, query.trim()))
+        }
+        Column(modifier = Modifier.testTag(OpenRouterCardTags.MODEL_LIST)) {
+          list.visible.forEach { model ->
+            RemoteModelRow(model, model.id in list.selected) {
+              onEvent(ModelDownloadAction.ToggleRemoteModel(model.id))
+            }
+          }
+        }
+      }
+  }
+}
+
+@Composable
+private fun RemoteModelRow(model: AvailableModel, checked: Boolean, onToggle: () -> Unit) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    modifier =
+      Modifier.fillMaxWidth()
+        .toggleable(value = checked, role = Role.Checkbox, onValueChange = { onToggle() })
+        .padding(vertical = 4.dp)
+        .testTag(OpenRouterCardTags.MODEL_ROW_PREFIX + model.id),
+  ) {
+    Checkbox(checked = checked, onCheckedChange = null)
+    Column(modifier = Modifier.padding(start = 12.dp)) {
+      Text(model.name, style = MaterialTheme.typography.bodyLarge)
+      if (model.name != model.id) Note(model.id)
+    }
+  }
+}
+
+@Composable
+private fun Note(text: String) {
+  Text(
+    text = text,
+    style = MaterialTheme.typography.bodyMedium,
+    color = MaterialTheme.colorScheme.onSurfaceVariant,
+  )
+}
+
+/** Confirms removing the saved key and selected models. */
 @Composable
 fun DeleteOpenRouterDialog(onEvent: (ModelDownloadAction) -> Unit) {
   AlertDialog(
@@ -175,9 +265,7 @@ private fun SettingsField(
   onValueChange: (String) -> Unit,
   label: Int,
   tag: String,
-  singleLine: Boolean = true,
   keyboardType: KeyboardType = KeyboardType.Text,
-  placeholder: Int? = null,
   hint: Int? = null,
   error: Int? = null,
   visualTransformation: VisualTransformation = VisualTransformation.None,
@@ -189,11 +277,9 @@ private fun SettingsField(
     onValueChange = onValueChange,
     modifier = Modifier.fillMaxWidth().testTag(tag),
     label = { Text(stringResource(label)) },
-    placeholder = placeholder?.let { { Text(stringResource(it)) } },
     supportingText = supporting?.let { { Text(stringResource(it)) } },
     isError = error != null,
-    singleLine = singleLine,
-    maxLines = if (singleLine) 1 else MODELS_MAX_LINES,
+    singleLine = true,
     keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
     visualTransformation = visualTransformation,
     trailingIcon = trailingIcon,
@@ -208,31 +294,42 @@ private fun SettingsField(
   )
 }
 
-private const val MODELS_MAX_LINES = 4
-
 object OpenRouterCardTags {
   const val HEADER = "openrouter_header"
   const val BASE_URL = "openrouter_base_url"
   const val API_KEY = "openrouter_api_key"
-  const val MODELS = "openrouter_models"
+  const val MODEL_SEARCH = "openrouter_model_search"
+  const val MODEL_LIST = "openrouter_model_list"
+  const val MODEL_ROW_PREFIX = "openrouter_model:"
+  const val MODELS_LOADING = "openrouter_models_loading"
+  const val MODELS_ERROR = "openrouter_models_error"
+  const val MODELS_RETRY = "openrouter_models_retry"
   const val SAVED = "openrouter_saved"
   const val SAVE = "openrouter_save"
   const val DELETE = "openrouter_delete"
   const val DELETE_DIALOG = "openrouter_delete_dialog"
 }
 
+private val previewModels =
+  listOf(
+    AvailableModel("anthropic/claude-haiku-5.5", "Anthropic: Claude Haiku 5.5"),
+    AvailableModel("openai/gpt-4o", "OpenAI: GPT-4o"),
+    AvailableModel("qwen/qwen3-8b", "qwen/qwen3-8b"),
+  )
+
 private fun previewSection(
-  savedModelCount: Int = 0,
+  list: RemoteModels = RemoteModels.Hidden,
   errors: Set<OpenRouterField> = emptySet(),
 ) =
   OpenRouterSection(
     baseUrl = OpenRouterConfig.DEFAULT_BASE_URL,
-    apiKey = if (savedModelCount > 0) "sk-or-preview" else "",
-    modelsText = if (savedModelCount > 0) "openai/gpt-4o;anthropic/claude-3.5-sonnet" else "",
+    apiKey = if (list != RemoteModels.Hidden) "sk-or-preview" else "",
     errors = errors,
-    savedModelCount = savedModelCount,
+    savedModelCount = (list as? RemoteModels.Loaded)?.selected?.size ?: 0,
     confirmingDelete = false,
     expanded = true,
+    list = list,
+    query = "",
   )
 
 @Preview(name = "OpenRouter", widthDp = 358)
@@ -243,18 +340,24 @@ private fun OpenRouterCardPreview() {
   ScottieTheme {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
       OpenRouterCard(previewSection(), onEvent = {})
-      OpenRouterCard(previewSection(savedModelCount = 2), onEvent = {})
+      OpenRouterCard(
+        previewSection(
+          RemoteModels.Loaded(previewModels, previewModels.size, setOf("openai/gpt-4o"))
+        ),
+        onEvent = {},
+      )
     }
   }
 }
 
-@Preview(name = "OpenRouter errors", widthDp = 358)
+@Preview(name = "OpenRouter states", widthDp = 358)
 @Composable
-private fun OpenRouterCardErrorsPreview() {
+private fun OpenRouterCardStatesPreview() {
   ScottieTheme {
-    OpenRouterCard(
-      previewSection(errors = setOf(OpenRouterField.BASE_URL, OpenRouterField.MODELS)),
-      onEvent = {},
-    )
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+      OpenRouterCard(previewSection(errors = setOf(OpenRouterField.BASE_URL)), onEvent = {})
+      OpenRouterCard(previewSection(RemoteModels.Loading), onEvent = {})
+      OpenRouterCard(previewSection(RemoteModels.Failed(FetchFailure.AUTH)), onEvent = {})
+    }
   }
 }

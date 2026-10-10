@@ -2,7 +2,11 @@ package com.jayvijay.scottie.feature.modeldownload.data.repository
 
 import android.util.Log
 import com.jayvijay.scottie.di.ApplicationScope
+import com.jayvijay.scottie.feature.modeldownload.data.remote.OpenRouterModelsClient
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.FetchFailure
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelsFetch
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.prunedTo
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.OpenRouterConfigRepository
 import java.io.File
 import javax.inject.Inject
@@ -27,6 +31,7 @@ constructor(
   @Named("openRouterConfigFile") private val file: File,
   private val json: Json,
   @ApplicationScope private val scope: CoroutineScope,
+  private val client: OpenRouterModelsClient,
 ) : OpenRouterConfigRepository {
 
   private val state = MutableStateFlow(read())
@@ -49,6 +54,19 @@ constructor(
   override fun clear() {
     state.value = null
     persist()
+  }
+
+  override suspend fun fetchAvailableModels(): ModelsFetch {
+    val fetchedFor = state.value ?: return ModelsFetch.Failed(FetchFailure.OTHER)
+    val result = client.fetch(fetchedFor.baseUrl, fetchedFor.apiKey)
+    // A Save or Delete during the fetch wins over pruning.
+    if (
+      result is ModelsFetch.Loaded &&
+        state.compareAndSet(fetchedFor, fetchedFor.prunedTo(result.models))
+    ) {
+      persist()
+    }
+    return result
   }
 
   /** Writes the latest state, so out-of-order launches cannot resurrect a cleared key. */

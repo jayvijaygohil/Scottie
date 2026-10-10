@@ -35,6 +35,20 @@ fun ModelSections(
     contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
+    item(key = "openrouter", contentType = "category") {
+      ScottieAccordionHeader(
+        title = stringResource(R.string.model_download_openrouter_title),
+        countLabel = countLabel(openRouter.savedModelCount),
+        expanded = openRouter.expanded,
+        onToggle = { onEvent(ModelDownloadAction.ToggleOpenRouter) },
+        modifier = Modifier.animateItem().testTag(OpenRouterCardTags.HEADER),
+      )
+    }
+    if (openRouter.expanded) {
+      item(key = "openrouter-card", contentType = "openrouter") {
+        OpenRouterCard(openRouter, onEvent, Modifier.animateItem())
+      }
+    }
     sections.forEach { section ->
       item(key = "type:${section.type}", contentType = "category") {
         ScottieAccordionHeader(
@@ -66,20 +80,6 @@ fun ModelSections(
               },
           )
         }
-      }
-    }
-    item(key = "openrouter", contentType = "category") {
-      ScottieAccordionHeader(
-        title = stringResource(R.string.model_download_openrouter_title),
-        countLabel = countLabel(openRouter.savedModelCount),
-        expanded = openRouter.expanded,
-        onToggle = { onEvent(ModelDownloadAction.ToggleOpenRouter) },
-        modifier = Modifier.animateItem().testTag(OpenRouterCardTags.HEADER),
-      )
-    }
-    if (openRouter.expanded) {
-      item(key = "openrouter-card", contentType = "openrouter") {
-        OpenRouterCard(openRouter, onEvent, Modifier.animateItem())
       }
     }
   }

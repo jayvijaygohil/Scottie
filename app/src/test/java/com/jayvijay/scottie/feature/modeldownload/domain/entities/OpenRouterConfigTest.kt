@@ -1,31 +1,25 @@
 package com.jayvijay.scottie.feature.modeldownload.domain.entities
 
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterField.BASE_URL
-import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterField.MODELS
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class OpenRouterConfigTest {
-  private fun validate(baseUrl: String = URL, apiKey: String = "k", models: String = "a/b") =
-    OpenRouterDraft(baseUrl, apiKey, models).validate()
+  private fun validate(baseUrl: String = URL, apiKey: String = "k", selection: List<String> = SEL) =
+    OpenRouterDraft(baseUrl, apiKey, selection).validate()
 
-  private fun valid(baseUrl: String = URL, apiKey: String = "k", models: String = "a/b") =
-    (validate(baseUrl, apiKey, models) as OpenRouterValidation.Valid).config
+  private fun valid(baseUrl: String = URL, apiKey: String = "k", selection: List<String> = SEL) =
+    (validate(baseUrl, apiKey, selection) as OpenRouterValidation.Valid).config
 
-  private fun invalidFields(baseUrl: String = URL, models: String = "a/b") =
-    (validate(baseUrl = baseUrl, models = models) as OpenRouterValidation.Invalid).fields
-
-  @Test
-  fun modelsAreTrimmedSplitAndDeduplicated() {
-    assertEquals(listOf("a/b", "c/d"), valid(models = "a/b ; c/d;").models)
-    assertEquals(listOf("a/b"), valid(models = "a/b;a/b").models)
-  }
+  private fun invalidFields(baseUrl: String) =
+    (validate(baseUrl = baseUrl) as OpenRouterValidation.Invalid).fields
 
   @Test
-  fun blankModelListIsInvalid() {
-    assertEquals(setOf(MODELS), invalidFields(models = "; ;"))
+  fun validationChecksOnlyBaseUrlAndKeepsSelection() {
+    assertEquals(OpenRouterConfig(URL, "k", SEL), valid())
+    assertEquals(emptyList<String>(), valid(selection = emptyList()).models)
   }
 
   @Test
@@ -43,8 +37,11 @@ class OpenRouterConfigTest {
   }
 
   @Test
-  fun everyFailingFieldIsReported() {
-    assertEquals(setOf(BASE_URL, MODELS), invalidFields(baseUrl = "x", models = ""))
+  fun prunedToDropsUnlistedAndFollowsFetchedOrder() {
+    val config = OpenRouterConfig(URL, "", listOf("c", "gone", "a"))
+    val fetched = listOf("a", "b", "c").map { AvailableModel(it, it) }
+    assertEquals(listOf("a", "c"), config.prunedTo(fetched).models)
+    assertEquals(emptyList<String>(), config.prunedTo(emptyList()).models)
   }
 
   @Test
@@ -61,5 +58,6 @@ class OpenRouterConfigTest {
 
   private companion object {
     const val URL = "https://openrouter.ai"
+    val SEL = listOf("a/b")
   }
 }

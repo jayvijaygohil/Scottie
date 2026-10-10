@@ -4,7 +4,10 @@ import java.net.URI
 import java.net.URISyntaxException
 import kotlinx.serialization.Serializable
 
-/** The single saved OpenRouter connection; [models] are raw OpenRouter ids. */
+/**
+ * The single saved OpenRouter connection; [models] are the checked OpenRouter ids, in fetched-list
+ * order; may be empty.
+ */
 @Serializable
 data class OpenRouterConfig(val baseUrl: String, val apiKey: String, val models: List<String>) {
   /** Ids shared with on-device models in the active-model slot. */
@@ -21,9 +24,29 @@ data class OpenRouterConfig(val baseUrl: String, val apiKey: String, val models:
   }
 }
 
+/** Keeps only selected ids still in [available], in [available]'s order. */
+fun OpenRouterConfig.prunedTo(available: List<AvailableModel>): OpenRouterConfig {
+  val selected = models.toSet()
+  return copy(models = available.map { it.id }.filter { it in selected })
+}
+
+/** One entry of the service's model list; [name] falls back to [id]. */
+data class AvailableModel(val id: String, val name: String)
+
+enum class FetchFailure {
+  NO_CONNECTION,
+  AUTH,
+  OTHER,
+}
+
+sealed interface ModelsFetch {
+  data class Loaded(val models: List<AvailableModel>) : ModelsFetch
+
+  data class Failed(val reason: FetchFailure) : ModelsFetch
+}
+
 enum class OpenRouterField {
-  BASE_URL,
-  MODELS,
+  BASE_URL
 }
 
 sealed interface OpenRouterValidation {
@@ -32,19 +55,14 @@ sealed interface OpenRouterValidation {
   data class Invalid(val fields: Set<OpenRouterField>) : OpenRouterValidation
 }
 
-/** Unsaved Settings input; [modelsText] separates ids with semicolons. */
-data class OpenRouterDraft(val baseUrl: String, val apiKey: String, val modelsText: String) {
+/** Unsaved Settings input; [selection] is carried through unchanged. */
+data class OpenRouterDraft(val baseUrl: String, val apiKey: String, val selection: List<String>) {
   fun validate(): OpenRouterValidation {
-    val models = modelsText.split(';').map { it.trim() }.filter { it.isNotEmpty() }.distinct()
     val url = baseUrl.trim()
-    val invalid = buildSet {
-      if (!isWebAddress(url)) add(OpenRouterField.BASE_URL)
-      if (models.isEmpty()) add(OpenRouterField.MODELS)
-    }
-    return if (invalid.isEmpty()) {
-      OpenRouterValidation.Valid(OpenRouterConfig(url, apiKey.trim(), models))
+    return if (isWebAddress(url)) {
+      OpenRouterValidation.Valid(OpenRouterConfig(url, apiKey.trim(), selection))
     } else {
-      OpenRouterValidation.Invalid(invalid)
+      OpenRouterValidation.Invalid(setOf(OpenRouterField.BASE_URL))
     }
   }
 

@@ -1,9 +1,11 @@
 package com.jayvijay.scottie.feature.modeldownload.presentation
 
 import app.cash.turbine.ReceiveTurbine
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.AvailableModel
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.Compatibility.Shortfall
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadFailure
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadProgress
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.FetchFailure
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.Model
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelCatalog
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus
@@ -12,16 +14,17 @@ import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelEntry
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType.SPEECH_RECOGNITION
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType.TEXT
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelsFetch
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterField
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ShortfallKind.STORAGE
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.DownloadStart
 import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadAction.EditOpenRouterApiKey
 import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadAction.EditOpenRouterBaseUrl
-import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadAction.EditOpenRouterModels
 import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadAction.SaveOpenRouter
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -134,7 +137,7 @@ class ModelDownloadPresenterTest {
         state.layout(),
       )
       assertEquals(listOf(2, 1), state.sections().map { it.count })
-      assertEquals(listOf(true, true), state.sections().map { it.expanded })
+      assertEquals(listOf(false, false), state.sections().map { it.expanded })
 
       repository.catalog.value = ready(entry("stt", type = SPEECH_RECOGNITION))
       assertEquals(listOf(SPEECH_RECOGNITION to listOf("stt")), awaitItem().layout())
@@ -142,18 +145,18 @@ class ModelDownloadPresenterTest {
   }
 
   @Test
-  fun toggleCollapsesOnlyThatSectionWithoutTouchingDownloads() = runTest {
+  fun toggleOpensOnlyThatSectionWithoutTouchingDownloads() = runTest {
     val downloading = ModelDownloadStatus.Downloading(DownloadProgress(1, SIZE, 0.1f))
     repository.catalog.value = ready(entry("a", downloading), entry("s", type = SPEECH_RECOGNITION))
     presenter.test {
       awaitItem().eventSink(ModelDownloadAction.ToggleCategory(TEXT))
-      val closed = awaitItem()
-      assertEquals(listOf(false, true), closed.sections().map { it.expanded })
-      assertEquals(downloading, closed.models().first().status)
+      val open = awaitItem()
+      assertEquals(listOf(true, false), open.sections().map { it.expanded })
+      assertEquals(downloading, open.models().first().status)
       assertEquals(emptyList<String>(), repository.pauses)
 
-      closed.eventSink(ModelDownloadAction.ToggleCategory(TEXT))
-      assertEquals(listOf(true, true), awaitItem().sections().map { it.expanded })
+      open.eventSink(ModelDownloadAction.ToggleCategory(TEXT))
+      assertEquals(listOf(false, false), awaitItem().sections().map { it.expanded })
     }
   }
 
@@ -186,10 +189,10 @@ class ModelDownloadPresenterTest {
     repository.catalog.value = ready(entry("a"), entry("b", type = SPEECH_RECOGNITION), entry("n"))
     presenter.test {
       awaitItem().eventSink(ModelDownloadAction.ToggleCategory(TEXT))
-      val collapsed = awaitItem()
-      assertEquals(listOf(false, true), collapsed.sections().map { it.expanded })
+      val toggled = awaitItem()
+      assertEquals(listOf(true, false), toggled.sections().map { it.expanded })
 
-      collapsed.eventSink(ModelDownloadAction.Search("model"))
+      toggled.eventSink(ModelDownloadAction.Search("model"))
       val searching = awaitItem()
       assertEquals(listOf(true, true), searching.sections().map { it.expanded })
       // Toggles are ignored while searching.
@@ -197,7 +200,7 @@ class ModelDownloadPresenterTest {
 
       searching.eventSink(ModelDownloadAction.Search(" "))
       val cleared = awaitItem()
-      assertEquals(listOf(false, true), cleared.sections().map { it.expanded })
+      assertEquals(listOf(true, false), cleared.sections().map { it.expanded })
       assertEquals(listOf("a", "n", "b"), cleared.models().map { it.id })
     }
   }
@@ -285,24 +288,26 @@ class ModelDownloadPresenterTest {
     return state
   }
 
+  private suspend fun ReceiveTurbine<ModelDownloadState>.awaitLoaded(): ModelDownloadState =
+    awaitUntil { it.list is RemoteModels.Loaded }
+
+  private suspend fun ReceiveTurbine<ModelDownloadState>.awaitList(): RemoteModels.Loaded =
+    awaitLoaded().openRouter.list as RemoteModels.Loaded
+
   /** Edits only fields that differ, since an unchanged value emits no new state. */
   private suspend fun ReceiveTurbine<ModelDownloadState>.edit(
     state: ModelDownloadState,
     baseUrl: String = state.openRouter.baseUrl,
     apiKey: String = state.openRouter.apiKey,
-    models: String = state.openRouter.modelsText,
   ): ModelDownloadState {
     var current = state
-    fun changed(value: String, now: String, action: ModelDownloadAction) =
-      (value != now).also { if (it) current.eventSink(action) }
-    if (changed(baseUrl, current.openRouter.baseUrl, EditOpenRouterBaseUrl(baseUrl))) {
+    if (baseUrl != current.openRouter.baseUrl) {
+      current.eventSink(EditOpenRouterBaseUrl(baseUrl))
       current = awaitUntil { it.baseUrl == baseUrl }
     }
-    if (changed(apiKey, current.openRouter.apiKey, EditOpenRouterApiKey(apiKey))) {
+    if (apiKey != current.openRouter.apiKey) {
+      current.eventSink(EditOpenRouterApiKey(apiKey))
       current = awaitUntil { it.apiKey == apiKey }
-    }
-    if (changed(models, current.openRouter.modelsText, EditOpenRouterModels(models))) {
-      current = awaitUntil { it.modelsText == models }
     }
     return current
   }
@@ -310,11 +315,19 @@ class ModelDownloadPresenterTest {
   /** Saves the draft and returns the first state showing either the save or errors. */
   private suspend fun ReceiveTurbine<ModelDownloadState>.saveDraft(
     baseUrl: String = URL,
-    models: String = "a/b",
+    apiKey: String = "",
   ): ModelDownloadState {
     val saves = openRouter.saves.size
-    edit(awaitItem(), baseUrl = baseUrl, models = models).eventSink(SaveOpenRouter)
+    edit(awaitItem(), baseUrl = baseUrl, apiKey = apiKey).eventSink(SaveOpenRouter)
     return awaitUntil { it.errors.isNotEmpty() || openRouter.saves.size > saves }
+  }
+
+  private fun saved(vararg models: String) {
+    openRouter.config.value = OpenRouterConfig(URL, "sk", models.toList())
+  }
+
+  private fun fetches(vararg ids: String) {
+    openRouter.nextFetch = ModelsFetch.Loaded(ids.map { AvailableModel(it, "Model $it") })
   }
 
   @Test
@@ -323,21 +336,122 @@ class ModelDownloadPresenterTest {
       val section = awaitItem().openRouter
       assertEquals(URL, section.baseUrl)
       assertEquals("", section.apiKey)
-      assertEquals("", section.modelsText)
       assertEquals(0, section.savedModelCount)
-      assertTrue(section.expanded)
+      assertEquals(RemoteModels.Hidden, section.list)
+      assertFalse(section.expanded)
+    }
+    assertEquals(0, openRouter.fetches)
+  }
+
+  @Test
+  fun sectionsAndOpenRouterStartCollapsed() = runTest {
+    repository.catalog.value = ready(entry("a"), entry("s", type = SPEECH_RECOGNITION))
+    presenter.test {
+      val state = awaitItem()
+      assertEquals(listOf(false, false), state.sections().map { it.expanded })
+      assertFalse(state.openRouter.expanded)
     }
   }
 
   @Test
-  fun saveStoresParsedConfigAndResetsDraftFromIt() = runTest {
+  fun saveStoresConfigAndResetsDraftFromIt() = runTest {
     presenter.test {
-      edit(awaitItem(), apiKey = "sk", models = "a/b;c/d").eventSink(SaveOpenRouter)
-      val saved = awaitUntil { it.savedModelCount == 2 }.openRouter
-      assertEquals(OpenRouterConfig(URL, "sk", listOf("a/b", "c/d")), openRouter.saves.single())
-      assertEquals(emptySet<OpenRouterField>(), saved.errors)
-      assertEquals(2, saved.savedModelCount)
-      assertEquals("a/b;c/d", saved.modelsText)
+      saveDraft(apiKey = "sk")
+      assertEquals(OpenRouterConfig(URL, "sk", emptyList()), openRouter.saves.single())
+      val section = awaitUntil { it.list is RemoteModels.Loaded }.openRouter
+      assertEquals(emptySet<OpenRouterField>(), section.errors)
+      assertEquals("sk", section.apiKey)
+    }
+  }
+
+  @Test
+  fun saveKeepsSelectionAndFetches() = runTest {
+    saved("a")
+    fetches("a", "b")
+    presenter.test {
+      val loaded = awaitLoaded()
+      val gate = CompletableDeferred<Unit>().also { openRouter.gate = it }
+      loaded.eventSink(EditOpenRouterApiKey("new"))
+      awaitUntil { it.apiKey == "new" }.eventSink(SaveOpenRouter)
+      awaitUntil { it.list == RemoteModels.Loading }
+      assertEquals(OpenRouterConfig(URL, "new", listOf("a")), openRouter.saves.last())
+      gate.complete(Unit)
+      assertEquals(setOf("a"), awaitList().selected)
+      assertEquals(2, openRouter.fetches)
+    }
+  }
+
+  @Test
+  fun openingWithSavedConfigFetchesOnce() = runTest {
+    saved("a")
+    fetches("a", "b")
+    presenter.test {
+      val list = awaitList()
+      assertEquals(listOf("a", "b"), list.visible.map { it.id })
+      assertEquals(2, list.total)
+      assertEquals(setOf("a"), list.selected)
+      testScheduler.runCurrent()
+      assertEquals(1, openRouter.fetches)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun toggleSavesInFetchedOrder() = runTest {
+    saved()
+    fetches("a", "b", "c")
+    presenter.test {
+      awaitLoaded().eventSink(ModelDownloadAction.ToggleRemoteModel("c"))
+      awaitUntil { (it.list as? RemoteModels.Loaded)?.selected == setOf("c") }
+        .eventSink(ModelDownloadAction.ToggleRemoteModel("a"))
+      awaitUntil { it.savedModelCount == 2 }
+      assertEquals(listOf("a", "c"), openRouter.config.value?.models)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun untoggleRemovesFromSelection() = runTest {
+    saved("a", "b")
+    fetches("a", "b")
+    presenter.test {
+      awaitLoaded().eventSink(ModelDownloadAction.ToggleRemoteModel("a"))
+      assertEquals(setOf("b"), awaitUntil { it.savedModelCount == 1 }.openRouter.selected())
+      assertEquals(listOf("b"), openRouter.config.value?.models)
+    }
+  }
+
+  @Test
+  fun fetchPrunesUnlistedSelection() = runTest {
+    saved("gone", "b", "a")
+    fetches("a", "b")
+    presenter.test {
+      assertEquals(setOf("a", "b"), awaitUntil { it.savedModelCount == 2 }.openRouter.selected())
+      assertEquals(listOf("a", "b"), openRouter.config.value?.models)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun deleteHidesList() = runTest {
+    saved("a")
+    fetches("a")
+    presenter.test {
+      awaitLoaded().eventSink(ModelDownloadAction.DeleteOpenRouter)
+      awaitUntil { it.confirmingDelete }.eventSink(ModelDownloadAction.ConfirmDeleteOpenRouter)
+      awaitUntil { it.list == RemoteModels.Hidden }
+      assertEquals(1, openRouter.clears)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun savingSameValuesRefetches() = runTest {
+    openRouter.config.value = OpenRouterConfig(URL, "", emptyList())
+    presenter.test {
+      awaitLoaded().eventSink(SaveOpenRouter)
+      awaitUntil { openRouter.fetches == 2 && it.list is RemoteModels.Loaded }
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -346,18 +460,20 @@ class ModelDownloadPresenterTest {
     presenter.test {
       saveDraft()
       assertEquals("", openRouter.saves.single().apiKey)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
   fun savedConfigPrefillsDraft() = runTest {
     openRouter.config.value = OpenRouterConfig("http://10.0.2.2:8080", "sk", listOf("x/y"))
+    fetches("x/y")
     presenter.test {
       val section = awaitItem().openRouter
       assertEquals("http://10.0.2.2:8080", section.baseUrl)
       assertEquals("sk", section.apiKey)
-      assertEquals("x/y", section.modelsText)
       assertEquals(1, section.savedModelCount)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -365,15 +481,16 @@ class ModelDownloadPresenterTest {
   fun toggleOpenRouterFlipsExpansion() = runTest {
     presenter.test {
       awaitItem().eventSink(ModelDownloadAction.ToggleOpenRouter)
-      assertFalse(awaitItem().openRouter.expanded)
+      assertTrue(awaitItem().openRouter.expanded)
     }
   }
 
   @Test
   fun deleteAsksThenClearsAndResetsDraft() = runTest {
-    openRouter.config.value = OpenRouterConfig(URL, "sk", listOf("x/y"))
+    saved("x/y")
+    fetches("x/y")
     presenter.test {
-      awaitItem().eventSink(ModelDownloadAction.DeleteOpenRouter)
+      awaitLoaded().eventSink(ModelDownloadAction.DeleteOpenRouter)
       awaitUntil { it.confirmingDelete }.eventSink(ModelDownloadAction.CancelDeleteOpenRouter)
       val cancelled = awaitUntil { !it.confirmingDelete }
       assertEquals(0, openRouter.clears)
@@ -383,7 +500,7 @@ class ModelDownloadPresenterTest {
       val confirmed = awaitUntil { !it.confirmingDelete && it.savedModelCount == 0 }.openRouter
       assertEquals(1, openRouter.clears)
       assertEquals(URL to "", confirmed.baseUrl to confirmed.apiKey)
-      assertEquals("", confirmed.modelsText)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -397,42 +514,116 @@ class ModelDownloadPresenterTest {
   }
 
   @Test
-  fun invalidDraftReportsFieldsWithoutSaving() = runTest {
-    listOf(
-        Triple("", "a/b", setOf(OpenRouterField.BASE_URL)),
-        Triple("openrouter.ai/api/v1", "a/b", setOf(OpenRouterField.BASE_URL)),
-        Triple(URL, " ; ", setOf(OpenRouterField.MODELS)),
-        Triple("x", "", setOf(OpenRouterField.BASE_URL, OpenRouterField.MODELS)),
-      )
-      .forEach { (baseUrl, models, errors) ->
-        ModelDownloadPresenter(navigator, repository, openRouter).test {
-          assertEquals(baseUrl, errors, saveDraft(baseUrl, models).openRouter.errors)
-        }
+  fun invalidBaseUrlReportsErrorWithoutSaving() = runTest {
+    listOf("", "openrouter.ai/api/v1", "x").forEach { baseUrl ->
+      ModelDownloadPresenter(navigator, repository, openRouter).test {
+        assertEquals(baseUrl, setOf(OpenRouterField.BASE_URL), saveDraft(baseUrl).openRouter.errors)
       }
+    }
     assertTrue(openRouter.saves.isEmpty())
   }
 
   @Test
-  fun editingAFieldClearsOnlyItsError() = runTest {
+  fun editingBaseUrlClearsItsError() = runTest {
     presenter.test {
-      val failed = saveDraft(baseUrl = "x", models = "")
-      failed.eventSink(EditOpenRouterModels("a/b"))
-      val section = awaitUntil { it.modelsText == "a/b" }.openRouter
-      assertEquals(setOf(OpenRouterField.BASE_URL), section.errors)
+      saveDraft(baseUrl = "x").eventSink(EditOpenRouterBaseUrl(URL))
+      assertEquals(emptySet<OpenRouterField>(), awaitUntil { it.baseUrl == URL }.openRouter.errors)
     }
   }
 
   @Test
-  fun lenientModelsAndHttpUrlsSave() = runTest {
-    presenter.test { saveDraft(models = "a/b ; c/d;") }
-    presenter.test { saveDraft(models = "a/b;a/b") }
-    presenter.test { saveDraft(baseUrl = "http://10.0.2.2:8080") }
-    assertEquals(
-      listOf(listOf("a/b", "c/d"), listOf("a/b"), listOf("a/b")),
-      openRouter.saves.map { it.models },
-    )
-    assertEquals("http://10.0.2.2:8080", openRouter.saves.last().baseUrl)
+  fun httpUrlSaves() = runTest {
+    presenter.test {
+      saveDraft(baseUrl = "http://10.0.2.2:8080")
+      cancelAndIgnoreRemainingEvents()
+    }
+    assertEquals("http://10.0.2.2:8080", openRouter.saves.single().baseUrl)
   }
+
+  @Test
+  fun filterRemoteMatchesNameOrIdIgnoringCase() {
+    val models = listOf(AvailableModel("openai/gpt-4o", "GPT-4o"), AvailableModel("q/x", "Qwen"))
+    assertEquals(models, filterRemote(models, " "))
+    assertEquals(listOf(models[0]), filterRemote(models, " OPENAI "))
+    assertEquals(listOf(models[1]), filterRemote(models, "qwe"))
+  }
+
+  @Test
+  fun remoteSearchKeepsHiddenChecks() = runTest {
+    saved("a")
+    fetches("a", "b")
+    presenter.test {
+      awaitLoaded().eventSink(ModelDownloadAction.SearchRemoteModels("model b"))
+      val searching = awaitUntil { it.query == "model b" }
+      val list = searching.openRouter.list as RemoteModels.Loaded
+      assertEquals(listOf("b"), list.visible.map { it.id })
+      searching.eventSink(ModelDownloadAction.ToggleRemoteModel("b"))
+      awaitUntil { it.savedModelCount == 2 }
+      assertEquals(listOf("a", "b"), openRouter.config.value?.models)
+    }
+  }
+
+  @Test
+  fun remoteSearchWithoutMatchesIsEmptyButTotalKept() = runTest {
+    saved()
+    fetches("a", "b")
+    presenter.test {
+      awaitLoaded().eventSink(ModelDownloadAction.SearchRemoteModels("zzz"))
+      val list = awaitUntil { it.query == "zzz" }.openRouter.list as RemoteModels.Loaded
+      assertEquals(emptyList<AvailableModel>() to 2, list.visible to list.total)
+    }
+  }
+
+  @Test
+  fun fetchFailureKindsMapToFailedState() = runTest {
+    saved("a")
+    FetchFailure.entries.forEach { reason ->
+      openRouter.nextFetch = ModelsFetch.Failed(reason)
+      ModelDownloadPresenter(navigator, repository, openRouter).test {
+        assertEquals(
+          RemoteModels.Failed(reason),
+          awaitUntil { it.list is RemoteModels.Failed }.openRouter.list,
+        )
+      }
+    }
+  }
+
+  @Test
+  fun retryRefetchesAndRecovers() = runTest {
+    saved("a")
+    openRouter.nextFetch = ModelsFetch.Failed(FetchFailure.NO_CONNECTION)
+    presenter.test {
+      val failed = awaitUntil { it.list is RemoteModels.Failed }
+      fetches("a")
+      failed.eventSink(ModelDownloadAction.RetryRemoteModels)
+      assertEquals(setOf("a"), awaitList().selected)
+      assertEquals(2, openRouter.fetches)
+    }
+  }
+
+  @Test
+  fun failedFetchKeepsConfigAndSelection() = runTest {
+    saved("a", "b")
+    openRouter.nextFetch = ModelsFetch.Failed(FetchFailure.AUTH)
+    presenter.test {
+      awaitUntil { it.list is RemoteModels.Failed }
+      assertEquals(listOf("a", "b"), openRouter.config.value?.models)
+      assertTrue(openRouter.saves.isEmpty())
+    }
+  }
+
+  @Test
+  fun reopeningSettingsRefetchesWithSelectionPrechecked() = runTest {
+    saved("a")
+    fetches("a", "b")
+    presenter.test { awaitList() }
+    ModelDownloadPresenter(navigator, repository, openRouter).test {
+      assertEquals(setOf("a"), awaitList().selected)
+    }
+    assertEquals(2, openRouter.fetches)
+  }
+
+  private fun OpenRouterSection.selected() = (list as RemoteModels.Loaded).selected
 
   private companion object {
     const val SIZE = 100L

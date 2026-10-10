@@ -1,14 +1,18 @@
 package com.jayvijay.scottie.feature.modeldownload.presentation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.AvailableModel
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelCatalog
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelsFetch
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterDraft
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterField
@@ -39,7 +43,7 @@ constructor(
     val catalog by repository.catalog.collectAsState()
     var error by rememberRetained { mutableStateOf<ModelDownloadError?>(null) }
     var query by rememberRetained { mutableStateOf("") }
-    // User toggles only; sections without one are expanded.
+    // User toggles only; sections without one are collapsed.
     var expansion by rememberRetained { mutableStateOf(emptyMap<ModelType, Boolean>()) }
     val scope = rememberCoroutineScope()
 
@@ -71,7 +75,7 @@ constructor(
         is ModelDownloadAction.Search -> query = action.query
         is ModelDownloadAction.ToggleCategory ->
           if (query.isBlank()) {
-            expansion = expansion + (action.type to !(expansion[action.type] ?: true))
+            expansion = expansion + (action.type to !(expansion[action.type] ?: false))
           }
         is ModelDownloadAction.UseModel -> {
           repository.selectTextModel(action.modelId)
@@ -81,31 +85,65 @@ constructor(
     }
   }
 
-  /** Drafts reset whenever the saved configuration changes: save, delete, or relaunch. */
+  /**
+   * Drafts reset whenever the saved URL or key changes: save, delete, or relaunch. The model list
+   * is fetched once per request (open with a saved config, Save, Retry), so rotation does not
+   * refetch.
+   */
   @Composable
   private fun presentOpenRouter():
     Pair<OpenRouterSection, (ModelDownloadAction.OpenRouter) -> Unit> {
     val config by openRouter.config.collectAsState()
-    var baseUrl by rememberRetained(config) {
-      mutableStateOf(config?.baseUrl ?: OpenRouterConfig.DEFAULT_BASE_URL)
+    val savedUrl = config?.baseUrl
+    val savedKey = config?.apiKey
+    var baseUrl by rememberRetained(savedUrl, savedKey) {
+      mutableStateOf(savedUrl ?: OpenRouterConfig.DEFAULT_BASE_URL)
     }
-    var apiKey by rememberRetained(config) { mutableStateOf(config?.apiKey.orEmpty()) }
-    var modelsText by rememberRetained(config) {
-      mutableStateOf(config?.models?.joinToString(";").orEmpty())
+    var apiKey by rememberRetained(savedUrl, savedKey) { mutableStateOf(savedKey.orEmpty()) }
+    var errors by rememberRetained(savedUrl, savedKey) {
+      mutableStateOf(emptySet<OpenRouterField>())
     }
-    var errors by rememberRetained(config) { mutableStateOf(emptySet<OpenRouterField>()) }
     var confirmingDelete by rememberRetained { mutableStateOf(false) }
-    var expanded by rememberRetained { mutableStateOf(true) }
+    var expanded by rememberRetained { mutableStateOf(false) }
+    var fetchRequest by rememberRetained { mutableIntStateOf(if (config != null) 1 else 0) }
+    var fetchedFor by rememberRetained { mutableIntStateOf(0) }
+    var result by rememberRetained { mutableStateOf<ModelsFetch?>(null) }
+    var query by rememberRetained { mutableStateOf("") }
 
+    LaunchedEffect(fetchRequest) {
+      if (openRouter.config.value != null && fetchedFor != fetchRequest) {
+        result = openRouter.fetchAvailableModels()
+        fetchedFor = fetchRequest
+      }
+    }
+
+    val saved = config
+    val fetched = result
+    val list =
+      when {
+        saved == null -> RemoteModels.Hidden
+        fetchedFor != fetchRequest || fetched == null -> RemoteModels.Loading
+        else ->
+          when (fetched) {
+            is ModelsFetch.Failed -> RemoteModels.Failed(fetched.reason)
+            is ModelsFetch.Loaded ->
+              RemoteModels.Loaded(
+                filterRemote(fetched.models, query),
+                fetched.models.size,
+                saved.models.toSet(),
+              )
+          }
+      }
     val section =
       OpenRouterSection(
         baseUrl = baseUrl,
         apiKey = apiKey,
-        modelsText = modelsText,
         errors = errors,
-        savedModelCount = config?.models?.size ?: 0,
+        savedModelCount = saved?.models?.size ?: 0,
         confirmingDelete = confirmingDelete,
         expanded = expanded,
+        list = list,
+        query = query,
       )
     return section to { action ->
       when (action) {
@@ -114,19 +152,30 @@ constructor(
           baseUrl = action.value
         }
         is ModelDownloadAction.EditOpenRouterApiKey -> apiKey = action.value
-        is ModelDownloadAction.EditOpenRouterModels -> {
-          errors -= OpenRouterField.MODELS
-          modelsText = action.value
-        }
         ModelDownloadAction.SaveOpenRouter ->
-          when (val result = OpenRouterDraft(baseUrl, apiKey, modelsText).validate()) {
-            is OpenRouterValidation.Valid -> openRouter.save(result.config)
-            is OpenRouterValidation.Invalid -> errors = result.fields
+          when (val draft = OpenRouterDraft(baseUrl, apiKey, saved?.models.orEmpty()).validate()) {
+            is OpenRouterValidation.Valid -> {
+              openRouter.save(draft.config)
+              fetchRequest++
+            }
+            is OpenRouterValidation.Invalid -> errors = draft.fields
           }
+        is ModelDownloadAction.ToggleRemoteModel -> {
+          val models = (fetched as? ModelsFetch.Loaded)?.models
+          if (saved != null && models != null) {
+            val selected = saved.models.toMutableSet()
+            if (!selected.remove(action.id)) selected += action.id
+            openRouter.save(saved.copy(models = models.map { it.id }.filter { it in selected }))
+          }
+        }
+        is ModelDownloadAction.SearchRemoteModels -> query = action.query
+        ModelDownloadAction.RetryRemoteModels -> fetchRequest++
         ModelDownloadAction.ToggleOpenRouter -> expanded = !expanded
-        ModelDownloadAction.DeleteOpenRouter -> confirmingDelete = config != null
+        ModelDownloadAction.DeleteOpenRouter -> confirmingDelete = saved != null
         ModelDownloadAction.ConfirmDeleteOpenRouter -> {
           openRouter.clear()
+          result = null
+          query = ""
           confirmingDelete = false
         }
         ModelDownloadAction.CancelDeleteOpenRouter -> confirmingDelete = false
@@ -165,9 +214,9 @@ private fun ModelCatalog.Ready.toModels(): List<ModelDownloadModel> {
 }
 
 /**
- * Groups [models] by type. A non-blank [query] keeps only matching models and shows every remaining
- * section expanded without touching [expansion], so clearing the search restores the user's
- * toggles.
+ * Groups [models] by type; sections are collapsed unless toggled open. A non-blank [query] keeps
+ * only matching models and shows every remaining section expanded without touching [expansion], so
+ * clearing the search restores the user's toggles.
  */
 internal fun catalogSections(
   models: List<ModelDownloadModel>,
@@ -180,7 +229,7 @@ internal fun catalogSections(
   val byType = visible.groupBy { it.type }
   return ModelType.entries.mapNotNull { type ->
     byType[type]?.let { ofType ->
-      ModelSection(type, ofType.size, searching || expansion[type] ?: true, ofType)
+      ModelSection(type, ofType.size, searching || expansion[type] ?: false, ofType)
     }
   }
 }
@@ -192,4 +241,14 @@ private fun ModelDownloadModel.matches(term: String): Boolean {
   return listOfNotNull(name, id, description, type.name.replace('_', ' ')).any {
     it.contains(term, ignoreCase = true)
   } || status.startsWith(term, ignoreCase = true) // "supported" must not match "unsupported".
+}
+
+/** Case-insensitive match on name or id; a blank [query] keeps everything. */
+internal fun filterRemote(models: List<AvailableModel>, query: String): List<AvailableModel> {
+  val term = query.trim()
+  return if (term.isEmpty()) {
+    models
+  } else {
+    models.filter { it.name.contains(term, ignoreCase = true) || it.id.contains(term, true) }
+  }
 }

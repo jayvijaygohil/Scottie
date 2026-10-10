@@ -203,11 +203,12 @@ private fun previewState(
       OpenRouterSection(
         baseUrl = OpenRouterConfig.DEFAULT_BASE_URL,
         apiKey = "",
-        modelsText = "",
         errors = emptySet(),
         savedModelCount = 0,
         confirmingDelete = false,
         expanded = true,
+        list = RemoteModels.Hidden,
+        query = "",
       ),
     eventSink = {},
   )

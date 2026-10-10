@@ -1,5 +1,7 @@
 package com.jayvijay.scottie.feature.modeldownload.presentation
 
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.AvailableModel
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.FetchFailure
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterField
@@ -42,14 +44,30 @@ data class ModelSection(
 data class OpenRouterSection(
   val baseUrl: String,
   val apiKey: String,
-  val modelsText: String,
   /** Fields that failed the last Save; a field's error clears when it is edited. */
   val errors: Set<OpenRouterField>,
   /** Models in the saved configuration; 0 when nothing is saved. */
   val savedModelCount: Int,
   val confirmingDelete: Boolean,
   val expanded: Boolean,
+  val list: RemoteModels,
+  /** In-card search over the fetched list; never changes checks. */
+  val query: String,
 )
+
+/** The service's model list below the OpenRouter fields. */
+sealed interface RemoteModels {
+  /** Nothing saved. */
+  data object Hidden : RemoteModels
+
+  data object Loading : RemoteModels
+
+  /** [visible] matches the search; [total] counts the whole fetched list. */
+  data class Loaded(val visible: List<AvailableModel>, val total: Int, val selected: Set<String>) :
+    RemoteModels
+
+  data class Failed(val reason: FetchFailure) : RemoteModels
+}
 
 sealed interface ModelDownloadError {
   data class DeleteFailed(val modelName: String) : ModelDownloadError
@@ -86,7 +104,7 @@ sealed interface ModelDownloadAction : CircuitUiEvent {
 
   data class Search(val query: String) : ModelDownloadAction
 
-  /** Ignored while searching, when every matching section is shown expanded. */
+  /** Sections start collapsed; ignored while searching, when matching sections show expanded. */
   data class ToggleCategory(val type: ModelType) : ModelDownloadAction
 
   /** Opens the screen that runs a downloaded text model. */
@@ -99,9 +117,14 @@ sealed interface ModelDownloadAction : CircuitUiEvent {
 
   data class EditOpenRouterApiKey(val value: String) : OpenRouter
 
-  data class EditOpenRouterModels(val value: String) : OpenRouter
+  /** Checks or unchecks a fetched model and saves the selection in fetched order. */
+  data class ToggleRemoteModel(val id: String) : OpenRouter
 
-  /** Validates the draft; saves it or reports the failing fields. */
+  data class SearchRemoteModels(val query: String) : OpenRouter
+
+  data object RetryRemoteModels : OpenRouter
+
+  /** Validates the draft; saves it and refetches the list, or reports the failing fields. */
   data object SaveOpenRouter : OpenRouter
 
   data object ToggleOpenRouter : OpenRouter
