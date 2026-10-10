@@ -515,7 +515,7 @@ class ModelDownloadPresenterTest {
 
   @Test
   fun invalidBaseUrlReportsErrorWithoutSaving() = runTest {
-    listOf("", "openrouter.ai/api/v1", "x").forEach { baseUrl ->
+    listOf("", "openrouter.ai/api/v1", "x", "$URL?q=1").forEach { baseUrl ->
       ModelDownloadPresenter(navigator, repository, openRouter).test {
         assertEquals(baseUrl, setOf(OpenRouterField.BASE_URL), saveDraft(baseUrl).openRouter.errors)
       }

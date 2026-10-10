@@ -17,7 +17,7 @@ data class OpenRouterConfig(val baseUrl: String, val apiKey: String, val models:
   override fun toString() = "OpenRouterConfig(baseUrl=$baseUrl, apiKey=***, models=$models)"
 
   companion object {
-    const val DEFAULT_BASE_URL = "https://openrouter.ai"
+    const val DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
     const val ID_PREFIX = "openrouter:"
 
     fun remoteId(model: String) = ID_PREFIX + model
@@ -55,7 +55,10 @@ sealed interface OpenRouterValidation {
   data class Invalid(val fields: Set<OpenRouterField>) : OpenRouterValidation
 }
 
-/** Unsaved Settings input; [selection] is carried through unchanged. */
+/**
+ * Unsaved Settings input; [selection] is carried through unchanged. [baseUrl] is the API root that
+ * `/models` and `/chat/completions` hang off, e.g. `https://openrouter.ai/api/v1`.
+ */
 data class OpenRouterDraft(val baseUrl: String, val apiKey: String, val selection: List<String>) {
   fun validate(): OpenRouterValidation {
     val url = baseUrl.trim()
@@ -74,6 +77,9 @@ data class OpenRouterDraft(val baseUrl: String, val apiKey: String, val selectio
         return false
       }
     val scheme = uri.scheme?.lowercase()
-    return (scheme == "http" || scheme == "https") && !uri.host.isNullOrBlank()
+    return (scheme == "http" || scheme == "https") &&
+      !uri.host.isNullOrBlank() &&
+      uri.rawQuery == null &&
+      uri.rawFragment == null
   }
 }

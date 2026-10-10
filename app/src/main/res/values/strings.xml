@@ -120,7 +120,7 @@
     <string name="model_download_openrouter_api_key_hint">Optional. Stored only on this device.</string>
     <string name="model_download_openrouter_show_key">Show API key</string>
     <string name="model_download_openrouter_hide_key">Hide API key</string>
-    <string name="model_download_openrouter_error_base_url">Enter a full web address starting with http:// or https://</string>
+    <string name="model_download_openrouter_error_base_url">Enter the API base URL, like https://openrouter.ai/api/v1</string>
     <string name="model_download_openrouter_models_loading">Loading models…</string>
     <string name="model_download_openrouter_models_empty">No models available</string>
     <string name="model_download_openrouter_models_search">Search models</string>

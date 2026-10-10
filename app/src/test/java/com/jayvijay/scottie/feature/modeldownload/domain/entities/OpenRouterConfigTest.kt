@@ -24,11 +24,19 @@ class OpenRouterConfigTest {
 
   @Test
   fun baseUrlNeedsHttpSchemeAndHost() {
-    listOf("", "openrouter.ai/api/v1", "ftp://x", "not a url").forEach {
-      assertEquals(it, setOf(BASE_URL), invalidFields(baseUrl = it))
-    }
+    listOf(
+        "",
+        "openrouter.ai/api/v1",
+        "ftp://x",
+        "not a url",
+        "$URL?q=1",
+        "$URL#x",
+      )
+      .forEach { assertEquals(it, setOf(BASE_URL), invalidFields(baseUrl = it)) }
     assertEquals("http://192.168.1.20:8080", valid(baseUrl = "http://192.168.1.20:8080").baseUrl)
     assertEquals(URL, valid(baseUrl = " $URL ").baseUrl)
+    val routeLlm = "https://routellm.abacus.ai/v1"
+    assertEquals(routeLlm, valid(baseUrl = routeLlm).baseUrl)
   }
 
   @Test
@@ -57,7 +65,7 @@ class OpenRouterConfigTest {
   }
 
   private companion object {
-    const val URL = "https://openrouter.ai"
+    const val URL = OpenRouterConfig.DEFAULT_BASE_URL
     val SEL = listOf("a/b")
   }
 }

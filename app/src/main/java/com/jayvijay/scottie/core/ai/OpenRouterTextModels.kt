@@ -12,10 +12,6 @@ import ai.koog.prompt.llm.LLModel
 
 /** How Koog reaches an OpenRouter-compatible server and addresses its models. */
 object OpenRouterTextModels {
-  /** Koog appends `api/v1/...` itself, so a pasted `https://openrouter.ai/api/v1` is trimmed. */
-  fun normalize(baseUrl: String): String =
-    baseUrl.trim().removeSuffix("/").removeSuffix("/api/v1").removeSuffix("/")
-
   /** Koog model for an OpenRouter id; unknown ids get a generic tool-capable definition. */
   fun llModel(modelId: String): LLModel =
     OpenRouterModels.models.find { it.id == modelId }
@@ -29,6 +25,9 @@ object OpenRouterTextModels {
       )
 
   /**
+   * [baseUrl] already carries the API version path (`https://openrouter.ai/api/v1`), so other
+   * OpenAI-compatible servers (`https://routellm.abacus.ai/v1`) work; Koog adds only the endpoint.
+   *
    * The HTTP factory is explicit: Koog's Android Ktor AAR lacks the ServiceLoader registration that
    * the `OpenRouterLLMClient(apiKey, settings)` overload relies on.
    */
@@ -38,7 +37,12 @@ object OpenRouterTextModels {
         LLMProvider.OpenRouter to
           OpenRouterLLMClient(
             apiKey = apiKey,
-            settings = OpenRouterClientSettings(baseUrl = normalize(baseUrl)),
+            settings =
+              OpenRouterClientSettings(
+                baseUrl = baseUrl,
+                chatCompletionsPath = "chat/completions",
+                modelsPath = "models",
+              ),
             httpClientFactory = KtorKoogHttpClient.Factory(),
           )
       )

@@ -9,18 +9,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class OpenRouterTextModelsTest {
-  @Test
-  fun normalizeStripsApiPathAndSlashes() {
-    listOf(
-        "https://openrouter.ai/api/v1/",
-        "https://openrouter.ai/api/v1",
-        "https://openrouter.ai/",
-        " https://openrouter.ai ",
-      )
-      .forEach { assertEquals(it, "https://openrouter.ai", OpenRouterTextModels.normalize(it)) }
-    assertEquals("http://10.0.2.2:8080", OpenRouterTextModels.normalize("http://10.0.2.2:8080"))
-  }
-
   /** The Android Ktor AAR has no ServiceLoader registration, so discovery finds no factory. */
   @Test
   fun executorBuildsWithoutServiceLoaderDiscovery() {

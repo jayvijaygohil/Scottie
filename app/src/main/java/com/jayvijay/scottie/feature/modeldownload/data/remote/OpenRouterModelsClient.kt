@@ -1,7 +1,6 @@
 package com.jayvijay.scottie.feature.modeldownload.data.remote
 
 import android.util.Log
-import com.jayvijay.scottie.core.ai.OpenRouterTextModels
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.AvailableModel
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.FetchFailure
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelsFetch
@@ -18,14 +17,14 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-/** Reads every page of `/api/v1/models`; logs only the failure kind and HTTP status. */
+/** Reads every page of `<baseUrl>/models`; logs only the failure kind and HTTP status. */
 @Singleton
 class OpenRouterModelsClient @Inject constructor(private val json: Json) {
 
   suspend fun fetch(baseUrl: String, apiKey: String): ModelsFetch =
     withContext(Dispatchers.IO) {
       try {
-        val first = OpenRouterTextModels.normalize(baseUrl) + PATH
+        val first = baseUrl.removeSuffix("/") + PATH
         ModelsFetch.Loaded(toAvailable(entries(first, apiKey)))
       } catch (e: Failure) {
         ModelsFetch.Failed(e.reason)
@@ -99,7 +98,7 @@ class OpenRouterModelsClient @Inject constructor(private val json: Json) {
 
   private companion object {
     const val TAG = "OpenRouterModels"
-    const val PATH = "/api/v1/models"
+    const val PATH = "/models"
     const val TIMEOUT_MS = 15_000
     val HTTP_OK = 200..299
     val HTTP_AUTH = setOf(401, 403)
