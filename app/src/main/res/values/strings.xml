@@ -56,14 +56,10 @@
     </plurals>
 
     <!-- Interac assistant -->
-    <string name="assistant_title">Interac assistant</string>
     <string name="assistant_composer_hint">Ask to check balances, send, or request money</string>
-    <string name="assistant_send">Send</string>
-    <string name="assistant_thinking">Thinking…</string>
     <string name="assistant_fallback">I couldn\'t build that form. Please try again.</string>
-    <string name="assistant_model_missing">Download a text model first, then open the assistant from its card.</string>
     <string name="assistant_off_topic">I can check your balances, send an Interac e-Transfer, or request money.</string>
-    <string name="assistant_use_model">Use with Interac assistant</string>
+    <string name="assistant_use_model">Use in chat</string>
     <string name="assistant_form_send_title">Send an Interac e-Transfer</string>
     <string name="assistant_form_request_title">Request money via Interac</string>
     <string name="assistant_field_amount">Amount (CAD)</string>
@@ -103,4 +99,17 @@
     <string name="assistant_alert_title_error">Couldn\'t complete that</string>
     <string name="assistant_alert_title_info">Heads up</string>
     <string name="assistant_latency_debug">first card %1$d ms</string>
+
+    <!-- Chat home screen -->
+    <string name="chat_empty_title">No model downloaded yet</string>
+    <string name="chat_empty_action">Download a Model to Get Started</string>
+    <string name="chat_settings">Model settings</string>
+    <string name="chat_model_selector">Choose model, current: %1$s</string>
+    <string name="chat_thinking">Assistant is thinking</string>
+    <string name="chat_send">Send message</string>
+    <string name="chat_reply_failed">Something went wrong. Please try again.</string>
+    <string name="chat_welcome_title">Hi! I can help with Interac e-Transfers.</string>
+    <string name="chat_example_balance">What\'s my balance?</string>
+    <string name="chat_example_send">Send $50 to Alice</string>
+    <string name="chat_example_request">Request $30 from Jane for dinner</string>
 </resources>

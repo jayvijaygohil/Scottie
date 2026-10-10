@@ -19,21 +19,27 @@ import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadS
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus.Failed
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus.Paused
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelEntry
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.checkCompatibility
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.DownloadStart
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.ModelDownloadRepository
+import java.io.File
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/** Owns catalog registration and the single active download. */
+/** Owns catalog registration, the single active download, and the active text model. */
 @Singleton
 class ModelDownloadRepositoryImpl
 @Inject
@@ -43,10 +49,20 @@ constructor(
   private val resources: DeviceResources,
   private val rows: List<@JvmSuppressWildcards CatalogModel>,
   @ApplicationScope private val scope: CoroutineScope,
+  /** Holds the chosen text model id; absent until the user picks one. */
+  @Named("activeTextModelFile") private val activeFile: File,
 ) : ModelDownloadRepository {
 
   private val state = MutableStateFlow<ModelCatalog>(ModelCatalog.Loading)
   override val catalog: StateFlow<ModelCatalog> = state.asStateFlow()
+
+  private val stored = MutableStateFlow(activeFile.takeIf { it.exists() }?.readText())
+  override val activeTextModel: StateFlow<String?> =
+    combine(state, stored) { catalog, id ->
+        val ids = catalog.downloadedTextIds()
+        id?.takeIf { it in ids } ?: ids.firstOrNull()
+      }
+      .stateIn(scope, SharingStarted.Eagerly, null)
 
   @Volatile private var active: Job? = null
 
@@ -179,6 +195,15 @@ constructor(
       Result.failure(e)
     }
 
+  override fun selectTextModel(modelId: String) {
+    if (modelId !in state.value.downloadedTextIds()) return
+    stored.value = modelId
+    scope.launch {
+      runCatching { activeFile.writeText(modelId) }
+        .onFailure { Log.w(TAG, "active model not saved", it) }
+    }
+  }
+
   private fun setStatus(modelId: String, status: ModelDownloadStatus) {
     state.update { (it as? ModelCatalog.Ready)?.withStatus(modelId, status) ?: it }
   }
@@ -190,3 +215,10 @@ constructor(
     const val TAG = "ModelDownload"
   }
 }
+
+private fun ModelCatalog.downloadedTextIds(): List<String> =
+  (this as? ModelCatalog.Ready)
+    ?.entries
+    ?.filter { it.model.type == ModelType.TEXT && it.status == Downloaded }
+    ?.map { it.model.id }
+    .orEmpty()

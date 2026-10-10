@@ -8,36 +8,40 @@ import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.Assista
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChannel
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.MoneyRequestResult
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Recipient
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransferResult
+import com.jayvijay.scottie.feature.interacbanking.domain.repository.TextModelSource
+import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.test.CircuitReceiveTurbine
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
-import java.io.File
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
+import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TemporaryFolder
 
 class InteracAssistantPresenterTest {
-  @get:Rule val folder = TemporaryFolder()
-
-  private val screen = InteracAssistantScreen("m.litertlm")
-  private val navigator = FakeNavigator(screen)
+  private val navigator = FakeNavigator(InteracAssistantScreen)
   private val extractor = FakeIntentExtractor()
   private val banking = CountingBanking(MockInteracBankingTools())
   private val bridge = FakeA2uiBridge()
+  private val source = FakeTextModelSource()
   private val presenter by lazy {
-    InteracAssistantPresenter(screen, navigator, extractor, banking, { bridge }, folder.root)
+    InteracAssistantPresenter(navigator, extractor, banking, { bridge }, source) { SettingsScreen }
   }
 
-  private fun modelPresent() = File(folder.root, screen.modelId).writeText("model")
+  private fun modelPresent() {
+    source.models.value = listOf(TextModelOption(MODEL, "M"), TextModelOption(OTHER, "O"))
+    source.active.value = MODEL
+  }
 
   private fun balance(id: String) =
     banking.getAccountBalances().single { it.accountId == id }.availableBalance
@@ -91,15 +95,53 @@ class InteracAssistantPresenterTest {
     bridge.rootData()["accounts"]!!.jsonArray.map { it.jsonObject.str("name") }
 
   @Test
-  fun initialStateAndMissingModel() = runTest {
+  fun missingModelBlocksSendUntilOneIsDownloaded() = runTest {
     presenter.test {
       val state = awaitItem()
-      assertEquals("m", state.modelName)
+      assertNull(state.activeModelId)
       assertTrue(state.turns.isEmpty())
       assertFalse(state.busy)
       assertTrue(state.missingModel)
-      state.eventSink(InteracAssistantAction.Back)
-      navigator.awaitPop()
+      state.eventSink(InteracAssistantAction.InputChanged("hi"))
+      awaitState { it.input == "hi" }.eventSink(InteracAssistantAction.Send)
+      state.eventSink(InteracAssistantAction.OpenSettings)
+      assertEquals(SettingsScreen, navigator.awaitNextScreen())
+      assertTrue(extractor.calls.isEmpty())
+
+      modelPresent()
+      val ready = awaitState { !it.missingModel }
+      assertEquals(MODEL, ready.activeModelId)
+      assertEquals(listOf(MODEL, OTHER), ready.models.map { it.id })
+      assertTrue(ready.turns.isEmpty())
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun sendUsesTheActiveModelAndIsIgnoredWhileBusy() = runTest {
+    modelPresent()
+    presenter.test(timeout = 5.seconds) {
+      extractor.enqueue(AssistantIntent(Intent.OTHER, reply = "ok"))
+      val gate = CompletableDeferred<Unit>().also { extractor.gate = it }
+      awaitState { !it.missingModel }.eventSink(InteracAssistantAction.InputChanged("hello"))
+      awaitState { it.input == "hello" }.eventSink(InteracAssistantAction.Send)
+      val thinking = awaitState { it.busy && it.turns.singleOrNull()?.reply == TurnReply.Thinking }
+      assertEquals("", thinking.input)
+      thinking.eventSink(InteracAssistantAction.InputChanged("again"))
+      awaitState { it.input == "again" }.eventSink(InteracAssistantAction.Send)
+      thinking.eventSink(InteracAssistantAction.SelectModel(OTHER))
+      gate.complete(Unit)
+      val done = awaitState { !it.busy && it.turns.singleOrNull()?.reply == TurnReply.Text("ok") }
+      assertEquals(listOf(MODEL), extractor.modelIds)
+      assertEquals(listOf("hello"), extractor.calls)
+      assertTrue(source.selected.isEmpty())
+      assertEquals("again", done.input)
+
+      done.eventSink(InteracAssistantAction.SelectModel(OTHER))
+      assertEquals(listOf(OTHER), source.selected)
+      val switched = awaitState { it.activeModelId == OTHER }
+      assertEquals(1, switched.turns.size)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 
@@ -107,8 +149,7 @@ class InteracAssistantPresenterTest {
   fun offTopicAndFailures() = runTest {
     modelPresent()
     presenter.test(timeout = 5.seconds) {
-      var s = awaitItem()
-      assertFalse(s.missingModel)
+      var s = awaitState { !it.missingModel }
       s = send(s, "What's the weather?", AssistantIntent(Intent.OTHER, reply = "I can help."))
       assertEquals(TurnReply.Text("I can help."), s.turns.last().reply)
 
@@ -119,12 +160,11 @@ class InteracAssistantPresenterTest {
       s.eventSink(InteracAssistantAction.InputChanged("x"))
       awaitState { it.input == "x" }.eventSink(InteracAssistantAction.Send)
       val failed = awaitState {
-        it.turns.size == 3 && it.turns.last().reply is TurnReply.Fallback && !it.busy
+        it.turns.size == 3 && it.turns.last().reply is TurnReply.Failed && !it.busy
       }
+      assertEquals("x", failed.turns.last().userText)
       assertEquals(listOf("What's the weather?", "weather", "x"), extractor.calls)
       assertTrue(bridge.accepted.value.isEmpty())
-      failed.eventSink(InteracAssistantAction.Back)
-      navigator.awaitPop()
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -413,6 +453,17 @@ class InteracAssistantPresenterTest {
     }
   }
 
+  private class FakeTextModelSource : TextModelSource {
+    override val models = MutableStateFlow(emptyList<TextModelOption>())
+    override val active = MutableStateFlow<String?>(null)
+    val selected = mutableListOf<String>()
+
+    override fun select(id: String) {
+      selected += id
+      active.value = id
+    }
+  }
+
   /** Counts money-moving calls so tests can assert "exactly once". */
   private class CountingBanking(private val delegate: InteracBankingTools) :
     InteracBankingTools by delegate {
@@ -456,3 +507,8 @@ class InteracAssistantPresenterTest {
     }
   }
 }
+
+@Parcelize private data object SettingsScreen : ParcelableScreen
+
+private const val MODEL = "m.litertlm"
+private const val OTHER = "o.litertlm"

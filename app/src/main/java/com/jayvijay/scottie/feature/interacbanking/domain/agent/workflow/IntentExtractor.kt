@@ -2,7 +2,10 @@ package com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow
 
 import ai.koog.prompt.llm.LLModel
 
-/** Turns typed text into an [AssistantIntent]; never throws, falls back to OTHER. */
+/**
+ * Turns typed text into an [AssistantIntent]; throws on inference failure and falls back to OTHER
+ * on unparseable output.
+ */
 fun interface IntentExtractor {
   suspend fun extract(text: String, modelId: String): AssistantIntent
 }

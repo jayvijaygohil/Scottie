@@ -258,14 +258,14 @@ private fun ModelDownloadProgress(fraction: Float?) {
   if (fraction == null) {
     LinearProgressIndicator(
       modifier = modifier,
-      color = MaterialTheme.colorScheme.error,
+      color = MaterialTheme.colorScheme.primary,
       trackColor = MaterialTheme.colorScheme.outlineVariant,
     )
   } else {
     LinearProgressIndicator(
       progress = { animatedProgress },
       modifier = modifier,
-      color = MaterialTheme.colorScheme.error,
+      color = MaterialTheme.colorScheme.primary,
       trackColor = MaterialTheme.colorScheme.outlineVariant,
       gapSize = 0.dp,
       drawStopIndicator = {},
@@ -286,9 +286,10 @@ private fun ModelDownloadButton(
     onClick = onClick,
     state = if (enabled) XelaButtonState.DEFAULT else XelaButtonState.DISABLED,
     type = if (filled) XelaButtonType.PRIMARY else XelaButtonType.SECONDARY,
-    background = if (filled) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surface,
+    background =
+      if (filled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
     foregroundColor =
-      if (filled) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.error,
+      if (filled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
     defaultBorderColor = MaterialTheme.colorScheme.outlineVariant,
     modifier = modifier,
   )

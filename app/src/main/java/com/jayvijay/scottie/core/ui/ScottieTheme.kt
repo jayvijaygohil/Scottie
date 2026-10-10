@@ -48,10 +48,10 @@ val XelaTypography =
 
 val XelaDarkColorScheme =
   darkColorScheme(
-    primary = XelaColor.Blue6,
+    primary = XelaColor.Red6,
     onPrimary = Color.White,
-    primaryContainer = XelaColor.Blue1,
-    onPrimaryContainer = XelaColor.Blue11,
+    primaryContainer = XelaColor.Red1,
+    onPrimaryContainer = XelaColor.Red11,
     secondary = XelaColor.Purple6,
     onSecondary = XelaColor.Gray1,
     secondaryContainer = XelaColor.Purple1,
@@ -68,18 +68,18 @@ val XelaDarkColorScheme =
     onSurfaceVariant = XelaColor.Gray8,
     outline = XelaColor.Gray5,
     outlineVariant = XelaColor.Gray4,
-    error = XelaColor.Red6,
-    onError = Color.White,
-    errorContainer = XelaColor.Red1,
-    onErrorContainer = XelaColor.Red11,
+    error = XelaColor.Orange6,
+    onError = XelaColor.Gray1,
+    errorContainer = XelaColor.Orange1,
+    onErrorContainer = XelaColor.Orange11,
   )
 
 val XelaLightColorScheme =
   lightColorScheme(
-    primary = XelaColor.Blue3,
+    primary = XelaColor.Red3,
     onPrimary = Color.White,
-    primaryContainer = XelaColor.Blue12,
-    onPrimaryContainer = XelaColor.Blue1,
+    primaryContainer = XelaColor.Red12,
+    onPrimaryContainer = XelaColor.Red1,
     secondary = XelaColor.Purple3,
     onSecondary = Color.White,
     secondaryContainer = XelaColor.Purple12,
@@ -96,10 +96,10 @@ val XelaLightColorScheme =
     onSurfaceVariant = XelaColor.Gray5,
     outline = XelaColor.Gray10,
     outlineVariant = XelaColor.Gray11,
-    error = XelaColor.Red3,
+    error = XelaColor.Orange2,
     onError = Color.White,
-    errorContainer = XelaColor.Red12,
-    onErrorContainer = XelaColor.Red1,
+    errorContainer = XelaColor.Orange12,
+    onErrorContainer = XelaColor.Orange1,
   )
 
 @Composable

@@ -107,7 +107,7 @@ class ModelDownloadUi @Inject constructor() : Ui<ModelDownloadState> {
             onFirstButtonAction = { state.eventSink(ModelDownloadAction.DismissError) },
             background = MaterialTheme.colorScheme.surface,
             titleColor = MaterialTheme.colorScheme.onSurface,
-            firstActionButtonColor = MaterialTheme.colorScheme.error,
+            firstActionButtonColor = MaterialTheme.colorScheme.primary,
           )
         }
       }
@@ -163,7 +163,7 @@ private fun Message(text: String, loading: Boolean = false) {
     verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    if (loading) CircularProgressIndicator(color = MaterialTheme.colorScheme.error)
+    if (loading) CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
     Text(
       text = text,
       style = MaterialTheme.typography.bodyLarge,

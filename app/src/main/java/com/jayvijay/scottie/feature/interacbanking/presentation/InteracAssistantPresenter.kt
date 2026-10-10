@@ -8,7 +8,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.tools.InteracBankingTools
@@ -20,6 +19,7 @@ import com.jayvijay.scottie.feature.interacbanking.domain.entities.Account
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChannel
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.InteracContact
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Recipient
+import com.jayvijay.scottie.feature.interacbanking.domain.repository.TextModelSource
 import com.jayvijay.scottie.feature.interacbanking.domain.usecase.ContactMatcher
 import com.jayvijay.scottie.feature.interacbanking.domain.usecase.InteracResolution
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.A2uiBridge
@@ -36,8 +36,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.components.SingletonComponent
-import java.io.File
-import javax.inject.Named
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -47,12 +46,12 @@ import kotlinx.serialization.json.JsonPrimitive
 class InteracAssistantPresenter
 @AssistedInject
 constructor(
-  @Assisted private val screen: InteracAssistantScreen,
   @Assisted private val navigator: Navigator,
   private val extractor: IntentExtractor,
   private val banking: InteracBankingTools,
   private val bridgeFactory: A2uiBridgeFactory,
-  @Named("liteRtModelsDir") private val modelsDir: File,
+  private val source: TextModelSource,
+  private val settings: ModelSettingsDestination,
 ) : Presenter<InteracAssistantState> {
 
   @Composable
@@ -63,7 +62,8 @@ constructor(
     val bridge = rememberRetained { bridgeFactory.create() }
     val startedAt = rememberRetained { mutableMapOf<String, Long>() }
     val surfaces by bridge.surfaces.collectAsState()
-    val missingModel = remember { !File(modelsDir, screen.modelId).exists() }
+    val models by source.models.collectAsState(initial = emptyList())
+    val active by source.active.collectAsState(initial = null)
     val scope = rememberCoroutineScope()
 
     fun update(surfaceId: String, reply: TurnReply) {
@@ -104,19 +104,22 @@ constructor(
     }
 
     return InteracAssistantState(
-      modelName = screen.modelId.removeSuffix(MODEL_SUFFIX),
+      models = models,
+      activeModelId = active,
       turns = turns,
       input = input,
       busy = busy,
-      missingModel = missingModel,
+      missingModel = active == null,
       surfaces = surfaces,
     ) { action ->
       when (action) {
-        InteracAssistantAction.Back -> navigator.pop()
         is InteracAssistantAction.InputChanged -> input = action.text
+        is InteracAssistantAction.SelectModel -> if (!busy) source.select(action.id)
+        InteracAssistantAction.OpenSettings -> navigator.goTo(settings.screen())
         InteracAssistantAction.Send -> {
           val text = input.trim()
-          if (text.isEmpty() || busy || missingModel) return@InteracAssistantState
+          val modelId = active
+          if (text.isEmpty() || busy || modelId == null) return@InteracAssistantState
           val turn = AssistantTurn(turns.size + 1, text, TurnReply.Thinking)
           input = ""
           busy = true
@@ -124,9 +127,10 @@ constructor(
           startedAt[turn.surfaceId] = System.currentTimeMillis()
           scope.launch {
             val reply = runCatching {
-              respond(text, turn.surfaceId, bridge)
+              respond(text, modelId, turn.surfaceId, bridge)
             }
               .getOrElse {
+                if (it is CancellationException) throw it
                 Log.w(TAG, "turn failed", it)
                 TurnReply.Fallback
               }
@@ -138,18 +142,37 @@ constructor(
     }
   }
 
-  private suspend fun respond(text: String, surfaceId: String, bridge: A2uiBridge): TurnReply {
-    val intent = extractor.extract(text, screen.modelId)
+  private suspend fun respond(
+    text: String,
+    modelId: String,
+    surfaceId: String,
+    bridge: A2uiBridge,
+  ): TurnReply {
+    val intent = extractOrNull(text, modelId) ?: return TurnReply.Failed
     val lines =
       when (intent.intent) {
-        Intent.OTHER -> return TurnReply.Text(intent.reply)
+        Intent.OTHER -> null
         Intent.BALANCE -> balanceLines(intent.accountHint, surfaceId)
         Intent.SEND -> sendLines(intent, surfaceId)
         Intent.REQUEST -> requestLines(intent, surfaceId)
       }
-    lines.forEach(bridge::accept)
-    return TurnReply.Surface(surfaceId)
+    return if (lines == null) {
+      TurnReply.Text(intent.reply)
+    } else {
+      lines.forEach(bridge::accept)
+      TurnReply.Surface(surfaceId)
+    }
   }
+
+  /** FR-015: inference failures get their own reply; building the surface may still fall back. */
+  private suspend fun extractOrNull(text: String, modelId: String): AssistantIntent? = runCatching {
+    extractor.extract(text, modelId)
+  }
+    .getOrElse {
+      if (it is CancellationException) throw it
+      Log.w(TAG, "inference failed", it)
+      null
+    }
 
   private suspend fun balanceLines(hint: String?, surfaceId: String): List<String> {
     val all = banking { getAccountBalances() }
@@ -461,12 +484,11 @@ constructor(
   @CircuitInject(InteracAssistantScreen::class, SingletonComponent::class)
   @AssistedFactory
   fun interface Factory {
-    fun create(screen: InteracAssistantScreen, navigator: Navigator): InteracAssistantPresenter
+    fun create(navigator: Navigator): InteracAssistantPresenter
   }
 
   private companion object {
     const val TAG = "InteracAssistant"
-    const val MODEL_SUFFIX = ".litertlm"
     const val MANUAL_PHONE_DIGITS = 7
     const val PROBE_AMOUNT = 0.01
   }

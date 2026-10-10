@@ -1,17 +1,20 @@
 package com.jayvijay.scottie.feature.interacbanking.presentation
 
 import androidx.a2ui.model.processor.A2uiSurfaceModel
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 
 data class InteracAssistantState(
-  val modelName: String,
+  /** Downloaded text models for the selector, catalog order. */
+  val models: List<TextModelOption>,
+  val activeModelId: String?,
   /** Oldest first. */
   val turns: List<AssistantTurn>,
   val input: String,
   /** Inference or submission in flight. */
   val busy: Boolean,
-  /** The model file is not on disk; no inference is attempted (FR-027). */
+  /** No downloaded text model; the empty state replaces the chat. */
   val missingModel: Boolean,
   /** Live A2UI surfaces; a turn renders the one whose id matches. */
   val surfaces: List<A2uiSurfaceModel>,
@@ -34,7 +37,11 @@ sealed interface TurnReply {
 
   data class Surface(val surfaceId: String) : TurnReply
 
+  /** The form or cards could not be built. */
   data object Fallback : TurnReply
+
+  /** Inference failed or the model could not load. */
+  data object Failed : TurnReply
 }
 
 /** App notices travel as codes; the `Alert` component resolves the copy. */
@@ -45,9 +52,12 @@ sealed interface Notice {
 }
 
 sealed interface InteracAssistantAction : CircuitUiEvent {
-  data object Back : InteracAssistantAction
-
   data class InputChanged(val text: String) : InteracAssistantAction
 
   data object Send : InteracAssistantAction
+
+  /** Ignored while a reply is in progress. */
+  data class SelectModel(val id: String) : InteracAssistantAction
+
+  data object OpenSettings : InteracAssistantAction
 }

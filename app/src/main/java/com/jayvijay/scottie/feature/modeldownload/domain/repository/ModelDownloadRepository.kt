@@ -21,6 +21,15 @@ interface ModelDownloadRepository {
 
   /** Removes a downloaded model's files, supported or not. Failure leaves the entry Downloaded. */
   suspend fun delete(modelId: String): Result<Unit>
+
+  /**
+   * Stored id if that entry is `TEXT` and `Downloaded`; else first such entry in catalog order;
+   * else null.
+   */
+  val activeTextModel: StateFlow<String?>
+
+  /** Persists the choice. Ignored unless [modelId] is a downloaded text model. */
+  fun selectTextModel(modelId: String)
 }
 
 sealed interface DownloadStart {

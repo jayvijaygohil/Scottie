@@ -37,8 +37,6 @@ object Badge : A2uiComponent {
   @Composable
   internal fun toneColors(tone: String) =
     when (tone) {
-      "success" ->
-        MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
       "warning",
       "error" ->
         MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer

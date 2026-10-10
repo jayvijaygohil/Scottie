@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.runtime.remember
 import com.jayvijay.scottie.core.ui.ScottieTheme
-import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadScreen
+import com.jayvijay.scottie.feature.interacbanking.presentation.InteracAssistantScreen
 import com.slack.circuit.backstack.rememberSaveableBackStack
 import com.slack.circuit.foundation.Circuit
 import com.slack.circuit.foundation.CircuitCompositionLocals
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
     setContent {
       ScottieTheme {
         CircuitCompositionLocals(circuit) {
-          val backStack = rememberSaveableBackStack(root = ModelDownloadScreen)
+          val backStack = rememberSaveableBackStack(root = InteracAssistantScreen)
           val navigator =
             rememberAndroidScreenAwareNavigator(
               delegate = rememberCircuitNavigator(backStack, onRootPop = { finish() }),

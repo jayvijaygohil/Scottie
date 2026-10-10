@@ -26,21 +26,28 @@ import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadS
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ShortfallKind
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.DownloadStart
+import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Rule
 import org.junit.Test
+import org.junit.rules.TemporaryFolder
 
 class ModelDownloadRepositoryImplTest {
+  @get:Rule val folder = TemporaryFolder()
+
   private val runtime = FakeModelRuntime()
   private val host = FakeDownloadForegroundHost()
   private val resources = FakeDeviceResources()
+  private val activeFile by lazy { File(folder.root, "active_text_model") }
 
   private fun TestScope.repository(rows: List<CatalogModel> = ROWS): ModelDownloadRepositoryImpl =
-    ModelDownloadRepositoryImpl(runtime, host, resources, rows, backgroundScope).also {
+    ModelDownloadRepositoryImpl(runtime, host, resources, rows, backgroundScope, activeFile).also {
       runCurrent()
     }
 
@@ -55,7 +62,7 @@ class ModelDownloadRepositoryImplTest {
   @Test
   fun catalogLoadsWithDownloadedIdsApplied() = runTest {
     runtime.downloaded += B
-    val repo = ModelDownloadRepositoryImpl(runtime, host, resources, ROWS, backgroundScope)
+    val repo = ModelDownloadRepositoryImpl(runtime, host, resources, ROWS, backgroundScope, activeFile)
     assertEquals(ModelCatalog.Loading, repo.catalog.value)
     runCurrent()
 
@@ -332,6 +339,58 @@ class ModelDownloadRepositoryImplTest {
   }
 
   @Test
+  fun activeTextModelPrefersTheStoredDownloadedModel() = runTest {
+    runtime.downloaded += listOf(T1, T2, A)
+    activeFile.writeText(T2)
+    assertEquals(T2, repository(TEXT_ROWS).activeTextModel.value)
+  }
+
+  @Test
+  fun activeTextModelFallsBackToTheFirstDownloadedTextModel() = runTest {
+    runtime.downloaded += listOf(T2, A)
+    activeFile.writeText(T1)
+    assertEquals(T2, repository(TEXT_ROWS).activeTextModel.value)
+  }
+
+  @Test
+  fun activeTextModelIsNullWithoutDownloadedTextModels() = runTest {
+    runtime.downloaded += A // Speech models never count.
+    assertNull(repository(TEXT_ROWS).activeTextModel.value)
+  }
+
+  @Test
+  fun selectTextModelPersistsAcrossInstances() = runTest {
+    runtime.downloaded += listOf(T1, T2)
+    val repo = repository(TEXT_ROWS)
+    repo.selectTextModel(T2)
+    runCurrent()
+    assertEquals(T2, repo.activeTextModel.value)
+    assertEquals(T2, repository(TEXT_ROWS).activeTextModel.value)
+  }
+
+  @Test
+  fun selectTextModelIgnoresModelsThatAreNotDownloadedText() = runTest {
+    runtime.downloaded += listOf(T1, A)
+    val repo = repository(TEXT_ROWS)
+    repo.selectTextModel(T2)
+    repo.selectTextModel(A)
+    runCurrent()
+    assertEquals(T1, repo.activeTextModel.value)
+    assertTrue(!activeFile.exists())
+  }
+
+  @Test
+  fun deletingTheActiveModelMovesToTheNextDownloadedOne() = runTest {
+    runtime.downloaded += listOf(T1, T2)
+    val repo = repository(TEXT_ROWS)
+    repo.selectTextModel(T1)
+    runCurrent()
+    repo.delete(T1)
+    runCurrent()
+    assertEquals(T2, repo.activeTextModel.value)
+  }
+
+  @Test
   fun deleteFailureKeepsModelDownloaded() = runTest {
     runtime.downloaded += B
     runtime.deleteError = IOException("locked")
@@ -344,6 +403,8 @@ class ModelDownloadRepositoryImplTest {
     const val A = "a"
     const val B = "b"
     const val TOKEN = "token.litertlm"
+    const val T1 = "t1.litertlm"
+    const val T2 = "t2.litertlm"
     const val TOTAL = 100L
 
     val ARCHIVE =
@@ -364,6 +425,11 @@ class ModelDownloadRepositoryImplTest {
         stt(B),
         LiteRtModel(TOKEN, "Token", "https://example.com/t", TOTAL, TOTAL, true),
       )
+
+    val TEXT_ROWS: List<CatalogModel> =
+      listOf(stt(A), text(T1), text(T2))
+
+    fun text(id: String) = LiteRtModel(id, "Text $id", "https://example.com/$id", TOTAL, TOTAL, false)
 
     fun stt(id: String) =
       MultiFileModel(

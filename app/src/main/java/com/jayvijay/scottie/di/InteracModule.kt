@@ -8,17 +8,25 @@ import com.jayvijay.scottie.feature.interacbanking.domain.agent.tools.InteracBan
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.IntentExtractor
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InteracAssistantAgent
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.ModelResolver
-import com.jayvijay.scottie.feature.interacbanking.presentation.InteracAssistantScreen
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
+import com.jayvijay.scottie.feature.interacbanking.domain.repository.TextModelSource
+import com.jayvijay.scottie.feature.interacbanking.presentation.ModelSettingsDestination
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.A2uiBridgeFactory
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.ProcessorA2uiBridge
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.interacCatalog
-import com.jayvijay.scottie.feature.modeldownload.presentation.TextModelDestination
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelCatalog
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
+import com.jayvijay.scottie.feature.modeldownload.domain.repository.ModelDownloadRepository
+import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadScreen
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -46,10 +54,28 @@ object InteracModule {
     return A2uiBridgeFactory { ProcessorA2uiBridge(catalog) }
   }
 
-  /** The only place both features' presentation types meet. */
+  /** The only place both features meet: the chat reads model state through its own contract. */
   @Provides
-  fun textModelDestination(): TextModelDestination = TextModelDestination {
-    InteracAssistantScreen(it)
+  fun textModelSource(repository: ModelDownloadRepository): TextModelSource =
+    object : TextModelSource {
+      override val models: Flow<List<TextModelOption>> =
+        repository.catalog.map { catalog ->
+          (catalog as? ModelCatalog.Ready)
+            ?.entries
+            ?.filter {
+              it.model.type == ModelType.TEXT && it.status == ModelDownloadStatus.Downloaded
+            }
+            ?.map { TextModelOption(it.model.id, it.model.name) }
+            .orEmpty()
+        }
+      override val active: Flow<String?> = repository.activeTextModel
+
+      override fun select(id: String) = repository.selectTextModel(id)
+    }
+
+  @Provides
+  fun modelSettingsDestination(): ModelSettingsDestination = ModelSettingsDestination {
+    ModelDownloadScreen
   }
 }
 

@@ -1,5 +1,6 @@
 package com.jayvijay.scottie.di
 
+import android.content.Context
 import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.AndroidDeviceResources
 import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.CatalogModel
 import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.DeviceResources
@@ -16,7 +17,10 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import java.io.File
+import javax.inject.Named
 import javax.inject.Qualifier
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +47,11 @@ object DataModule {
     CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
   @Provides fun provideModelCatalog(): List<CatalogModel> = StaticModelCatalog.models
+
+  @Provides
+  @Named("activeTextModelFile")
+  fun activeTextModelFile(@ApplicationContext context: Context): File =
+    File(context.filesDir, "active_text_model")
 
   @Provides
   @Singleton

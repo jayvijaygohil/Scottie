@@ -13,8 +13,9 @@ import kotlinx.serialization.json.Json
 
 /**
  * One Koog agent per request: free-form request with read-only tools, then the reply is parsed as
- * [AssistantIntent]; a structured repair request runs only when the first reply is not JSON. Any
- * failure yields [AssistantIntent.FALLBACK]. Constructed in `di/`; no DI or Android here.
+ * [AssistantIntent]; a structured repair request runs only when the first reply is not JSON.
+ * Unparseable output yields [AssistantIntent.FALLBACK]; model load or inference failures propagate.
+ * Constructed in `di/`; no DI or Android here.
  */
 class InteracAssistantAgent(
   private val executor: PromptExecutor,
@@ -37,9 +38,6 @@ class InteracAssistantAgent(
         )
       try {
         agent.run(text)
-      } catch (@Suppress("TooGenericExceptionCaught", "SwallowedException") e: Exception) {
-        // Domain code cannot log; any inference failure is the spec's OTHER fallback (FR-024).
-        AssistantIntent.FALLBACK
       } finally {
         agent.close()
       }

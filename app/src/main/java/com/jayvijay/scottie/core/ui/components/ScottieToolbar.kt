@@ -2,8 +2,11 @@ package com.jayvijay.scottie.core.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,45 +32,57 @@ import com.jayvijay.scottie.core.ui.xelauikit.models.xelaSubheadline
 @Composable
 fun ScottieToolbar(
   title: String,
-  backLabel: String,
-  onBack: () -> Unit,
   modifier: Modifier = Modifier,
+  /** Back arrow description; the arrow is shown only when [onBack] is set. */
+  backLabel: String? = null,
+  onBack: (() -> Unit)? = null,
   subtitle: String? = null,
+  /** Replaces the [title] text in the bar, e.g. a selector. */
+  titleContent: (@Composable () -> Unit)? = null,
+  actions: @Composable RowScope.() -> Unit = {},
   /** Optional search input shown below the title, e.g. [ScottieSearchField]. */
   search: (@Composable () -> Unit)? = null,
 ) {
   Column(modifier = modifier) {
     TopAppBar(
       title = {
-        Text(
-          text = title,
-          modifier = Modifier.semantics { heading() },
-          style = xelaSubheadline,
-        )
-      },
-      navigationIcon = {
-        IconButton(
-          onClick = onBack,
-          modifier = Modifier.size(48.dp),
-          colors =
-            IconButtonDefaults.iconButtonColors(
-              containerColor = Color.Transparent,
-              contentColor = MaterialTheme.colorScheme.onBackground,
-              disabledContainerColor = Color.Transparent,
-            ),
-          shape = MaterialTheme.shapes.small,
-        ) {
-          Icon(
-            painter = painterResource(R.drawable.ic_arrow_left),
-            contentDescription = backLabel,
-            modifier = Modifier.size(20.dp),
+        if (titleContent != null) {
+          titleContent()
+        } else {
+          Text(
+            text = title,
+            modifier = Modifier.semantics { heading() },
+            style = xelaSubheadline,
           )
         }
       },
+      navigationIcon = {
+        if (onBack != null) {
+          IconButton(
+            onClick = onBack,
+            modifier = Modifier.size(48.dp),
+            colors =
+              IconButtonDefaults.iconButtonColors(
+                containerColor = Color.Transparent,
+                contentColor = MaterialTheme.colorScheme.onBackground,
+                disabledContainerColor = Color.Transparent,
+              ),
+            shape = MaterialTheme.shapes.small,
+          ) {
+            Icon(
+              painter = painterResource(R.drawable.ic_arrow_left),
+              contentDescription = backLabel,
+              modifier = Modifier.size(20.dp),
+            )
+          }
+        }
+      },
+      actions = actions,
       colors =
         TopAppBarDefaults.topAppBarColors(
           containerColor = MaterialTheme.colorScheme.background,
           titleContentColor = MaterialTheme.colorScheme.onBackground,
+          actionIconContentColor = MaterialTheme.colorScheme.onBackground,
         ),
     )
 
@@ -126,6 +141,20 @@ private fun ScottieToolbarWithSearchPreview() {
           placeholder = "Search",
           clearLabel = "Clear",
         )
+      },
+    )
+  }
+}
+
+@Preview(name = "Root toolbar with title slot and action")
+@Composable
+private fun ScottieToolbarRootPreview() {
+  ScottieTheme {
+    ScottieToolbar(
+      title = "Chat",
+      titleContent = { Text("gemma-4-E2B-it", style = xelaSubheadline) },
+      actions = {
+        IconButton(onClick = {}) { Icon(Icons.Rounded.Settings, contentDescription = "Settings") }
       },
     )
   }

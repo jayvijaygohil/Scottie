@@ -108,6 +108,13 @@ class InteracAssistantAgentTest {
   }
 
   @Test
+  fun modelLoadFailurePropagates() = runTest {
+    val agent = InteracAssistantAgent(answering("{}"), ToolRegistry.EMPTY) { error("no model") }
+    val failure = runCatching { agent.extract("hi", model.id) }.exceptionOrNull()
+    assertEquals("no model", failure?.message)
+  }
+
+  @Test
   fun garbageAnswerFallsBackToOther() = runTest {
     assertEquals(AssistantIntent.FALLBACK, agent(answering("sure thing")).extract("hi", model.id))
   }

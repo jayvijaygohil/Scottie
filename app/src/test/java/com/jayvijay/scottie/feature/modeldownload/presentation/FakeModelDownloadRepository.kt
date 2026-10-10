@@ -13,6 +13,8 @@ class FakeModelDownloadRepository : ModelDownloadRepository {
   val downloads = mutableListOf<String>()
   val pauses = mutableListOf<String>()
   val deletes = mutableListOf<String>()
+  val selections = mutableListOf<String>()
+  override val activeTextModel = MutableStateFlow<String?>(null)
 
   override suspend fun download(modelId: String): DownloadStart {
     downloads += modelId
@@ -26,5 +28,10 @@ class FakeModelDownloadRepository : ModelDownloadRepository {
   override suspend fun delete(modelId: String): Result<Unit> {
     deletes += modelId
     return deleteResult
+  }
+
+  override fun selectTextModel(modelId: String) {
+    selections += modelId
+    activeTextModel.value = modelId
   }
 }
