@@ -3,10 +3,10 @@ package com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow
 import ai.koog.agents.core.agent.AIAgent
 import ai.koog.agents.core.agent.functionalStrategy
 import ai.koog.agents.core.tools.ToolRegistry
-import ai.koog.prompt.executor.model.PromptExecutor
 import ai.koog.prompt.executor.model.StructureFixingParser
 import ai.koog.prompt.llm.LLModel
 import ai.koog.prompt.message.MessagePart
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -14,34 +14,45 @@ import kotlinx.serialization.json.Json
 /**
  * One Koog agent per request: free-form request with read-only tools, then the reply is parsed as
  * [AssistantIntent]; a structured repair request runs only when the first reply is not JSON.
- * Unparseable output yields [AssistantIntent.FALLBACK]; model load or inference failures propagate.
+ * Unparseable output yields [AssistantIntent.FALLBACK]; model load or inference failures surface as
+ * [InferenceException], classified by [classifier].
  * Constructed in `di/`; no DI or Android here.
  */
 class InteracAssistantAgent(
-  private val executor: PromptExecutor,
   private val toolRegistry: ToolRegistry,
   private val models: ModelResolver,
+  private val classifier: FailureClassifier,
 ) : IntentExtractor {
 
   override suspend fun extract(text: String, modelId: String): AssistantIntent =
     withContext(Dispatchers.Default) {
-      val model = models.resolve(modelId)
-      val agent =
-        AIAgent(
-          promptExecutor = executor,
-          llmModel = model,
-          strategy = strategy(model),
-          toolRegistry = toolRegistry,
-          systemPrompt = INTERAC_AGENT_INSTRUCTIONS,
-          temperature = 0.0,
-          maxIterations = MAX_ITERATIONS,
-        )
       try {
-        agent.run(text)
-      } finally {
-        agent.close()
+        run(text, modelId)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+        throw InferenceException(classifier.classify(e), e)
       }
     }
+
+  private suspend fun run(text: String, modelId: String): AssistantIntent {
+    val (executor, model) = models.resolve(modelId)
+    val agent =
+      AIAgent(
+        promptExecutor = executor,
+        llmModel = model,
+        strategy = strategy(model),
+        toolRegistry = toolRegistry,
+        systemPrompt = INTERAC_AGENT_INSTRUCTIONS,
+        temperature = 0.0,
+        maxIterations = MAX_ITERATIONS,
+      )
+    return try {
+      agent.run(text)
+    } finally {
+      agent.close()
+    }
+  }
 
   private fun strategy(model: LLModel) =
     functionalStrategy<String, AssistantIntent>("interac-intent") { input ->

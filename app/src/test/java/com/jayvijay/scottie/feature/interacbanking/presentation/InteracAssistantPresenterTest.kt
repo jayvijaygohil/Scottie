@@ -5,6 +5,8 @@ import com.jayvijay.scottie.feature.interacbanking.domain.agent.tools.InteracBan
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.ChannelHint
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.Intent
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceException
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChannel
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.MoneyRequestResult
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Recipient
@@ -15,6 +17,7 @@ import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.test.CircuitReceiveTurbine
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
+import java.io.IOException
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -162,6 +165,7 @@ class InteracAssistantPresenterTest {
       val failed = awaitState {
         it.turns.size == 3 && it.turns.last().reply is TurnReply.Failed && !it.busy
       }
+      assertEquals(TurnReply.Failed(InferenceFailure.UNKNOWN), failed.turns.last().reply)
       assertEquals("x", failed.turns.last().userText)
       assertEquals(listOf("What's the weather?", "weather", "x"), extractor.calls)
       assertTrue(bridge.accepted.value.isEmpty())
@@ -453,6 +457,35 @@ class InteracAssistantPresenterTest {
     }
   }
 
+  @Test
+  fun classifiedFailureKeepsTheTurnAndAllowsRetry() = runTest {
+    modelPresent()
+    presenter.test(timeout = 5.seconds) {
+      val s = awaitState { !it.missingModel }
+      extractor.enqueueFailure(InferenceException(InferenceFailure.OFFLINE, IOException()))
+      s.eventSink(InteracAssistantAction.InputChanged("hi"))
+      awaitState { it.input == "hi" }.eventSink(InteracAssistantAction.Send)
+      val failed = awaitState { it.turns.size == 1 && !it.busy }
+      assertEquals(TurnReply.Failed(InferenceFailure.OFFLINE), failed.turns.single().reply)
+      assertEquals("hi", failed.turns.single().userText)
+
+      val retried = send(failed, "hi", AssistantIntent(Intent.OTHER, reply = "ok"))
+      assertEquals(TurnReply.Text("ok"), retried.turns.last().reply)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun remoteActiveModelIsPassedToInference() = runTest {
+    source.models.value = listOf(TextModelOption(REMOTE, "x/y", remote = true))
+    source.active.value = REMOTE
+    presenter.test(timeout = 5.seconds) {
+      send(awaitState { !it.missingModel }, "hi", AssistantIntent(Intent.OTHER, reply = "ok"))
+      assertEquals(listOf(REMOTE), extractor.modelIds)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private class FakeTextModelSource : TextModelSource {
     override val models = MutableStateFlow(emptyList<TextModelOption>())
     override val active = MutableStateFlow<String?>(null)
@@ -512,3 +545,4 @@ class InteracAssistantPresenterTest {
 
 private const val MODEL = "m.litertlm"
 private const val OTHER = "o.litertlm"
+private const val REMOTE = "openrouter:x/y"

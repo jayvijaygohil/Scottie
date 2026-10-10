@@ -1,12 +1,13 @@
 package com.jayvijay.scottie.feature.interacbanking.presentation
 
 import androidx.a2ui.model.processor.A2uiSurfaceModel
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 
 data class InteracAssistantState(
-  /** Downloaded text models for the selector, catalog order. */
+  /** Downloaded text models in catalog order, then configured remote models. */
   val models: List<TextModelOption>,
   val activeModelId: String?,
   /** Oldest first. */
@@ -40,8 +41,8 @@ sealed interface TurnReply {
   /** The form or cards could not be built. */
   data object Fallback : TurnReply
 
-  /** Inference failed or the model could not load. */
-  data object Failed : TurnReply
+  /** Inference failed; [failure] selects the message. */
+  data class Failed(val failure: InferenceFailure) : TurnReply
 }
 
 /** App notices travel as codes; the `Alert` component resolves the copy. */

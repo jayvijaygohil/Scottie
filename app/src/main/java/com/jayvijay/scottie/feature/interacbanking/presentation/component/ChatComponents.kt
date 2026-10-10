@@ -247,7 +247,21 @@ internal fun ModelSelector(
     DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
       models.forEach { model ->
         DropdownMenuItem(
-          text = { Text(model.name) },
+          text = {
+            Row(
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+              verticalAlignment = Alignment.CenterVertically,
+            ) {
+              Text(model.name)
+              if (model.remote) {
+                Text(
+                  stringResource(R.string.chat_model_remote),
+                  style = MaterialTheme.typography.labelSmall,
+                  color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+              }
+            }
+          },
           onClick = {
             expanded = false
             if (model.id != activeId) {
@@ -313,7 +327,12 @@ private fun ChatComponentsPreview() {
   ScottieTheme {
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
       ModelSelector(
-        models = listOf(TextModelOption("a", "Gemma 4 E2B"), TextModelOption("b", "Qwen")),
+        models =
+          listOf(
+            TextModelOption("a", "Gemma 4 E2B"),
+            TextModelOption("b", "Qwen"),
+            TextModelOption("openrouter:openai/gpt-4o", "openai/gpt-4o", remote = true),
+          ),
         activeId = "a",
         enabled = true,
         onSelect = {},

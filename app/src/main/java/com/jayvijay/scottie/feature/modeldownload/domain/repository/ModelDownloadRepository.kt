@@ -23,12 +23,15 @@ interface ModelDownloadRepository {
   suspend fun delete(modelId: String): Result<Unit>
 
   /**
-   * Stored id if that entry is `TEXT` and `Downloaded`; else first such entry in catalog order;
-   * else null.
+   * Stored id if it is a downloaded `TEXT` model or a configured remote id; else first downloaded
+   * text model in catalog order; else first configured remote id; else null.
    */
   val activeTextModel: StateFlow<String?>
 
-  /** Persists the choice. Ignored unless [modelId] is a downloaded text model. */
+  /**
+   * Persists the choice. Ignored unless [modelId] is a downloaded text model or a configured remote
+   * id.
+   */
   fun selectTextModel(modelId: String)
 }
 

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ponytail: cleartext allowed app-wide (FR-006a); tighten to domain-config entries if the
+     gateway hosts become known -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

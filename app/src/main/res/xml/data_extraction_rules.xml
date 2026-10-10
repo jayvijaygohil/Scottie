@@ -5,6 +5,8 @@
 -->
 <data-extraction-rules>
     <cloud-backup>
+        <!-- The OpenRouter API key stays on this device. -->
+        <exclude domain="file" path="openrouter_config.json" />
         <!-- TODO: Use <include> and <exclude> to control what is backed up.
         <include .../>
         <exclude .../>

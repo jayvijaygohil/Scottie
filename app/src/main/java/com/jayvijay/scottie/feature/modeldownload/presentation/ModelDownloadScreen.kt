@@ -2,6 +2,7 @@ package com.jayvijay.scottie.feature.modeldownload.presentation
 
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterField
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ShortfallKind
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
@@ -16,6 +17,7 @@ data class ModelDownloadState(
   val query: String,
   /** Shown as a toast until [ModelDownloadAction.DismissError]. */
   val error: ModelDownloadError?,
+  val openRouter: OpenRouterSection,
   val eventSink: (ModelDownloadAction) -> Unit,
 ) : CircuitUiState
 
@@ -34,6 +36,19 @@ data class ModelSection(
   val count: Int,
   val expanded: Boolean,
   val models: List<ModelDownloadModel>,
+)
+
+/** Draft OpenRouter input; edits stay local until Save. */
+data class OpenRouterSection(
+  val baseUrl: String,
+  val apiKey: String,
+  val modelsText: String,
+  /** Fields that failed the last Save; a field's error clears when it is edited. */
+  val errors: Set<OpenRouterField>,
+  /** Models in the saved configuration; 0 when nothing is saved. */
+  val savedModelCount: Int,
+  val confirmingDelete: Boolean,
+  val expanded: Boolean,
 )
 
 sealed interface ModelDownloadError {
@@ -76,4 +91,25 @@ sealed interface ModelDownloadAction : CircuitUiEvent {
 
   /** Opens the screen that runs a downloaded text model. */
   data class UseModel(val modelId: String) : ModelDownloadAction
+
+  /** Settings actions for the OpenRouter section. */
+  sealed interface OpenRouter : ModelDownloadAction
+
+  data class EditOpenRouterBaseUrl(val value: String) : OpenRouter
+
+  data class EditOpenRouterApiKey(val value: String) : OpenRouter
+
+  data class EditOpenRouterModels(val value: String) : OpenRouter
+
+  /** Validates the draft; saves it or reports the failing fields. */
+  data object SaveOpenRouter : OpenRouter
+
+  data object ToggleOpenRouter : OpenRouter
+
+  /** Opens the confirmation; ignored when nothing is saved. */
+  data object DeleteOpenRouter : OpenRouter
+
+  data object ConfirmDeleteOpenRouter : OpenRouter
+
+  data object CancelDeleteOpenRouter : OpenRouter
 }

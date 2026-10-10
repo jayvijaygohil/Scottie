@@ -274,7 +274,7 @@ private fun ModelDownloadProgress(fraction: Float?) {
 }
 
 @Composable
-private fun ModelDownloadButton(
+internal fun ModelDownloadButton(
   text: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,

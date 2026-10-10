@@ -12,8 +12,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,8 +42,11 @@ import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadFailur
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadProgress
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ShortfallKind
 import com.jayvijay.scottie.feature.modeldownload.presentation.component.ModelSections
+import com.jayvijay.scottie.feature.modeldownload.presentation.component.DeleteOpenRouterDialog
+import com.jayvijay.scottie.feature.modeldownload.presentation.component.OpenRouterCard
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.ui.Ui
 import dagger.hilt.components.SingletonComponent
@@ -83,14 +89,23 @@ class ModelDownloadUi @Inject constructor() : Ui<ModelDownloadState> {
         when (val content = state.content) {
           ModelDownloadContent.Loading ->
             Message(stringResource(R.string.model_download_loading), loading = true)
+          // FR-015: remote models stay configurable when the on-device runtime is unavailable.
           ModelDownloadContent.Unavailable ->
-            Message(stringResource(R.string.model_download_unavailable))
+            Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+              Message(stringResource(R.string.model_download_unavailable), fill = false)
+              OpenRouterCard(
+                state.openRouter,
+                state.eventSink,
+                Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+              )
+            }
           is ModelDownloadContent.Models ->
             if (content.sections.isEmpty() && state.query.isNotBlank()) {
               Message(stringResource(R.string.model_download_search_empty, state.query.trim()))
             } else {
               ModelSections(
                 sections = content.sections,
+                openRouter = state.openRouter,
                 onEvent = state.eventSink,
                 onDownload = onDownload,
                 modifier = Modifier.weight(1f),
@@ -98,6 +113,8 @@ class ModelDownloadUi @Inject constructor() : Ui<ModelDownloadState> {
             }
         }
       }
+
+      if (state.openRouter.confirmingDelete) DeleteOpenRouterDialog(state.eventSink)
 
       state.error?.let { error ->
         Box(modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)) {
@@ -157,9 +174,9 @@ private fun rememberNotificationPermissionGate(onDownload: (String) -> Unit): (S
 }
 
 @Composable
-private fun Message(text: String, loading: Boolean = false) {
+private fun Message(text: String, loading: Boolean = false, fill: Boolean = true) {
   Column(
-    modifier = Modifier.fillMaxSize().padding(32.dp),
+    modifier = (if (fill) Modifier.fillMaxSize() else Modifier.fillMaxWidth()).padding(32.dp),
     verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
@@ -177,7 +194,23 @@ private fun previewState(
   content: ModelDownloadContent,
   query: String = "",
   error: ModelDownloadError? = null,
-) = ModelDownloadState(content = content, query = query, error = error, eventSink = {})
+) =
+  ModelDownloadState(
+    content = content,
+    query = query,
+    error = error,
+    openRouter =
+      OpenRouterSection(
+        baseUrl = OpenRouterConfig.DEFAULT_BASE_URL,
+        apiKey = "",
+        modelsText = "",
+        errors = emptySet(),
+        savedModelCount = 0,
+        confirmingDelete = false,
+        expanded = true,
+      ),
+    eventSink = {},
+  )
 
 private fun previewModel(
   id: String,

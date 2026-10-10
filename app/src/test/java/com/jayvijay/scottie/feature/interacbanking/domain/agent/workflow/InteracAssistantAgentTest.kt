@@ -31,7 +31,7 @@ class InteracAssistantAgentTest {
   private val captured = mutableListOf<String>()
 
   private fun agent(executor: PromptExecutor, registry: ToolRegistry = ToolRegistry.EMPTY) =
-    InteracAssistantAgent(executor, registry) { model }
+    InteracAssistantAgent(registry, { ResolvedModel(executor, model) }) { InferenceFailure.UNKNOWN }
 
   private fun answering(json: String) = getMockExecutor {
     mockLLMAnswer(json) onCondition
@@ -108,11 +108,31 @@ class InteracAssistantAgentTest {
   }
 
   @Test
-  fun modelLoadFailurePropagates() = runTest {
-    val agent = InteracAssistantAgent(answering("{}"), ToolRegistry.EMPTY) { error("no model") }
+  fun modelLoadFailureIsClassified() = runTest {
+    val agent =
+      InteracAssistantAgent(ToolRegistry.EMPTY, { error("no model") }) { InferenceFailure.UNKNOWN }
     val failure = runCatching { agent.extract("hi", model.id) }.exceptionOrNull()
-    assertEquals("no model", failure?.message)
+    assertEquals(InferenceFailure.UNKNOWN, (failure as InferenceException).failure)
+    assertEquals("no model", failure.cause?.message)
   }
+
+  @Test
+  fun inferenceFailureConsultsTheClassifier() = runTest {
+    val failing = getMockExecutor {
+      mockLLMAnswer("{}") onCondition { throw IllegalStateException("boom") }
+    }
+    val seen = mutableListOf<Throwable>()
+    val agent =
+      InteracAssistantAgent(ToolRegistry.EMPTY, { ResolvedModel(failing, model) }) {
+        seen += it
+        InferenceFailure.OFFLINE
+      }
+    val failure = runCatching { agent.extract("hi", model.id) }.exceptionOrNull()
+    assertEquals(InferenceFailure.OFFLINE, (failure as InferenceException).failure)
+    assertTrue(seen.single().causes().any { it.message == "boom" })
+  }
+
+  private fun Throwable.causes() = generateSequence(this) { it.cause }
 
   @Test
   fun garbageAnswerFallsBackToOther() = runTest {

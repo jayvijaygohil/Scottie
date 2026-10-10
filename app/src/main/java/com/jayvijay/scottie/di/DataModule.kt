@@ -12,7 +12,9 @@ import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.RunAnywhereMo
 import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.ServiceDownloadForegroundHost
 import com.jayvijay.scottie.feature.modeldownload.data.ai.provider.StaticModelCatalog
 import com.jayvijay.scottie.feature.modeldownload.data.repository.ModelDownloadRepositoryImpl
+import com.jayvijay.scottie.feature.modeldownload.data.repository.OpenRouterConfigRepositoryImpl
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.ModelDownloadRepository
+import com.jayvijay.scottie.feature.modeldownload.domain.repository.OpenRouterConfigRepository
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -53,6 +55,12 @@ object DataModule {
   fun activeTextModelFile(@ApplicationContext context: Context): File =
     File(context.filesDir, "active_text_model")
 
+  /** Excluded from backup in `res/xml`; keep the name in sync. */
+  @Provides
+  @Named("openRouterConfigFile")
+  fun openRouterConfigFile(@ApplicationContext context: Context): File =
+    File(context.filesDir, "openrouter_config.json")
+
   @Provides
   @Singleton
   fun provideModelRuntime(
@@ -69,4 +77,7 @@ interface DataBindingsModule {
   @Binds fun downloadForegroundHost(impl: ServiceDownloadForegroundHost): DownloadForegroundHost
 
   @Binds fun modelDownloadRepository(impl: ModelDownloadRepositoryImpl): ModelDownloadRepository
+
+  @Binds
+  fun openRouterConfigRepository(impl: OpenRouterConfigRepositoryImpl): OpenRouterConfigRepository
 }

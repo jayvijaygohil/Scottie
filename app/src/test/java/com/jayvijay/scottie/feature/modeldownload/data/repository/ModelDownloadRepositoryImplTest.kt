@@ -24,8 +24,10 @@ import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadS
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus.Failed
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus.Paused
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ShortfallKind
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.DownloadStart
+import com.jayvijay.scottie.feature.modeldownload.presentation.FakeOpenRouterConfigRepository
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.test.TestScope
@@ -45,11 +47,19 @@ class ModelDownloadRepositoryImplTest {
   private val host = FakeDownloadForegroundHost()
   private val resources = FakeDeviceResources()
   private val activeFile by lazy { File(folder.root, "active_text_model") }
+  private val openRouter = FakeOpenRouterConfigRepository()
 
   private fun TestScope.repository(rows: List<CatalogModel> = ROWS): ModelDownloadRepositoryImpl =
-    ModelDownloadRepositoryImpl(runtime, host, resources, rows, backgroundScope, activeFile).also {
-      runCurrent()
-    }
+    ModelDownloadRepositoryImpl(
+        runtime,
+        host,
+        resources,
+        rows,
+        backgroundScope,
+        activeFile,
+        openRouter,
+      )
+      .also { runCurrent() }
 
   private fun ModelDownloadRepositoryImpl.entries() = (catalog.value as ModelCatalog.Ready).entries
 
@@ -62,7 +72,16 @@ class ModelDownloadRepositoryImplTest {
   @Test
   fun catalogLoadsWithDownloadedIdsApplied() = runTest {
     runtime.downloaded += B
-    val repo = ModelDownloadRepositoryImpl(runtime, host, resources, ROWS, backgroundScope, activeFile)
+    val repo =
+      ModelDownloadRepositoryImpl(
+        runtime,
+        host,
+        resources,
+        ROWS,
+        backgroundScope,
+        activeFile,
+        openRouter,
+      )
     assertEquals(ModelCatalog.Loading, repo.catalog.value)
     runCurrent()
 
@@ -391,6 +410,61 @@ class ModelDownloadRepositoryImplTest {
   }
 
   @Test
+  fun remoteModelIsActiveWithoutDownloadedTextModels() = runTest {
+    openRouter.config.value = REMOTE
+    assertEquals("openrouter:x/y", repository(TEXT_ROWS).activeTextModel.value)
+  }
+
+  @Test
+  fun downloadedModelWinsOverRemoteByDefault() = runTest {
+    runtime.downloaded += T1
+    openRouter.config.value = REMOTE
+    assertEquals(T1, repository(TEXT_ROWS).activeTextModel.value)
+  }
+
+  @Test
+  fun storedRemoteModelStaysActiveAcrossInstances() = runTest {
+    runtime.downloaded += T1
+    openRouter.config.value = REMOTE
+    val repo = repository(TEXT_ROWS)
+    repo.selectTextModel("openrouter:z/w")
+    runCurrent()
+    assertEquals("openrouter:z/w", activeFile.readText())
+    assertEquals("openrouter:z/w", repository(TEXT_ROWS).activeTextModel.value)
+  }
+
+  @Test
+  fun unconfiguredRemoteModelIsIgnored() = runTest {
+    openRouter.config.value = REMOTE
+    val repo = repository(TEXT_ROWS)
+    repo.selectTextModel("openrouter:nope")
+    runCurrent()
+    assertEquals("openrouter:x/y", repo.activeTextModel.value)
+    assertTrue(!activeFile.exists())
+  }
+
+  @Test
+  fun removingTheConfigFallsBackToLocalOrNull() = runTest {
+    runtime.downloaded += T1
+    openRouter.config.value = REMOTE
+    val repo = repository(TEXT_ROWS)
+    repo.selectTextModel("openrouter:x/y")
+    runCurrent()
+    openRouter.config.value = null
+    runCurrent()
+    assertEquals(T1, repo.activeTextModel.value)
+  }
+
+  @Test
+  fun removingTheConfigWithoutLocalModelsLeavesNoActiveModel() = runTest {
+    openRouter.config.value = REMOTE
+    val repo = repository(TEXT_ROWS)
+    openRouter.config.value = null
+    runCurrent()
+    assertNull(repo.activeTextModel.value)
+  }
+
+  @Test
   fun deleteFailureKeepsModelDownloaded() = runTest {
     runtime.downloaded += B
     runtime.deleteError = IOException("locked")
@@ -406,6 +480,7 @@ class ModelDownloadRepositoryImplTest {
     const val T1 = "t1.litertlm"
     const val T2 = "t2.litertlm"
     const val TOTAL = 100L
+    val REMOTE = OpenRouterConfig("https://openrouter.ai", "k", listOf("x/y", "z/w"))
 
     val ARCHIVE =
       ArchiveModel(

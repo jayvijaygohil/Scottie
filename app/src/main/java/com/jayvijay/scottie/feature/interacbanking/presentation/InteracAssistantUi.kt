@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
 import com.jayvijay.scottie.core.ui.ScottieTheme
 import com.jayvijay.scottie.core.ui.components.ScottieToolbar
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.Composer
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.EmptyState
@@ -148,7 +149,7 @@ private fun Turn(turn: AssistantTurn, state: InteracAssistantState) {
           RevealText(reply.message ?: stringResource(R.string.assistant_off_topic), turn.id)
         }
       TurnReply.Fallback -> ReplyCard(textCard) { ReplyText(R.string.assistant_fallback) }
-      TurnReply.Failed -> ReplyCard(textCard) { ReplyText(R.string.chat_reply_failed) }
+      is TurnReply.Failed -> ReplyCard(textCard) { ReplyText(reply.failure.message()) }
       is TurnReply.Surface ->
         state.surfaces
           .firstOrNull { it.id == reply.surfaceId }
@@ -171,6 +172,14 @@ private fun Turn(turn: AssistantTurn, state: InteracAssistantState) {
     }
   }
 }
+
+private fun InferenceFailure.message(): Int =
+  when (this) {
+    InferenceFailure.OFFLINE -> R.string.chat_reply_offline
+    InferenceFailure.UNAUTHORIZED -> R.string.chat_reply_unauthorized
+    InferenceFailure.MODEL_UNAVAILABLE -> R.string.chat_reply_model_unavailable
+    InferenceFailure.UNKNOWN -> R.string.chat_reply_failed
+  }
 
 @Composable
 private fun ReplyText(resId: Int) {
@@ -224,7 +233,15 @@ private fun InteracAssistantPreview() {
 private fun InteracAssistantFailedPreview() {
   ScottieTheme {
     InteracAssistantUi()
-      .Content(previewState(listOf(AssistantTurn(1, "Send money", TurnReply.Failed))), Modifier)
+      .Content(
+        previewState(
+          listOf(
+            AssistantTurn(1, "Send money", TurnReply.Failed(InferenceFailure.UNKNOWN)),
+            AssistantTurn(2, "What's my balance?", TurnReply.Failed(InferenceFailure.OFFLINE)),
+          )
+        ),
+        Modifier,
+      )
   }
 }
 

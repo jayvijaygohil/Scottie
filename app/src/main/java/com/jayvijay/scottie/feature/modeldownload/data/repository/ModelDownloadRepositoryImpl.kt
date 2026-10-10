@@ -23,6 +23,7 @@ import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.checkCompatibility
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.DownloadStart
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.ModelDownloadRepository
+import com.jayvijay.scottie.feature.modeldownload.domain.repository.OpenRouterConfigRepository
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Named
@@ -51,6 +52,7 @@ constructor(
   @ApplicationScope private val scope: CoroutineScope,
   /** Holds the chosen text model id; absent until the user picks one. */
   @Named("activeTextModelFile") private val activeFile: File,
+  private val openRouter: OpenRouterConfigRepository,
 ) : ModelDownloadRepository {
 
   private val state = MutableStateFlow<ModelCatalog>(ModelCatalog.Loading)
@@ -58,9 +60,10 @@ constructor(
 
   private val stored = MutableStateFlow(activeFile.takeIf { it.exists() }?.readText())
   override val activeTextModel: StateFlow<String?> =
-    combine(state, stored) { catalog, id ->
-        val ids = catalog.downloadedTextIds()
-        id?.takeIf { it in ids } ?: ids.firstOrNull()
+    combine(state, stored, openRouter.config) { catalog, id, config ->
+        val local = catalog.downloadedTextIds()
+        val remote = config?.modelIds.orEmpty()
+        id?.takeIf { it in local || it in remote } ?: local.firstOrNull() ?: remote.firstOrNull()
       }
       .stateIn(scope, SharingStarted.Eagerly, null)
 
@@ -196,7 +199,8 @@ constructor(
     }
 
   override fun selectTextModel(modelId: String) {
-    if (modelId !in state.value.downloadedTextIds()) return
+    val remote = openRouter.config.value?.modelIds.orEmpty()
+    if (modelId !in state.value.downloadedTextIds() && modelId !in remote) return
     stored.value = modelId
     scope.launch {
       runCatching { activeFile.writeText(modelId) }

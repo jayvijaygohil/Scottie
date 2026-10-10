@@ -14,6 +14,8 @@ import com.jayvijay.scottie.feature.interacbanking.domain.agent.tools.InteracBan
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.ChannelHint
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.Intent
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceException
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.IntentExtractor
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Account
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChannel
@@ -148,7 +150,14 @@ constructor(
     surfaceId: String,
     bridge: A2uiBridge,
   ): TurnReply {
-    val intent = extractOrNull(text, modelId) ?: return TurnReply.Failed
+    // FR-015: inference failures get their own reply; building the surface may still fall back.
+    val intent =
+      runCatching { extractor.extract(text, modelId) }
+        .getOrElse {
+          if (it is CancellationException) throw it
+          Log.w(TAG, "inference failed", it)
+          return TurnReply.Failed((it as? InferenceException)?.failure ?: InferenceFailure.UNKNOWN)
+        }
     val lines =
       when (intent.intent) {
         Intent.OTHER -> null
@@ -163,16 +172,6 @@ constructor(
       TurnReply.Surface(surfaceId)
     }
   }
-
-  /** FR-015: inference failures get their own reply; building the surface may still fall back. */
-  private suspend fun extractOrNull(text: String, modelId: String): AssistantIntent? = runCatching {
-    extractor.extract(text, modelId)
-  }
-    .getOrElse {
-      if (it is CancellationException) throw it
-      Log.w(TAG, "inference failed", it)
-      null
-    }
 
   private suspend fun balanceLines(hint: String?, surfaceId: String): List<String> {
     val all = banking { getAccountBalances() }

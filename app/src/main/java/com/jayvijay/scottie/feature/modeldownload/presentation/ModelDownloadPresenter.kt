@@ -9,8 +9,13 @@ import androidx.compose.runtime.setValue
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelCatalog
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterDraft
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterField
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterValidation
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.DownloadStart
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.ModelDownloadRepository
+import com.jayvijay.scottie.feature.modeldownload.domain.repository.OpenRouterConfigRepository
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.retained.rememberRetained
 import com.slack.circuit.runtime.Navigator
@@ -26,6 +31,7 @@ class ModelDownloadPresenter
 constructor(
   @Assisted private val navigator: Navigator,
   private val repository: ModelDownloadRepository,
+  private val openRouter: OpenRouterConfigRepository,
 ) : Presenter<ModelDownloadState> {
 
   @Composable
@@ -39,9 +45,11 @@ constructor(
 
     val models = (catalog as? ModelCatalog.Ready)?.toModels().orEmpty()
     val content = catalog.toContent { catalogSections(models, query, expansion) }
+    val (section, onOpenRouter) = presentOpenRouter()
 
-    return ModelDownloadState(content, query, error) { action ->
+    return ModelDownloadState(content, query, error, section) { action ->
       when (action) {
+        is ModelDownloadAction.OpenRouter -> onOpenRouter(action)
         ModelDownloadAction.Back -> navigator.pop()
         is ModelDownloadAction.Download ->
           scope.launch {
@@ -69,6 +77,59 @@ constructor(
           repository.selectTextModel(action.modelId)
           navigator.pop()
         }
+      }
+    }
+  }
+
+  /** Drafts reset whenever the saved configuration changes: save, delete, or relaunch. */
+  @Composable
+  private fun presentOpenRouter():
+    Pair<OpenRouterSection, (ModelDownloadAction.OpenRouter) -> Unit> {
+    val config by openRouter.config.collectAsState()
+    var baseUrl by rememberRetained(config) {
+      mutableStateOf(config?.baseUrl ?: OpenRouterConfig.DEFAULT_BASE_URL)
+    }
+    var apiKey by rememberRetained(config) { mutableStateOf(config?.apiKey.orEmpty()) }
+    var modelsText by rememberRetained(config) {
+      mutableStateOf(config?.models?.joinToString(";").orEmpty())
+    }
+    var errors by rememberRetained(config) { mutableStateOf(emptySet<OpenRouterField>()) }
+    var confirmingDelete by rememberRetained { mutableStateOf(false) }
+    var expanded by rememberRetained { mutableStateOf(true) }
+
+    val section =
+      OpenRouterSection(
+        baseUrl = baseUrl,
+        apiKey = apiKey,
+        modelsText = modelsText,
+        errors = errors,
+        savedModelCount = config?.models?.size ?: 0,
+        confirmingDelete = confirmingDelete,
+        expanded = expanded,
+      )
+    return section to { action ->
+      when (action) {
+        is ModelDownloadAction.EditOpenRouterBaseUrl -> {
+          errors -= OpenRouterField.BASE_URL
+          baseUrl = action.value
+        }
+        is ModelDownloadAction.EditOpenRouterApiKey -> apiKey = action.value
+        is ModelDownloadAction.EditOpenRouterModels -> {
+          errors -= OpenRouterField.MODELS
+          modelsText = action.value
+        }
+        ModelDownloadAction.SaveOpenRouter ->
+          when (val result = OpenRouterDraft(baseUrl, apiKey, modelsText).validate()) {
+            is OpenRouterValidation.Valid -> openRouter.save(result.config)
+            is OpenRouterValidation.Invalid -> errors = result.fields
+          }
+        ModelDownloadAction.ToggleOpenRouter -> expanded = !expanded
+        ModelDownloadAction.DeleteOpenRouter -> confirmingDelete = config != null
+        ModelDownloadAction.ConfirmDeleteOpenRouter -> {
+          openRouter.clear()
+          confirmingDelete = false
+        }
+        ModelDownloadAction.CancelDeleteOpenRouter -> confirmingDelete = false
       }
     }
   }

@@ -1,5 +1,6 @@
 package com.jayvijay.scottie.feature.modeldownload.presentation
 
+import app.cash.turbine.ReceiveTurbine
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.Compatibility.Shortfall
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadFailure
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadProgress
@@ -11,19 +12,28 @@ import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelEntry
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType.SPEECH_RECOGNITION
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType.TEXT
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterField
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ShortfallKind.STORAGE
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.DownloadStart
+import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadAction.EditOpenRouterApiKey
+import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadAction.EditOpenRouterBaseUrl
+import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadAction.EditOpenRouterModels
+import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadAction.SaveOpenRouter
 import com.slack.circuit.test.FakeNavigator
 import com.slack.circuit.test.test
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ModelDownloadPresenterTest {
   private val repository = FakeModelDownloadRepository()
   private val navigator = FakeNavigator(ModelDownloadScreen)
-  private val presenter = ModelDownloadPresenter(navigator, repository)
+  private val openRouter = FakeOpenRouterConfigRepository()
+  private val presenter = ModelDownloadPresenter(navigator, repository, openRouter)
 
   private fun entry(
     id: String,
@@ -267,7 +277,165 @@ class ModelDownloadPresenterTest {
     }
   }
 
+  private suspend fun ReceiveTurbine<ModelDownloadState>.awaitUntil(
+    done: (OpenRouterSection) -> Boolean
+  ): ModelDownloadState {
+    var state = awaitItem()
+    while (!done(state.openRouter)) state = awaitItem()
+    return state
+  }
+
+  /** Edits only fields that differ, since an unchanged value emits no new state. */
+  private suspend fun ReceiveTurbine<ModelDownloadState>.edit(
+    state: ModelDownloadState,
+    baseUrl: String = state.openRouter.baseUrl,
+    apiKey: String = state.openRouter.apiKey,
+    models: String = state.openRouter.modelsText,
+  ): ModelDownloadState {
+    var current = state
+    fun changed(value: String, now: String, action: ModelDownloadAction) =
+      (value != now).also { if (it) current.eventSink(action) }
+    if (changed(baseUrl, current.openRouter.baseUrl, EditOpenRouterBaseUrl(baseUrl))) {
+      current = awaitUntil { it.baseUrl == baseUrl }
+    }
+    if (changed(apiKey, current.openRouter.apiKey, EditOpenRouterApiKey(apiKey))) {
+      current = awaitUntil { it.apiKey == apiKey }
+    }
+    if (changed(models, current.openRouter.modelsText, EditOpenRouterModels(models))) {
+      current = awaitUntil { it.modelsText == models }
+    }
+    return current
+  }
+
+  /** Saves the draft and returns the first state showing either the save or errors. */
+  private suspend fun ReceiveTurbine<ModelDownloadState>.saveDraft(
+    baseUrl: String = URL,
+    models: String = "a/b",
+  ): ModelDownloadState {
+    val saves = openRouter.saves.size
+    edit(awaitItem(), baseUrl = baseUrl, models = models).eventSink(SaveOpenRouter)
+    return awaitUntil { it.errors.isNotEmpty() || openRouter.saves.size > saves }
+  }
+
+  @Test
+  fun openRouterSectionStartsWithDefaults() = runTest {
+    presenter.test {
+      val section = awaitItem().openRouter
+      assertEquals(URL, section.baseUrl)
+      assertEquals("", section.apiKey)
+      assertEquals("", section.modelsText)
+      assertEquals(0, section.savedModelCount)
+      assertTrue(section.expanded)
+    }
+  }
+
+  @Test
+  fun saveStoresParsedConfigAndResetsDraftFromIt() = runTest {
+    presenter.test {
+      edit(awaitItem(), apiKey = "sk", models = "a/b;c/d").eventSink(SaveOpenRouter)
+      val saved = awaitUntil { it.savedModelCount == 2 }.openRouter
+      assertEquals(OpenRouterConfig(URL, "sk", listOf("a/b", "c/d")), openRouter.saves.single())
+      assertEquals(emptySet<OpenRouterField>(), saved.errors)
+      assertEquals(2, saved.savedModelCount)
+      assertEquals("a/b;c/d", saved.modelsText)
+    }
+  }
+
+  @Test
+  fun emptyKeySaves() = runTest {
+    presenter.test {
+      saveDraft()
+      assertEquals("", openRouter.saves.single().apiKey)
+    }
+  }
+
+  @Test
+  fun savedConfigPrefillsDraft() = runTest {
+    openRouter.config.value = OpenRouterConfig("http://10.0.2.2:8080", "sk", listOf("x/y"))
+    presenter.test {
+      val section = awaitItem().openRouter
+      assertEquals("http://10.0.2.2:8080", section.baseUrl)
+      assertEquals("sk", section.apiKey)
+      assertEquals("x/y", section.modelsText)
+      assertEquals(1, section.savedModelCount)
+    }
+  }
+
+  @Test
+  fun toggleOpenRouterFlipsExpansion() = runTest {
+    presenter.test {
+      awaitItem().eventSink(ModelDownloadAction.ToggleOpenRouter)
+      assertFalse(awaitItem().openRouter.expanded)
+    }
+  }
+
+  @Test
+  fun deleteAsksThenClearsAndResetsDraft() = runTest {
+    openRouter.config.value = OpenRouterConfig(URL, "sk", listOf("x/y"))
+    presenter.test {
+      awaitItem().eventSink(ModelDownloadAction.DeleteOpenRouter)
+      awaitUntil { it.confirmingDelete }.eventSink(ModelDownloadAction.CancelDeleteOpenRouter)
+      val cancelled = awaitUntil { !it.confirmingDelete }
+      assertEquals(0, openRouter.clears)
+
+      cancelled.eventSink(ModelDownloadAction.DeleteOpenRouter)
+      awaitUntil { it.confirmingDelete }.eventSink(ModelDownloadAction.ConfirmDeleteOpenRouter)
+      val confirmed = awaitUntil { !it.confirmingDelete && it.savedModelCount == 0 }.openRouter
+      assertEquals(1, openRouter.clears)
+      assertEquals(URL to "", confirmed.baseUrl to confirmed.apiKey)
+      assertEquals("", confirmed.modelsText)
+    }
+  }
+
+  @Test
+  fun deleteWithoutSavedConfigIsIgnored() = runTest {
+    presenter.test {
+      awaitItem().eventSink(ModelDownloadAction.DeleteOpenRouter)
+      expectNoEvents()
+      assertEquals(0, openRouter.clears)
+    }
+  }
+
+  @Test
+  fun invalidDraftReportsFieldsWithoutSaving() = runTest {
+    listOf(
+        Triple("", "a/b", setOf(OpenRouterField.BASE_URL)),
+        Triple("openrouter.ai/api/v1", "a/b", setOf(OpenRouterField.BASE_URL)),
+        Triple(URL, " ; ", setOf(OpenRouterField.MODELS)),
+        Triple("x", "", setOf(OpenRouterField.BASE_URL, OpenRouterField.MODELS)),
+      )
+      .forEach { (baseUrl, models, errors) ->
+        ModelDownloadPresenter(navigator, repository, openRouter).test {
+          assertEquals(baseUrl, errors, saveDraft(baseUrl, models).openRouter.errors)
+        }
+      }
+    assertTrue(openRouter.saves.isEmpty())
+  }
+
+  @Test
+  fun editingAFieldClearsOnlyItsError() = runTest {
+    presenter.test {
+      val failed = saveDraft(baseUrl = "x", models = "")
+      failed.eventSink(EditOpenRouterModels("a/b"))
+      val section = awaitUntil { it.modelsText == "a/b" }.openRouter
+      assertEquals(setOf(OpenRouterField.BASE_URL), section.errors)
+    }
+  }
+
+  @Test
+  fun lenientModelsAndHttpUrlsSave() = runTest {
+    presenter.test { saveDraft(models = "a/b ; c/d;") }
+    presenter.test { saveDraft(models = "a/b;a/b") }
+    presenter.test { saveDraft(baseUrl = "http://10.0.2.2:8080") }
+    assertEquals(
+      listOf(listOf("a/b", "c/d"), listOf("a/b"), listOf("a/b")),
+      openRouter.saves.map { it.models },
+    )
+    assertEquals("http://10.0.2.2:8080", openRouter.saves.last().baseUrl)
+  }
+
   private companion object {
     const val SIZE = 100L
+    const val URL = OpenRouterConfig.DEFAULT_BASE_URL
   }
 }

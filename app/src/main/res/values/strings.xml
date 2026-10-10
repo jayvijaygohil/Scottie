@@ -112,4 +112,28 @@
     <string name="chat_example_balance">What\'s my balance?</string>
     <string name="chat_example_send">Send $50 to Alice</string>
     <string name="chat_example_request">Request $30 from Jane for dinner</string>
+
+    <!-- OpenRouter settings -->
+    <string name="model_download_openrouter_title">OpenRouter</string>
+    <string name="model_download_openrouter_base_url">Base URL</string>
+    <string name="model_download_openrouter_api_key">API key</string>
+    <string name="model_download_openrouter_api_key_hint">Optional. Stored only on this device.</string>
+    <string name="model_download_openrouter_show_key">Show API key</string>
+    <string name="model_download_openrouter_hide_key">Hide API key</string>
+    <string name="model_download_openrouter_models">Models</string>
+    <string name="model_download_openrouter_models_hint">anthropic/claude-3.5-sonnet;openai/gpt-4o</string>
+    <string name="model_download_openrouter_error_base_url">Enter a full web address starting with http:// or https://</string>
+    <string name="model_download_openrouter_error_models">Enter at least one model id, separated by semicolons</string>
+    <string name="model_download_openrouter_save">Save</string>
+    <string name="model_download_openrouter_cancel">Cancel</string>
+    <string name="model_download_openrouter_delete_title">Remove OpenRouter settings?</string>
+    <string name="model_download_openrouter_delete_text">The API key and model list will be deleted from this device.</string>
+    <plurals name="model_download_openrouter_saved">
+        <item quantity="one">Saved · %1$d model</item>
+        <item quantity="other">Saved · %1$d models</item>
+    </plurals>
+    <string name="chat_model_remote">Remote</string>
+    <string name="chat_reply_offline">No connection. Check your network and try again.</string>
+    <string name="chat_reply_unauthorized">OpenRouter rejected the API key. Update it in Model settings.</string>
+    <string name="chat_reply_model_unavailable">That model isn\'t available on OpenRouter. Check the model id in Model settings.</string>
 </resources>
