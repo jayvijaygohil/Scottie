@@ -1,5 +1,6 @@
 package com.jayvijay.scottie.core.ai
 
+import ai.koog.http.client.ktor.KtorKoogHttpClient
 import ai.koog.prompt.executor.clients.openrouter.OpenRouterClientSettings
 import ai.koog.prompt.executor.clients.openrouter.OpenRouterLLMClient
 import ai.koog.prompt.executor.clients.openrouter.OpenRouterModels
@@ -27,11 +28,19 @@ object OpenRouterTextModels {
         maxOutputTokens = MAX_OUTPUT_TOKENS,
       )
 
+  /**
+   * The HTTP factory is explicit: Koog's Android Ktor AAR lacks the ServiceLoader registration that
+   * the `OpenRouterLLMClient(apiKey, settings)` overload relies on.
+   */
   fun executor(baseUrl: String, apiKey: String): PromptExecutor =
     MultiLLMPromptExecutor(
       mapOf(
         LLMProvider.OpenRouter to
-          OpenRouterLLMClient(apiKey, OpenRouterClientSettings(baseUrl = normalize(baseUrl)))
+          OpenRouterLLMClient(
+            apiKey = apiKey,
+            settings = OpenRouterClientSettings(baseUrl = normalize(baseUrl)),
+            httpClientFactory = KtorKoogHttpClient.Factory(),
+          )
       )
     )
 

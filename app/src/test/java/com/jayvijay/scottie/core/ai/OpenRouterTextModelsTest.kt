@@ -21,6 +21,12 @@ class OpenRouterTextModelsTest {
     assertEquals("http://10.0.2.2:8080", OpenRouterTextModels.normalize("http://10.0.2.2:8080"))
   }
 
+  /** The Android Ktor AAR has no ServiceLoader registration, so discovery finds no factory. */
+  @Test
+  fun executorBuildsWithoutServiceLoaderDiscovery() {
+    OpenRouterTextModels.executor("https://openrouter.ai", "k").close()
+  }
+
   @Test
   fun knownIdUsesKoogDefinition() {
     val known = OpenRouterModels.models.first()
