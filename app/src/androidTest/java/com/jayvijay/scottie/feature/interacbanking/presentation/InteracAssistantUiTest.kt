@@ -7,6 +7,7 @@ import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -66,6 +67,7 @@ class InteracAssistantUiTest {
     show(listOf(AssistantTurn(1, "hi", TurnReply.Text("Hello there"))))
     rule.onNodeWithTag(TAG_USER_BUBBLE).assertIsDisplayed()
     rule.onNodeWithTag(TAG_REPLY).assertIsDisplayed()
+    rule.waitUntil { rule.onAllNodesWithText("Hello there").fetchSemanticsNodes().isNotEmpty() }
     rule.onNodeWithText("Hello there").assertIsDisplayed()
   }
 

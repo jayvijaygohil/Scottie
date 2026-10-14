@@ -19,6 +19,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.v2.runComposeUiTest
+import androidx.compose.ui.text.AnnotatedString
 import com.jayvijay.scottie.core.ui.ScottieTheme
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Account
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.AccountType
@@ -132,7 +133,8 @@ class InteracFormTest {
       .performTextReplacement("Rex")
     settle(controller)
     onNodeWithText(SEND_TRANSFER).assertIsEnabled()
-    onAllNodesWithText("Rex").assertCountEquals(0)
+    onNode(SemanticsMatcher.expectValue(SemanticsProperties.EditableText, AnnotatedString("•••")))
+      .assertIsDisplayed()
     assertEquals(true, controller.getRawData("/form/valid"))
     assertEquals("Rex", controller.getRawData("/form/securityAnswer"))
   }
@@ -153,7 +155,9 @@ class InteracFormTest {
   @Test
   fun typingQueriesAndSuggestionsRenderAsChips() = runComposeUiTest {
     val controller = start(aliceSeed)
-    onNodeWithText("Alice Martin").performTextReplacement("Ali")
+    onNode(hasText("Alice Martin") and hasSetTextAction()).performTextReplacement("Ali")
+    settle(controller)
+    mainClock.advanceTimeBy(300)
     settle(controller)
     waitUntil(timeoutMillis = 2_000) { controller.outboundEvents.any { it.type == QUERY } }
     assertEquals("Ali", controller.outboundEvents.last { it.type == QUERY }.context["query"])
