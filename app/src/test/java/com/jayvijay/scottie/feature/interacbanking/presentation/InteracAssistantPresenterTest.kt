@@ -423,6 +423,10 @@ class InteracAssistantPresenterTest {
         assertEquals("", str("memo"))
       }
       assertEquals(listOf("acc_chk_101", "acc_chk_303", "acc_sav_202"), accountIds())
+      bridge.emitEvent("submit", "turn-3", bridge.submitContext("accountId" to "acc_chk_101"))
+      bridge.awaitLine { "Alicia Moreno" in it && "REQ-" in it }
+      assertEquals(3, banking.requests)
+      assertEquals(0, banking.sends)
       cancelAndIgnoreRemainingEvents()
     }
   }

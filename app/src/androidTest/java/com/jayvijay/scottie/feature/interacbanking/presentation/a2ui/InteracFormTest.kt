@@ -196,10 +196,15 @@ class InteracFormTest {
 
   @Test
   fun requestModeShowsMemoAndNoSecurity() = runComposeUiTest {
-    start(seed(alice, security = false, channel = "EMAIL", locked = true, mode = "request"))
+    val controller =
+      start(seed(alice, security = false, channel = "EMAIL", locked = true, mode = "request"))
     onNodeWithText("Memo (optional)").assertIsDisplayed()
     onAllNodesWithText(SECURITY_ANSWER).assertCountEquals(0)
-    onNodeWithText("Send request").assertIsEnabled()
+    onNodeWithText("Send request").assertIsEnabled().performClick()
+    settle(controller)
+    val submit = controller.outboundEvents.single { it.type == "submit" }
+    assertEquals("request", submit.context["mode"])
+    assertEquals(emptyList<Any>(), controller.outboundErrors)
   }
 
   private fun JsonElement.plain(): Any? =

@@ -12,6 +12,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.jayvijay.scottie.core.ui.ScottieTheme
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_COMPOSER
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_EMPTY_STATE
@@ -73,7 +74,7 @@ class InteracAssistantUiTest {
     show(
       listOf(
         AssistantTurn(1, "Send money", TurnReply.Fallback),
-        AssistantTurn(2, "Send more", TurnReply.Failed),
+        AssistantTurn(2, "Send more", TurnReply.Failed(InferenceFailure.UNKNOWN)),
       )
     )
     rule.onNodeWithText("I couldn't build that form. Please try again.").assertIsDisplayed()

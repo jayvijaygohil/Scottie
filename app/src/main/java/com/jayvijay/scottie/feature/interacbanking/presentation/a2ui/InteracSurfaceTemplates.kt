@@ -166,7 +166,7 @@ object InteracSurfaceTemplates {
         bind("accounts", "/options/accounts")
         put("onQuery", event("recipientQuery", mapOf("query" to "/form/recipientQuery")))
         put("onSelectRecipient", event("selectRecipient", mapOf("id" to "/form/recipientId")))
-        put("onSubmit", event("submit", FORM_FIELDS.associateWith { "/form/$it" }))
+        put("onSubmit", event("submit", (FORM_FIELDS + "mode").associateWith { "/form/$it" }))
       }
     val alert = alertText?.let { alert(text = it) }
     val children = listOfNotNull(alert?.let { ALERT }) + FORM

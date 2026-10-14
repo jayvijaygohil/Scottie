@@ -4,10 +4,13 @@ import androidx.a2ui.compose.runtime.A2uiComponentProperties
 import androidx.a2ui.compose.runtime.A2uiComponentScope
 import androidx.a2ui.compose.runtime.A2uiProperty
 import androidx.a2ui.compose.ui.A2uiComponent
+import androidx.a2ui.model.schema.A2uiAnySchema
 import androidx.a2ui.model.schema.A2uiArraySchema
 import androidx.a2ui.model.schema.A2uiBooleanSchema
 import androidx.a2ui.model.schema.A2uiObjectSchema
+import androidx.a2ui.model.schema.A2uiSchemaKeyword
 import androidx.a2ui.model.schema.A2uiStringSchema
+import androidx.a2ui.model.schema.commontypes.A2uiDataBindingSchema
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -368,17 +371,27 @@ object InteracForm : A2uiComponent {
     A2uiProperty.dynamicCustom(
       key = key,
       schema =
-        A2uiArraySchema(
-          items =
-            A2uiObjectSchema(
-              properties =
-                mapOf(
-                  "id" to A2uiStringSchema(),
-                  "label" to A2uiStringSchema(),
-                  "detail" to A2uiStringSchema(),
-                  "autodeposit" to A2uiBooleanSchema(),
-                ),
-              required = setOf("id", "label"),
+        A2uiAnySchema(
+          keywords =
+            listOf(
+              A2uiSchemaKeyword.OneOf(
+                listOf(
+                  A2uiDataBindingSchema.DEFAULT_INSTANCE,
+                  A2uiArraySchema(
+                    items =
+                      A2uiObjectSchema(
+                        properties =
+                          mapOf(
+                            "id" to A2uiStringSchema(),
+                            "label" to A2uiStringSchema(),
+                            "detail" to A2uiStringSchema(),
+                            "autodeposit" to A2uiBooleanSchema(),
+                          ),
+                        required = setOf("id", "label"),
+                      )
+                  ),
+                )
+              )
             )
         ),
       safeCast = { raw ->

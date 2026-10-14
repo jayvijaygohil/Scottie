@@ -72,16 +72,29 @@ class FakeA2uiBridge : A2uiBridge {
   fun form(): JsonObject = rootData()["form"]!!.jsonObject
 
   fun components(): List<JsonObject> {
-    val update = lines("updateComponents").last()["updateComponents"]!!.jsonObject
-    return update["components"]!!.jsonArray.map { it.jsonObject }
+    val updates = lines("updateComponents").map { it["updateComponents"]!!.jsonObject }
+    val surfaceId = updates.last()["surfaceId"]!!.jsonPrimitive.content
+    return updates
+      .filter { it["surfaceId"]!!.jsonPrimitive.content == surfaceId }
+      .flatMap { it["components"]!!.jsonArray.map { c -> c.jsonObject } }
+      .associateBy { it["id"]!!.jsonPrimitive.content }
+      .values
+      .toList()
   }
 
   fun component(id: String): JsonObject? =
     components().find { it["id"]!!.jsonPrimitive.content == id }
 
-  /** A `submit` context as the real surface would resolve it from the form data plus [edits]. */
-  fun submitContext(vararg edits: Pair<String, Any?>): Map<String, Any?> =
-    form().mapValues { (_, v) -> v.plain() } + edits.toMap()
+  /** A `submit` context as the real surface would resolve it from `onSubmit` plus [edits]. */
+  fun submitContext(vararg edits: Pair<String, Any?>): Map<String, Any?> {
+    val data = form()
+    val bound =
+      component("form")!!["onSubmit"]!!.jsonObject["event"]!!.jsonObject["context"]!!.jsonObject
+    return bound.mapValues { (_, v) ->
+      val field = v.jsonObject.str("path").removePrefix("/form/")
+      data[field]?.plain()
+    } + edits.toMap()
+  }
 
   private fun JsonElement.plain(): Any? =
     (this as? JsonPrimitive)?.let { p ->

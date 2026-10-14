@@ -1,13 +1,32 @@
 package com.jayvijay.scottie.feature.interacbanking.presentation.a2ui
 
+import androidx.a2ui.compose.ui.A2uiMessageProcessor
+import androidx.a2ui.model.protocol.A2uiClientToServerMessage
+import androidx.a2ui.model.protocol.A2uiComponentPayload
+import androidx.a2ui.model.protocol.A2uiCreateSurfaceMessage
+import androidx.a2ui.model.protocol.A2uiServerToClientMessage
+import androidx.a2ui.model.protocol.A2uiUpdateComponentsMessage
+import androidx.a2ui.model.protocol.A2uiUpdateDataModelMessage
 import com.jayvijay.scottie.feature.interacbanking.Fixtures
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Account
 import com.jayvijay.scottie.feature.interacbanking.presentation.Notice
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.InteracSurfaceTemplates.ConfirmationData
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.InteracSurfaceTemplates.FormSeed
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -86,7 +105,9 @@ class InteracSurfaceTemplatesTest {
     for (field in bound) assertEquals("/form/$field", form.path(field))
     val submit = form["onSubmit"]!!.jsonObject["event"]!!.jsonObject
     assertEquals("submit", submit.str("name"))
-    assertEquals("/form/securityAnswer", submit["context"]!!.jsonObject.path("securityAnswer"))
+    val submitContext = submit["context"]!!.jsonObject
+    assertEquals("/form/securityAnswer", submitContext.path("securityAnswer"))
+    assertEquals("/form/mode", submitContext.path("mode"))
     val query = form["onQuery"]!!.jsonObject["event"]!!.jsonObject["context"]!!.jsonObject
     assertEquals("/form/recipientQuery", query.path("query"))
     assertTrue(lines.none { "Send an Interac" in it.toString() })
@@ -217,4 +238,89 @@ class InteracSurfaceTemplatesTest {
     assertEquals("alice.m@example.com", item.str("detail"))
     assertTrue(item.bool("autodeposit"))
   }
+
+  @Test
+  fun templatesPassCatalogValidationInProcessor() = runBlocking {
+    withTimeout(5.seconds) {
+      val processor = A2uiMessageProcessor(catalogs = listOf(interacCatalog()))
+      val events = mutableListOf<A2uiClientToServerMessage>()
+      val loop = launch(start = CoroutineStart.UNDISPATCHED) { processor.collectMessages() }
+      val collector =
+        launch(start = CoroutineStart.UNDISPATCHED) {
+          processor.outboundEvents.collect { events += it }
+        }
+      try {
+        val allEnvelopes =
+          InteracSurfaceTemplates.form("send-1", alice) +
+            InteracSurfaceTemplates.form(
+              "req-1",
+              alice.copy(mode = "request", memo = "dinner"),
+              alertText = "notice",
+            ) +
+            InteracSurfaceTemplates.balanceCards("bal-1", Fixtures.ACCOUNTS) +
+            InteracSurfaceTemplates.confirmation(
+              "conf-1",
+              ConfirmationData(
+                "request",
+                "REQUEST_SENT",
+                "REQ-1",
+                "30.00",
+                "Jane Doe",
+                "EMAIL",
+                "jane.doe@example.com",
+                "Everyday Chequing",
+                "now",
+                "dinner",
+              ),
+            )
+        allEnvelopes.forEach { processor.processMessage(toServerMessage(parse(it))) }
+
+        val activeIds = processor.activeSurfaces.first { it.size == 4 }.map { it.id }.toSet()
+        assertEquals(setOf("send-1", "req-1", "bal-1", "conf-1"), activeIds)
+        assertEquals(emptyList<A2uiClientToServerMessage>(), events)
+      } finally {
+        collector.cancel()
+        loop.cancel()
+      }
+    }
+  }
+
+  private fun toServerMessage(envelope: JsonObject): A2uiServerToClientMessage =
+    when {
+      "createSurface" in envelope -> {
+        val op = envelope["createSurface"]!!.jsonObject
+        A2uiCreateSurfaceMessage(surfaceId = op.str("surfaceId"), catalogId = op.str("catalogId"))
+      }
+      "updateDataModel" in envelope -> {
+        val op = envelope["updateDataModel"]!!.jsonObject
+        A2uiUpdateDataModelMessage(
+          surfaceId = op.str("surfaceId"),
+          path = op.str("path"),
+          value = op["value"]?.plain(),
+        )
+      }
+      "updateComponents" in envelope -> {
+        val op = envelope["updateComponents"]!!.jsonObject
+        val components =
+          op["components"]!!.jsonArray.map { item ->
+            val obj = item.jsonObject
+            A2uiComponentPayload(
+              id = obj.str("id"),
+              type = obj.str("component"),
+              properties = (obj - "id" - "component").mapValues { (_, v) -> v.plain() },
+            )
+          }
+        A2uiUpdateComponentsMessage(surfaceId = op.str("surfaceId"), components = components)
+      }
+      else -> error("Unsupported envelope: $envelope")
+    }
+
+  private fun JsonElement.plain(): Any? =
+    when (this) {
+      is JsonNull -> null
+      is JsonPrimitive -> if (isString) content else booleanOrNull ?: doubleOrNull ?: content
+      is JsonArray -> map { it.plain() }
+      is JsonObject -> mapValues { (_, v) -> v.plain() }
+    }
 }
+
