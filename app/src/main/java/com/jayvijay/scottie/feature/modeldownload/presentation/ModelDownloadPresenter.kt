@@ -96,13 +96,15 @@ constructor(
     val config by openRouter.config.collectAsState()
     val savedUrl = config?.baseUrl
     val savedKey = config?.apiKey
-    var baseUrl by rememberRetained(savedUrl, savedKey) {
-      mutableStateOf(savedUrl ?: OpenRouterConfig.DEFAULT_BASE_URL)
-    }
+    var baseUrl by
+      rememberRetained(savedUrl, savedKey) {
+        mutableStateOf(savedUrl ?: OpenRouterConfig.DEFAULT_BASE_URL)
+      }
     var apiKey by rememberRetained(savedUrl, savedKey) { mutableStateOf(savedKey.orEmpty()) }
-    var errors by rememberRetained(savedUrl, savedKey) {
-      mutableStateOf(emptySet<OpenRouterField>())
-    }
+    var errors by
+      rememberRetained(savedUrl, savedKey) {
+        mutableStateOf(emptySet<OpenRouterField>())
+      }
     var confirmingDelete by rememberRetained { mutableStateOf(false) }
     var expanded by rememberRetained { mutableStateOf(false) }
     var fetchRequest by rememberRetained { mutableIntStateOf(if (config != null) 1 else 0) }
@@ -145,42 +147,45 @@ constructor(
         list = list,
         query = query,
       )
-    return section to { action ->
-      when (action) {
-        is ModelDownloadAction.EditOpenRouterBaseUrl -> {
-          errors -= OpenRouterField.BASE_URL
-          baseUrl = action.value
-        }
-        is ModelDownloadAction.EditOpenRouterApiKey -> apiKey = action.value
-        ModelDownloadAction.SaveOpenRouter ->
-          when (val draft = OpenRouterDraft(baseUrl, apiKey, saved?.models.orEmpty()).validate()) {
-            is OpenRouterValidation.Valid -> {
-              openRouter.save(draft.config)
-              fetchRequest++
+    return section to
+      { action ->
+        when (action) {
+          is ModelDownloadAction.EditOpenRouterBaseUrl -> {
+            errors -= OpenRouterField.BASE_URL
+            baseUrl = action.value
+          }
+          is ModelDownloadAction.EditOpenRouterApiKey -> apiKey = action.value
+          ModelDownloadAction.SaveOpenRouter ->
+            when (
+              val draft = OpenRouterDraft(baseUrl, apiKey, saved?.models.orEmpty()).validate()
+            ) {
+              is OpenRouterValidation.Valid -> {
+                openRouter.save(draft.config)
+                fetchRequest++
+              }
+              is OpenRouterValidation.Invalid -> errors = draft.fields
             }
-            is OpenRouterValidation.Invalid -> errors = draft.fields
+          is ModelDownloadAction.ToggleRemoteModel -> {
+            val models = (fetched as? ModelsFetch.Loaded)?.models
+            if (saved != null && models != null) {
+              val selected = saved.models.toMutableSet()
+              if (!selected.remove(action.id)) selected += action.id
+              openRouter.save(saved.copy(models = models.map { it.id }.filter { it in selected }))
+            }
           }
-        is ModelDownloadAction.ToggleRemoteModel -> {
-          val models = (fetched as? ModelsFetch.Loaded)?.models
-          if (saved != null && models != null) {
-            val selected = saved.models.toMutableSet()
-            if (!selected.remove(action.id)) selected += action.id
-            openRouter.save(saved.copy(models = models.map { it.id }.filter { it in selected }))
+          is ModelDownloadAction.SearchRemoteModels -> query = action.query
+          ModelDownloadAction.RetryRemoteModels -> fetchRequest++
+          ModelDownloadAction.ToggleOpenRouter -> expanded = !expanded
+          ModelDownloadAction.DeleteOpenRouter -> confirmingDelete = saved != null
+          ModelDownloadAction.ConfirmDeleteOpenRouter -> {
+            openRouter.clear()
+            result = null
+            query = ""
+            confirmingDelete = false
           }
+          ModelDownloadAction.CancelDeleteOpenRouter -> confirmingDelete = false
         }
-        is ModelDownloadAction.SearchRemoteModels -> query = action.query
-        ModelDownloadAction.RetryRemoteModels -> fetchRequest++
-        ModelDownloadAction.ToggleOpenRouter -> expanded = !expanded
-        ModelDownloadAction.DeleteOpenRouter -> confirmingDelete = saved != null
-        ModelDownloadAction.ConfirmDeleteOpenRouter -> {
-          openRouter.clear()
-          result = null
-          query = ""
-          confirmingDelete = false
-        }
-        ModelDownloadAction.CancelDeleteOpenRouter -> confirmingDelete = false
       }
-    }
   }
 
   @CircuitInject(ModelDownloadScreen::class, SingletonComponent::class)

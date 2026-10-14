@@ -3,8 +3,6 @@ package com.jayvijay.scottie.feature.interacbanking.presentation.a2ui
 import android.icu.text.MessageFormat
 import androidx.a2ui.compose.ui.A2uiCatalog
 import androidx.a2ui.model.catalog.functions.A2uiLocaleProvider
-import androidx.a2ui.model.catalog.functions.A2uiMessageFormatter
-import androidx.a2ui.model.catalog.functions.A2uiUrlOpener
 import androidx.compose.material3.a2ui.catalog.A2uiAudioPlayerRenderer
 import androidx.compose.material3.a2ui.catalog.A2uiImageRenderer
 import androidx.compose.material3.a2ui.catalog.A2uiVideoRenderer
@@ -45,11 +43,10 @@ fun interacCatalog(): A2uiCatalog {
       image = MaterialA2uiBasicCatalogV1Defaults.image(NoMedia),
       video = MaterialA2uiBasicCatalogV1Defaults.video(NoMedia),
       audioPlayer = MaterialA2uiBasicCatalogV1Defaults.audioPlayer(NoMedia),
-      urlOpener = A2uiUrlOpener {},
-      messageFormatter =
-        A2uiMessageFormatter { pattern, locale, arguments ->
-          MessageFormat(pattern, locale).format(arguments)
-        },
+      urlOpener = {},
+      messageFormatter = { pattern, locale, arguments ->
+        MessageFormat(pattern, locale).format(arguments)
+      },
       localeProvider = A2uiLocaleProvider.Default,
     )
   return A2uiCatalog(

@@ -49,6 +49,5 @@ class OpenRouterConfigRepositoryImplTest {
     assertNull(repository().config.value)
   }
 
-  @Test
-  fun missingFileYieldsNull() = runTest { assertNull(repository().config.value) }
+  @Test fun missingFileYieldsNull() = runTest { assertNull(repository().config.value) }
 }

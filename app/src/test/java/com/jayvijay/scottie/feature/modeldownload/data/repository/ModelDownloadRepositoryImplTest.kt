@@ -501,10 +501,10 @@ class ModelDownloadRepositoryImplTest {
         LiteRtModel(TOKEN, "Token", "https://example.com/t", TOTAL, TOTAL, true),
       )
 
-    val TEXT_ROWS: List<CatalogModel> =
-      listOf(stt(A), text(T1), text(T2))
+    val TEXT_ROWS: List<CatalogModel> = listOf(stt(A), text(T1), text(T2))
 
-    fun text(id: String) = LiteRtModel(id, "Text $id", "https://example.com/$id", TOTAL, TOTAL, false)
+    fun text(id: String) =
+      LiteRtModel(id, "Text $id", "https://example.com/$id", TOTAL, TOTAL, false)
 
     fun stt(id: String) =
       MultiFileModel(

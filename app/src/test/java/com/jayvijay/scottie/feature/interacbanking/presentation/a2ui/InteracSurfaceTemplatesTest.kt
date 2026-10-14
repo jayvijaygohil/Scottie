@@ -323,4 +323,3 @@ class InteracSurfaceTemplatesTest {
       is JsonObject -> mapValues { (_, v) -> v.plain() }
     }
 }
-

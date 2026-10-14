@@ -151,13 +151,14 @@ constructor(
     bridge: A2uiBridge,
   ): TurnReply {
     // FR-015: inference failures get their own reply; building the surface may still fall back.
-    val intent =
-      runCatching { extractor.extract(text, modelId) }
-        .getOrElse {
-          if (it is CancellationException) throw it
-          Log.w(TAG, "inference failed", it)
-          return TurnReply.Failed((it as? InferenceException)?.failure ?: InferenceFailure.UNKNOWN)
-        }
+    val intent = runCatching {
+      extractor.extract(text, modelId)
+    }
+      .getOrElse {
+        if (it is CancellationException) throw it
+        Log.w(TAG, "inference failed", it)
+        return TurnReply.Failed((it as? InferenceException)?.failure ?: InferenceFailure.UNKNOWN)
+      }
     val lines =
       when (intent.intent) {
         Intent.OTHER -> null

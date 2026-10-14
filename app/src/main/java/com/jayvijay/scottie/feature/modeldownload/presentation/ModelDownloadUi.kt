@@ -44,8 +44,8 @@ import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadS
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ShortfallKind
-import com.jayvijay.scottie.feature.modeldownload.presentation.component.ModelSections
 import com.jayvijay.scottie.feature.modeldownload.presentation.component.DeleteOpenRouterDialog
+import com.jayvijay.scottie.feature.modeldownload.presentation.component.ModelSections
 import com.jayvijay.scottie.feature.modeldownload.presentation.component.OpenRouterCard
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.ui.Ui

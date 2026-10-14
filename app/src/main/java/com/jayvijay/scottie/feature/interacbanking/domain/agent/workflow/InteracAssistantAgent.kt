@@ -15,8 +15,7 @@ import kotlinx.serialization.json.Json
  * One Koog agent per request: free-form request with read-only tools, then the reply is parsed as
  * [AssistantIntent]; a structured repair request runs only when the first reply is not JSON.
  * Unparseable output yields [AssistantIntent.FALLBACK]; model load or inference failures surface as
- * [InferenceException], classified by [classifier].
- * Constructed in `di/`; no DI or Android here.
+ * [InferenceException], classified by [classifier]. Constructed in `di/`; no DI or Android here.
  */
 class InteracAssistantAgent(
   private val toolRegistry: ToolRegistry,

@@ -289,7 +289,9 @@ class ModelDownloadPresenterTest {
   }
 
   private suspend fun ReceiveTurbine<ModelDownloadState>.awaitLoaded(): ModelDownloadState =
-    awaitUntil { it.list is RemoteModels.Loaded }
+    awaitUntil {
+      it.list is RemoteModels.Loaded
+    }
 
   private suspend fun ReceiveTurbine<ModelDownloadState>.awaitList(): RemoteModels.Loaded =
     awaitLoaded().openRouter.list as RemoteModels.Loaded

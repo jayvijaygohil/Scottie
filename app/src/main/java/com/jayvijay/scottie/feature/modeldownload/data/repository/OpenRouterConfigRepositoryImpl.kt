@@ -39,12 +39,11 @@ constructor(
 
   private val writes = Mutex()
 
-  private fun read(): OpenRouterConfig? =
-    runCatching {
-        if (file.exists()) json.decodeFromString<OpenRouterConfig>(file.readText()) else null
-      }
-      .onFailure { Log.w(TAG, "config unreadable", it) }
-      .getOrNull()
+  private fun read(): OpenRouterConfig? = runCatching {
+    if (file.exists()) json.decodeFromString<OpenRouterConfig>(file.readText()) else null
+  }
+    .onFailure { Log.w(TAG, "config unreadable", it) }
+    .getOrNull()
 
   override fun save(config: OpenRouterConfig) {
     state.value = config
