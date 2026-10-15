@@ -47,6 +47,7 @@ class ModelDownloadRepositoryImplTest {
   private val host = FakeDownloadForegroundHost()
   private val resources = FakeDeviceResources()
   private val activeFile by lazy { File(folder.root, "active_text_model") }
+  private val activeAudioFile by lazy { File(folder.root, "active_audio_model") }
   private val openRouter = FakeOpenRouterConfigRepository()
 
   private fun TestScope.repository(rows: List<CatalogModel> = ROWS): ModelDownloadRepositoryImpl =
@@ -57,6 +58,7 @@ class ModelDownloadRepositoryImplTest {
         rows,
         backgroundScope,
         activeFile,
+        activeAudioFile,
         openRouter,
       )
       .also { runCurrent() }
@@ -80,6 +82,7 @@ class ModelDownloadRepositoryImplTest {
         ROWS,
         backgroundScope,
         activeFile,
+        activeAudioFile,
         openRouter,
       )
     assertEquals(ModelCatalog.Loading, repo.catalog.value)
@@ -473,6 +476,63 @@ class ModelDownloadRepositoryImplTest {
     assertEquals(Downloaded, repo.status(B))
   }
 
+  @Test
+  fun activeAudioModelDefaultsToNullEvenWhenSpeechModelsAreDownloaded() = runTest {
+    runtime.downloaded += listOf(A, B)
+    openRouter.config.value = REMOTE_AUDIO
+    assertNull(repository().activeAudioModel.value)
+  }
+
+  @Test
+  fun selectAudioModelPersistsLocalSpeechAndClearsOnNull() = runTest {
+    runtime.downloaded += listOf(A, B)
+    val repo = repository()
+    repo.selectAudioModel(A)
+    runCurrent()
+    assertEquals(A, repo.activeAudioModel.value)
+    assertEquals(A, activeAudioFile.readText())
+    assertEquals(A, repository().activeAudioModel.value)
+
+    repo.selectAudioModel(null)
+    runCurrent()
+    assertNull(repo.activeAudioModel.value)
+    assertTrue(!activeAudioFile.exists())
+    assertNull(repository().activeAudioModel.value)
+  }
+
+  @Test
+  fun selectAudioModelPersistsRemoteAudioAndFallsBackToNullWhenRemovedOrDeleted() = runTest {
+    runtime.downloaded += listOf(A, T1)
+    openRouter.config.value = REMOTE_AUDIO
+    val repo = repository(TEXT_ROWS)
+
+    // Non-speech local and text-only remote models are ignored.
+    repo.selectAudioModel(T1)
+    repo.selectAudioModel("openrouter:x/y")
+    runCurrent()
+    assertNull(repo.activeAudioModel.value)
+    assertTrue(!activeAudioFile.exists())
+
+    // Audio-capable remote model is accepted and persisted.
+    repo.selectAudioModel("openrouter:audio/one")
+    runCurrent()
+    assertEquals("openrouter:audio/one", repo.activeAudioModel.value)
+    assertEquals("openrouter:audio/one", repository(TEXT_ROWS).activeAudioModel.value)
+
+    // Removing the remote audio model from config falls back to null ("None").
+    openRouter.config.value = REMOTE
+    runCurrent()
+    assertNull(repo.activeAudioModel.value)
+
+    // Selecting and then deleting a local speech model falls back to null ("None").
+    repo.selectAudioModel(A)
+    runCurrent()
+    assertEquals(A, repo.activeAudioModel.value)
+    repo.delete(A)
+    runCurrent()
+    assertNull(repo.activeAudioModel.value)
+  }
+
   private companion object {
     const val A = "a"
     const val B = "b"
@@ -481,6 +541,13 @@ class ModelDownloadRepositoryImplTest {
     const val T2 = "t2.litertlm"
     const val TOTAL = 100L
     val REMOTE = OpenRouterConfig("https://openrouter.ai", "k", listOf("x/y", "z/w"))
+    val REMOTE_AUDIO =
+      OpenRouterConfig(
+        "https://openrouter.ai",
+        "k",
+        listOf("x/y", "audio/one"),
+        audioModels = listOf("audio/one"),
+      )
 
     val ARCHIVE =
       ArchiveModel(

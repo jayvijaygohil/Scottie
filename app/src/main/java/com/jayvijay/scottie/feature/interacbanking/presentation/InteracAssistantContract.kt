@@ -16,8 +16,23 @@ data class InteracAssistantState(
   val missingModel: Boolean,
   /** Live A2UI surfaces; a turn renders the one whose id matches. */
   val surfaces: List<A2uiSurfaceModel>,
+  val activeAudioModelId: String? = null,
+  val voiceState: VoiceState = VoiceState.Idle,
+  val voiceError: VoiceError? = null,
   val eventSink: (InteracAssistantAction) -> Unit,
 ) : CircuitUiState
+
+enum class VoiceState {
+  Idle,
+  Recording,
+  Transcribing,
+}
+
+sealed interface VoiceError {
+  data object PermissionDenied : VoiceError
+
+  data class Failed(val failure: InferenceFailure) : VoiceError
+}
 
 data class AssistantTurn(
   val id: Int,
@@ -58,4 +73,12 @@ sealed interface InteracAssistantAction : CircuitUiEvent {
   data object ClearChat : InteracAssistantAction
 
   data object OpenSettings : InteracAssistantAction
+
+  data object ToggleRecording : InteracAssistantAction
+
+  data object CancelRecording : InteracAssistantAction
+
+  data object MicrophonePermissionDenied : InteracAssistantAction
+
+  data object DismissVoiceError : InteracAssistantAction
 }

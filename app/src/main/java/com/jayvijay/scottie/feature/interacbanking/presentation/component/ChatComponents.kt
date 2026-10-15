@@ -27,8 +27,11 @@ import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Memory
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.RequestQuote
+import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material.icons.rounded.SwapHoriz
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -61,6 +64,7 @@ import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
 import com.jayvijay.scottie.core.ui.ScottieTheme
 import com.jayvijay.scottie.core.ui.components.ScottieButton
+import com.jayvijay.scottie.feature.interacbanking.presentation.VoiceState
 import kotlinx.coroutines.delay
 
 const val TAG_USER_BUBBLE = "assistant_user_bubble"
@@ -68,6 +72,7 @@ const val TAG_REPLY = "assistant_reply"
 const val TAG_COMPOSER = "assistant_composer"
 const val TAG_THINKING = "chat_thinking"
 const val TAG_SEND = "chat_send"
+const val TAG_RECORD = "chat_record"
 const val TAG_EMPTY_STATE = "chat_empty_state"
 const val TAG_WELCOME = "chat_welcome"
 const val TAG_EXAMPLE = "chat_example"
@@ -189,6 +194,10 @@ internal fun Composer(
   onValueChange: (String) -> Unit,
   onSend: () -> Unit,
   modifier: Modifier = Modifier,
+  showRecord: Boolean = false,
+  voiceState: VoiceState = VoiceState.Idle,
+  recordEnabled: Boolean = true,
+  onToggleRecord: () -> Unit = {},
 ) {
   val colors = ScottieTheme.colors
   val textStyle = MaterialTheme.typography.bodyLarge.copy(color = colors.textPrimary)
@@ -226,6 +235,50 @@ internal fun Composer(
           }
         },
       )
+    }
+    if (showRecord) {
+      val recording = voiceState == VoiceState.Recording
+      val transcribingLabel = stringResource(R.string.chat_transcribing)
+      FilledIconButton(
+        onClick = onToggleRecord,
+        enabled = recordEnabled && voiceState != VoiceState.Transcribing,
+        modifier = Modifier.size(46.dp).testTag(TAG_RECORD),
+        shape = SendButtonShape,
+        colors =
+          IconButtonDefaults.filledIconButtonColors(
+            containerColor =
+              if (recording) MaterialTheme.colorScheme.error else colors.scotiaRedSubtle,
+            contentColor =
+              if (recording) {
+                MaterialTheme.colorScheme.onError
+              } else {
+                MaterialTheme.colorScheme.primary
+              },
+            disabledContainerColor = colors.surfaceCard,
+            disabledContentColor = colors.textTertiary,
+          ),
+      ) {
+        when (voiceState) {
+          VoiceState.Idle ->
+            Icon(
+              Icons.Rounded.Mic,
+              contentDescription = stringResource(R.string.chat_record_voice),
+              modifier = Modifier.size(20.dp),
+            )
+          VoiceState.Recording ->
+            Icon(
+              Icons.Rounded.Stop,
+              contentDescription = stringResource(R.string.chat_stop_recording),
+              modifier = Modifier.size(20.dp),
+            )
+          VoiceState.Transcribing ->
+            CircularProgressIndicator(
+              modifier = Modifier.size(18.dp).semantics { contentDescription = transcribingLabel },
+              strokeWidth = 2.dp,
+              color = MaterialTheme.colorScheme.primary,
+            )
+        }
+      }
     }
     FilledIconButton(
       onClick = onSend,

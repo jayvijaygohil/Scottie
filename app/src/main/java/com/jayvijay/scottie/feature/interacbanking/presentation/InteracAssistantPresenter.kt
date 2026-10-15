@@ -4,10 +4,12 @@ import android.util.Log
 import androidx.a2ui.model.protocol.A2uiClientErrorMessage
 import androidx.a2ui.model.protocol.A2uiClientEventMessage
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.tools.InteracBankingTools
@@ -17,10 +19,12 @@ import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.Assista
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceException
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.IntentExtractor
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.SpeechTranscriber
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Account
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChannel
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.InteracContact
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Recipient
+import com.jayvijay.scottie.feature.interacbanking.domain.repository.AudioRecorder
 import com.jayvijay.scottie.feature.interacbanking.domain.repository.TextModelSource
 import com.jayvijay.scottie.feature.interacbanking.domain.usecase.ContactMatcher
 import com.jayvijay.scottie.feature.interacbanking.domain.usecase.InteracResolution
@@ -54,6 +58,8 @@ constructor(
   private val banking: InteracBankingTools,
   private val bridgeFactory: A2uiBridgeFactory,
   private val source: TextModelSource,
+  private val recorder: AudioRecorder,
+  private val transcriber: SpeechTranscriber,
   private val settings: ModelSettingsDestination,
 ) : Presenter<InteracAssistantState> {
 
@@ -62,11 +68,23 @@ constructor(
     var turns by rememberRetained { mutableStateOf(emptyList<AssistantTurn>()) }
     var input by rememberRetained { mutableStateOf("") }
     var busy by rememberRetained { mutableStateOf(false) }
+    var voiceState by remember { mutableStateOf(VoiceState.Idle) }
+    var voiceError by rememberRetained { mutableStateOf<VoiceError?>(null) }
     val bridge = rememberRetained { bridgeFactory.create() }
     val startedAt = rememberRetained { mutableMapOf<String, Long>() }
     val surfaces by bridge.surfaces.collectAsState()
     val active by source.active.collectAsState(initial = null)
+    val activeAudio by source.activeAudio.collectAsState(initial = null)
     val scope = rememberCoroutineScope()
+
+    DisposableEffect(Unit) { onDispose { recorder.cancel() } }
+
+    LaunchedEffect(activeAudio) {
+      if (activeAudio == null && voiceState == VoiceState.Recording) {
+        recorder.cancel()
+        voiceState = VoiceState.Idle
+      }
+    }
 
     fun update(surfaceId: String, reply: TurnReply) {
       turns = turns.map { if (it.surfaceId == surfaceId) it.copy(reply = reply) else it }
@@ -112,11 +130,15 @@ constructor(
       busy = busy,
       missingModel = active == null,
       surfaces = surfaces,
+      activeAudioModelId = activeAudio,
+      voiceState = voiceState,
+      voiceError = voiceError,
     ) { action ->
+      val idle = !busy && voiceState == VoiceState.Idle
       when (action) {
         is InteracAssistantAction.InputChanged -> input = action.text
         InteracAssistantAction.ClearChat -> {
-          if (busy || (turns.isEmpty() && input.isBlank())) return@InteracAssistantState
+          if (!idle || (turns.isEmpty() && input.isBlank())) return@InteracAssistantState
           (turns.map { it.surfaceId } + surfaces.map { it.id }).distinct().forEach {
             runCatching { bridge.accept(InteracSurfaceTemplates.deleteSurface(it)) }
           }
@@ -124,11 +146,86 @@ constructor(
           input = ""
           startedAt.clear()
         }
-        InteracAssistantAction.OpenSettings -> navigator.goTo(settings.screen())
+        InteracAssistantAction.OpenSettings -> {
+          if (voiceState == VoiceState.Recording) {
+            recorder.cancel()
+            voiceState = VoiceState.Idle
+          }
+          navigator.goTo(settings.screen())
+        }
+        InteracAssistantAction.CancelRecording -> {
+          if (voiceState == VoiceState.Recording) {
+            recorder.cancel()
+            voiceState = VoiceState.Idle
+          }
+        }
+        InteracAssistantAction.MicrophonePermissionDenied -> {
+          voiceError = VoiceError.PermissionDenied
+        }
+        InteracAssistantAction.DismissVoiceError -> {
+          voiceError = null
+        }
+        InteracAssistantAction.ToggleRecording -> {
+          when (voiceState) {
+            VoiceState.Idle -> {
+              if (busy || activeAudio == null) return@InteracAssistantState
+              voiceError = null
+              scope.launch {
+                runCatching { recorder.start() }
+                  .onSuccess { voiceState = VoiceState.Recording }
+                  .onFailure {
+                    if (it is CancellationException) throw it
+                    Log.w(TAG, "record start failed", it)
+                    recorder.cancel()
+                    voiceState = VoiceState.Idle
+                    voiceError = VoiceError.Failed(InferenceFailure.UNKNOWN)
+                  }
+              }
+            }
+            VoiceState.Recording -> {
+              val audioModelId = activeAudio
+              if (audioModelId == null) {
+                recorder.cancel()
+                voiceState = VoiceState.Idle
+                return@InteracAssistantState
+              }
+              voiceState = VoiceState.Transcribing
+              scope.launch {
+                val wavBytes = runCatching {
+                  recorder.stop()
+                }
+                  .getOrElse {
+                    if (it is CancellationException) throw it
+                    Log.w(TAG, "record stop failed", it)
+                    recorder.cancel()
+                    voiceState = VoiceState.Idle
+                    voiceError = VoiceError.Failed(InferenceFailure.UNKNOWN)
+                    return@launch
+                  }
+                runCatching { transcriber.transcribe(wavBytes, audioModelId) }
+                  .onSuccess { raw ->
+                    val transcript = raw.trim()
+                    if (transcript.isNotEmpty()) {
+                      input = appendTranscript(input, transcript)
+                    }
+                    voiceState = VoiceState.Idle
+                  }
+                  .onFailure {
+                    if (it is CancellationException) throw it
+                    Log.w(TAG, "transcription failed", it)
+                    val failure = (it as? InferenceException)?.failure ?: InferenceFailure.UNKNOWN
+                    voiceError = VoiceError.Failed(failure)
+                    voiceState = VoiceState.Idle
+                  }
+              }
+            }
+            VoiceState.Transcribing -> Unit
+          }
+        }
         InteracAssistantAction.Send -> {
           val text = input.trim()
           val modelId = active
-          if (text.isEmpty() || busy || modelId == null) return@InteracAssistantState
+          if (!idle || text.isEmpty() || modelId == null) return@InteracAssistantState
           val turn = AssistantTurn(turns.size + 1, text, TurnReply.Thinking)
           input = ""
           busy = true
@@ -507,6 +604,13 @@ constructor(
     const val PROBE_AMOUNT = 0.01
   }
 }
+
+private fun appendTranscript(current: String, transcript: String): String =
+  when {
+    current.isEmpty() -> transcript
+    current.last().isWhitespace() -> current + transcript
+    else -> "$current $transcript"
+  }
 
 private fun InteracContact.channels() =
   listOfNotNull(email?.let { DeliveryChannel.EMAIL }, phoneNumber?.let { DeliveryChannel.PHONE })

@@ -67,4 +67,24 @@ class OpenRouterModelsClientTest {
     assertNull(client.parsePage("""{"data":[]}""").links)
     assertEquals("/p2", client.parsePage("""{"links":{"next":"/p2"}}""").links?.next)
   }
+
+  @Test
+  fun marksAudioInputWhenInputModalitiesIncludeAudio() {
+    val page =
+      """
+      {"data":[
+        {"id":"audio","name":"Audio","architecture":{"input_modalities":["text","AUDIO"],"output_modalities":["text"]}},
+        {"id":"text","name":"Text","architecture":{"input_modalities":["text"],"output_modalities":["text"]}},
+        {"id":"bare","name":"Bare"}
+      ]}
+      """
+    assertEquals(
+      listOf(
+        AvailableModel("audio", "Audio", audioInput = true),
+        AvailableModel("bare", "Bare", audioInput = false),
+        AvailableModel("text", "Text", audioInput = false),
+      ),
+      available(page),
+    )
+  }
 }

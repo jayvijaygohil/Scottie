@@ -32,6 +32,7 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@Suppress("LargeClass")
 class ModelDownloadPresenterTest {
   private val repository = FakeModelDownloadRepository()
   private val navigator = FakeNavigator(ModelDownloadScreen)
@@ -255,6 +256,89 @@ class ModelDownloadPresenterTest {
       assertEquals("a", awaitItem().activeModelId)
       assertEquals(listOf("a"), repository.selections)
       navigator.awaitPop()
+    }
+  }
+
+  @Test
+  fun useSpeechModelSelectsAudioModelAndReturnsToTheChat() = runTest {
+    repository.catalog.value =
+      ready(entry("stt", ModelDownloadStatus.Downloaded, type = SPEECH_RECOGNITION))
+    presenter.test {
+      awaitItem().eventSink(ModelDownloadAction.UseModel("stt"))
+      assertEquals("stt", awaitItem().activeAudioModelId)
+      assertEquals(listOf("stt"), repository.audioSelections)
+      assertTrue(repository.selections.isEmpty())
+      navigator.awaitPop()
+    }
+  }
+
+  @Test
+  fun selectAudioModelListsDownloadedSpeechThenAudioRemoteAndAllowsClearingToNone() = runTest {
+    repository.catalog.value =
+      ready(
+        entry("a", ModelDownloadStatus.Downloaded),
+        entry("stt1", ModelDownloadStatus.Downloaded, type = SPEECH_RECOGNITION),
+        entry("stt2", Available, type = SPEECH_RECOGNITION),
+        entry("stt3", ModelDownloadStatus.Downloaded, type = SPEECH_RECOGNITION),
+      )
+    openRouter.config.value =
+      OpenRouterConfig(
+        URL,
+        "sk",
+        listOf("openai/gpt-4o", "openai/gpt-4o-audio"),
+        audioModels = listOf("openai/gpt-4o-audio"),
+      )
+    openRouter.nextFetch =
+      ModelsFetch.Loaded(
+        listOf(
+          AvailableModel("openai/gpt-4o", "GPT-4o", audioInput = false),
+          AvailableModel("openai/gpt-4o-audio", "GPT-4o Audio", audioInput = true),
+        )
+      )
+    presenter.test {
+      val initial = awaitItem()
+      assertEquals(
+        listOf(
+          TextModelOption("stt1", "Model stt1"),
+          TextModelOption("stt3", "Model stt3"),
+          TextModelOption("openrouter:openai/gpt-4o-audio", "openai/gpt-4o-audio", remote = true),
+        ),
+        initial.audioModels,
+      )
+      assertNull(initial.activeAudioModelId)
+
+      initial.eventSink(ModelDownloadAction.SelectAudioModel("openrouter:openai/gpt-4o-audio"))
+      var state = awaitItem()
+      while (state.activeAudioModelId != "openrouter:openai/gpt-4o-audio") state = awaitItem()
+      assertEquals("openrouter:openai/gpt-4o-audio", state.activeAudioModelId)
+
+      state.eventSink(ModelDownloadAction.SelectAudioModel(null))
+      while (state.activeAudioModelId != null) state = awaitItem()
+      assertNull(state.activeAudioModelId)
+      assertEquals(listOf("openrouter:openai/gpt-4o-audio", null), repository.audioSelections)
+      navigator.expectNoGoToEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun toggleRemoteAudioModelPersistsAudioModelsInConfig() = runTest {
+    saved()
+    openRouter.nextFetch =
+      ModelsFetch.Loaded(
+        listOf(
+          AvailableModel("text-only", "Text Only", audioInput = false),
+          AvailableModel("audio-capable", "Audio Capable", audioInput = true),
+        )
+      )
+    presenter.test {
+      awaitLoaded().eventSink(ModelDownloadAction.ToggleRemoteModel("audio-capable"))
+      awaitUntil { it.savedModelCount == 1 }
+        .eventSink(ModelDownloadAction.ToggleRemoteModel("text-only"))
+      awaitUntil { it.savedModelCount == 2 }
+      assertEquals(listOf("text-only", "audio-capable"), openRouter.config.value?.models)
+      assertEquals(listOf("audio-capable"), openRouter.config.value?.audioModels)
+      cancelAndIgnoreRemainingEvents()
     }
   }
 

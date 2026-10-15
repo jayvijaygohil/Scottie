@@ -7,10 +7,12 @@ import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.Assista
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.Intent
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceException
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.SpeechTranscriber
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChannel
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.MoneyRequestResult
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Recipient
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransferResult
+import com.jayvijay.scottie.feature.interacbanking.domain.repository.AudioRecorder
 import com.jayvijay.scottie.feature.interacbanking.domain.repository.TextModelSource
 import com.slack.circuit.runtime.screen.ParcelableScreen
 import com.slack.circuit.test.CircuitReceiveTurbine
@@ -30,14 +32,26 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
+@Suppress("LargeClass")
 class InteracAssistantPresenterTest {
   private val navigator = FakeNavigator(InteracAssistantScreen)
   private val extractor = FakeIntentExtractor()
   private val banking = CountingBanking(MockInteracBankingTools())
   private val bridge = FakeA2uiBridge()
   private val source = FakeTextModelSource()
+  private val recorder = FakeAudioRecorder()
+  private val transcriber = FakeSpeechTranscriber()
   private val presenter by lazy {
-    InteracAssistantPresenter(navigator, extractor, banking, { bridge }, source) { SettingsScreen }
+    InteracAssistantPresenter(
+      navigator = navigator,
+      extractor = extractor,
+      banking = banking,
+      bridgeFactory = { bridge },
+      source = source,
+      recorder = recorder,
+      transcriber = transcriber,
+      settings = { SettingsScreen },
+    )
   }
 
   private fun modelPresent() {
@@ -588,8 +602,166 @@ class InteracAssistantPresenterTest {
     }
   }
 
+  @Test
+  fun activeAudioModelPropagatesAndRecordingTranscribesIntoComposer() = runTest {
+    modelPresent()
+    presenter.test(timeout = 5.seconds) {
+      var s = awaitState { !it.missingModel }
+      assertNull(s.activeAudioModelId)
+      assertEquals(VoiceState.Idle, s.voiceState)
+
+      // Ignored when no audio model is selected.
+      s.eventSink(InteracAssistantAction.ToggleRecording)
+      assertEquals(0, recorder.starts)
+
+      source.activeAudio.value = AUDIO_LOCAL
+      s = awaitState { it.activeAudioModelId == AUDIO_LOCAL }
+
+      // Start recording -> stop recording -> transcribe into empty composer.
+      val gate = CompletableDeferred<Unit>().also { transcriber.gate = it }
+      transcriber.nextResult = Result.success("  Send $20 to Alice  ")
+      s.eventSink(InteracAssistantAction.ToggleRecording)
+      val recording = awaitState { it.voiceState == VoiceState.Recording }
+      assertTrue(recorder.recording)
+      // Send and ClearChat are blocked while recording.
+      recording.eventSink(InteracAssistantAction.Send)
+      recording.eventSink(InteracAssistantAction.ClearChat)
+
+      recording.eventSink(InteracAssistantAction.ToggleRecording)
+      awaitState { it.voiceState == VoiceState.Transcribing }
+      // Microphone hardware is released before transcription completes.
+      assertFalse(recorder.recording)
+      assertEquals(1, recorder.stops)
+      gate.complete(Unit)
+
+      awaitState { it.voiceState == VoiceState.Idle && it.input == "Send $20 to Alice" }
+      assertEquals(listOf(AUDIO_LOCAL), transcriber.modelIds)
+
+      // Second recording appends after a single space when draft does not end with whitespace.
+      source.activeAudio.value = AUDIO_REMOTE
+      val withRemote = awaitState { it.activeAudioModelId == AUDIO_REMOTE }
+      transcriber.nextResult = Result.success("from savings")
+      withRemote.eventSink(InteracAssistantAction.ToggleRecording)
+      awaitState { it.voiceState == VoiceState.Recording }
+        .eventSink(InteracAssistantAction.ToggleRecording)
+      val appended = awaitState {
+        it.voiceState == VoiceState.Idle && it.input == "Send $20 to Alice from savings"
+      }
+      assertEquals(listOf(AUDIO_LOCAL, AUDIO_REMOTE), transcriber.modelIds)
+
+      // Silent / blank transcript leaves existing draft text untouched.
+      transcriber.nextResult = Result.success("   ")
+      appended.eventSink(InteracAssistantAction.ToggleRecording)
+      awaitState { it.voiceState == VoiceState.Recording }
+        .eventSink(InteracAssistantAction.ToggleRecording)
+      val unchanged = awaitState { it.voiceState == VoiceState.Idle }
+      assertEquals("Send $20 to Alice from savings", unchanged.input)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun cancelRecordingAndSettingsNavigationReleaseMicWithoutTranscription() = runTest {
+    modelPresent()
+    source.activeAudio.value = AUDIO_LOCAL
+    presenter.test(timeout = 5.seconds) {
+      val s = awaitState { !it.missingModel && it.activeAudioModelId == AUDIO_LOCAL }
+      s.eventSink(InteracAssistantAction.ToggleRecording)
+      val recording = awaitState { it.voiceState == VoiceState.Recording }
+      assertTrue(recorder.recording)
+
+      recording.eventSink(InteracAssistantAction.CancelRecording)
+      val cancelled = awaitState { it.voiceState == VoiceState.Idle }
+      assertFalse(recorder.recording)
+      assertEquals(1, recorder.cancels)
+      assertTrue(transcriber.modelIds.isEmpty())
+
+      // Navigating to Settings while recording cancels and releases mic immediately.
+      cancelled.eventSink(InteracAssistantAction.ToggleRecording)
+      val recordingAgain = awaitState { it.voiceState == VoiceState.Recording }
+      recordingAgain.eventSink(InteracAssistantAction.OpenSettings)
+      awaitState { it.voiceState == VoiceState.Idle }
+      assertEquals(SettingsScreen, navigator.awaitNextScreen())
+      assertFalse(recorder.recording)
+      assertEquals(2, recorder.cancels)
+      assertTrue(transcriber.modelIds.isEmpty())
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun permissionDeniedAndTranscriptionFailuresPreserveDraftAndShowDismissibleError() = runTest {
+    modelPresent()
+    source.activeAudio.value = AUDIO_REMOTE
+    presenter.test(timeout = 5.seconds) {
+      var s = awaitState { !it.missingModel && it.activeAudioModelId == AUDIO_REMOTE }
+      s.eventSink(InteracAssistantAction.InputChanged("Draft text"))
+      s = awaitState { it.input == "Draft text" }
+
+      s.eventSink(InteracAssistantAction.MicrophonePermissionDenied)
+      val denied = awaitState { it.voiceError == VoiceError.PermissionDenied }
+      assertEquals("Draft text", denied.input)
+      assertEquals(VoiceState.Idle, denied.voiceState)
+
+      denied.eventSink(InteracAssistantAction.DismissVoiceError)
+      val dismissed = awaitState { it.voiceError == null }
+
+      transcriber.nextResult =
+        Result.failure(InferenceException(InferenceFailure.OFFLINE, IOException("offline")))
+      dismissed.eventSink(InteracAssistantAction.ToggleRecording)
+      awaitState { it.voiceState == VoiceState.Recording }
+        .eventSink(InteracAssistantAction.ToggleRecording)
+      val failed = awaitState {
+        it.voiceState == VoiceState.Idle &&
+          it.voiceError == VoiceError.Failed(InferenceFailure.OFFLINE)
+      }
+      assertEquals("Draft text", failed.input)
+      assertFalse(recorder.recording)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private class FakeTextModelSource : TextModelSource {
     override val active = MutableStateFlow<String?>(null)
+    override val activeAudio = MutableStateFlow<String?>(null)
+  }
+
+  private class FakeAudioRecorder : AudioRecorder {
+    var recording = false
+    var starts = 0
+    var stops = 0
+    var cancels = 0
+    var clip = byteArrayOf(1, 2, 3, 4)
+
+    override suspend fun start() {
+      starts++
+      recording = true
+    }
+
+    override suspend fun stop(): ByteArray {
+      stops++
+      recording = false
+      return clip
+    }
+
+    override fun cancel() {
+      cancels++
+      recording = false
+    }
+  }
+
+  private class FakeSpeechTranscriber : SpeechTranscriber {
+    val modelIds = mutableListOf<String>()
+    var gate: CompletableDeferred<Unit>? = null
+    var nextResult: Result<String> = Result.success("")
+
+    override suspend fun transcribe(wavBytes: ByteArray, modelId: String): String {
+      assertTrue(wavBytes.isNotEmpty())
+      modelIds += modelId
+      gate?.await()
+      gate = null
+      return nextResult.getOrThrow()
+    }
   }
 
   /** Counts money-moving calls so tests can assert "exactly once". */
@@ -641,3 +813,5 @@ class InteracAssistantPresenterTest {
 private const val MODEL = "m.litertlm"
 private const val OTHER = "o.litertlm"
 private const val REMOTE = "openrouter:x/y"
+private const val AUDIO_LOCAL = "sherpa-onnx-whisper-tiny.en"
+private const val AUDIO_REMOTE = "openrouter:openai/gpt-4o-audio-preview"

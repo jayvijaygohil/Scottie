@@ -107,8 +107,17 @@
     <string name="chat_empty_action">Download a Model to Get Started</string>
     <string name="chat_settings">Model settings</string>
     <string name="chat_model_selector">Choose model, current: %1$s</string>
+    <string name="audio_model_none">None</string>
+    <string name="audio_model_selector">Choose speech model, current: %1$s</string>
+    <string name="model_selector_text_label">Text</string>
+    <string name="model_selector_audio_label">Audio</string>
     <string name="chat_thinking">Assistant is thinking</string>
     <string name="chat_send">Send message</string>
+    <string name="chat_record_voice">Record voice input</string>
+    <string name="chat_stop_recording">Stop recording</string>
+    <string name="chat_transcribing">Transcribing voice input</string>
+    <string name="chat_mic_permission_denied">Microphone permission is required for voice input.</string>
+    <string name="chat_voice_failed">Couldn\'t transcribe audio. Please try again.</string>
     <string name="chat_reply_failed">Something went wrong. Please try again.</string>
     <string name="chat_welcome_title">Hi! I can help with Interac e-Transfers.</string>
     <string name="chat_example_balance">What\'s my balance?</string>

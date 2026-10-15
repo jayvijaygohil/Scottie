@@ -45,11 +45,20 @@ class OpenRouterConfigTest {
   }
 
   @Test
-  fun prunedToDropsUnlistedAndFollowsFetchedOrder() {
+  fun prunedToDropsUnlistedFollowsFetchedOrderAndTracksAudioModels() {
     val config = OpenRouterConfig(URL, "", listOf("c", "gone", "a"))
-    val fetched = listOf("a", "b", "c").map { AvailableModel(it, it) }
-    assertEquals(listOf("a", "c"), config.prunedTo(fetched).models)
+    val fetched =
+      listOf(
+        AvailableModel("a", "a", audioInput = true),
+        AvailableModel("b", "b", audioInput = true),
+        AvailableModel("c", "c", audioInput = false),
+      )
+    val pruned = config.prunedTo(fetched)
+    assertEquals(listOf("a", "c"), pruned.models)
+    assertEquals(listOf("a"), pruned.audioModels)
+    assertEquals(listOf("openrouter:a"), pruned.audioModelIds)
     assertEquals(emptyList<String>(), config.prunedTo(emptyList()).models)
+    assertEquals(emptyList<String>(), config.prunedTo(emptyList()).audioModels)
   }
 
   @Test
@@ -60,8 +69,10 @@ class OpenRouterConfigTest {
   }
 
   @Test
-  fun modelIdsArePrefixed() {
-    assertEquals(listOf("openrouter:a/b"), OpenRouterConfig(URL, "", listOf("a/b")).modelIds)
+  fun modelIdsAndAudioModelIdsArePrefixed() {
+    val cfg = OpenRouterConfig(URL, "", listOf("a/b", "c/d"), audioModels = listOf("c/d", "stale"))
+    assertEquals(listOf("openrouter:a/b", "openrouter:c/d"), cfg.modelIds)
+    assertEquals(listOf("openrouter:c/d"), cfg.audioModelIds)
   }
 
   private companion object {

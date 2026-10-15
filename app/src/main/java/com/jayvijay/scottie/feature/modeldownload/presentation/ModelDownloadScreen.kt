@@ -23,6 +23,9 @@ data class ModelDownloadState(
   /** Downloaded text models in catalog order, then configured remote models. */
   val models: List<TextModelOption> = emptyList(),
   val activeModelId: String? = null,
+  /** Downloaded speech models in catalog order, then configured audio-capable remote models. */
+  val audioModels: List<TextModelOption> = emptyList(),
+  val activeAudioModelId: String? = null,
   val eventSink: (ModelDownloadAction) -> Unit,
 ) : CircuitUiState
 
@@ -124,7 +127,10 @@ sealed interface ModelDownloadAction : CircuitUiEvent {
   /** Selects the active text model in-place without leaving Settings. */
   data class SelectModel(val modelId: String) : ModelDownloadAction
 
-  /** Opens the screen that runs a downloaded text model. */
+  /** Selects the active audio model (or clears it when null) in-place without leaving Settings. */
+  data class SelectAudioModel(val modelId: String?) : ModelDownloadAction
+
+  /** Opens the screen that runs a downloaded text or speech model. */
   data class UseModel(val modelId: String) : ModelDownloadAction
 
   /** Settings actions for the OpenRouter section. */

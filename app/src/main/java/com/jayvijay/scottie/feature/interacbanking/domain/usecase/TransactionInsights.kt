@@ -433,7 +433,8 @@ object TransactionInsights {
 
   private fun parseIsoDate(value: String): LocalDate? = runCatching {
     LocalDate.parse(value)
-  }.getOrNull()
+  }
+    .getOrNull()
 
   private fun List<Transaction>.filterInRange(
     range: Pair<LocalDate, LocalDate>?

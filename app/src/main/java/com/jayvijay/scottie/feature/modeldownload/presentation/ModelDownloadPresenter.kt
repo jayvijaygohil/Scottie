@@ -17,6 +17,7 @@ import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConf
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterDraft
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterField
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterValidation
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.prunedTo
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.DownloadStart
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.ModelDownloadRepository
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.OpenRouterConfigRepository
@@ -42,6 +43,7 @@ constructor(
   override fun present(): ModelDownloadState {
     val catalog by repository.catalog.collectAsState()
     val activeModelId by repository.activeTextModel.collectAsState()
+    val activeAudioModelId by repository.activeAudioModel.collectAsState()
     val savedConfig by openRouter.config.collectAsState()
     var error by rememberRetained { mutableStateOf<ModelDownloadError?>(null) }
     var query by rememberRetained { mutableStateOf("") }
@@ -57,10 +59,29 @@ constructor(
         savedConfig?.models.orEmpty().map {
           TextModelOption(OpenRouterConfig.remoteId(it), it, remote = true)
         }
+    val audioModels =
+      models
+        .filter {
+          it.type == ModelType.SPEECH_RECOGNITION && it.status == ModelDownloadStatus.Downloaded
+        }
+        .map { TextModelOption(it.id, it.name) } +
+        savedConfig
+          ?.let { cfg -> cfg.audioModels.filter { it in cfg.models } }
+          .orEmpty()
+          .map { TextModelOption(OpenRouterConfig.remoteId(it), it, remote = true) }
     val content = catalog.toContent { catalogSections(models, query, expansion) }
     val (section, onOpenRouter) = presentOpenRouter()
 
-    return ModelDownloadState(content, query, error, section, textModels, activeModelId) { action ->
+    return ModelDownloadState(
+      content = content,
+      query = query,
+      error = error,
+      openRouter = section,
+      models = textModels,
+      activeModelId = activeModelId,
+      audioModels = audioModels,
+      activeAudioModelId = activeAudioModelId,
+    ) { action ->
       when (action) {
         is ModelDownloadAction.OpenRouter -> onOpenRouter(action)
         ModelDownloadAction.Back -> navigator.pop()
@@ -87,8 +108,14 @@ constructor(
             expansion = expansion + (action.type to !(expansion[action.type] ?: false))
           }
         is ModelDownloadAction.SelectModel -> repository.selectTextModel(action.modelId)
+        is ModelDownloadAction.SelectAudioModel -> repository.selectAudioModel(action.modelId)
         is ModelDownloadAction.UseModel -> {
-          repository.selectTextModel(action.modelId)
+          val type = models.find { it.id == action.modelId }?.type
+          if (type == ModelType.SPEECH_RECOGNITION) {
+            repository.selectAudioModel(action.modelId)
+          } else {
+            repository.selectTextModel(action.modelId)
+          }
           navigator.pop()
         }
       }
@@ -167,7 +194,14 @@ constructor(
           is ModelDownloadAction.EditOpenRouterApiKey -> apiKey = action.value
           ModelDownloadAction.SaveOpenRouter ->
             when (
-              val draft = OpenRouterDraft(baseUrl, apiKey, saved?.models.orEmpty()).validate()
+              val draft =
+                OpenRouterDraft(
+                    baseUrl,
+                    apiKey,
+                    saved?.models.orEmpty(),
+                    saved?.audioModels.orEmpty(),
+                  )
+                  .validate()
             ) {
               is OpenRouterValidation.Valid -> {
                 openRouter.save(draft.config)
@@ -180,7 +214,7 @@ constructor(
             if (saved != null && models != null) {
               val selected = saved.models.toMutableSet()
               if (!selected.remove(action.id)) selected += action.id
-              openRouter.save(saved.copy(models = models.map { it.id }.filter { it in selected }))
+              openRouter.save(saved.copy(models = selected.toList()).prunedTo(models))
             }
           }
           is ModelDownloadAction.SearchRemoteModels -> query = action.query

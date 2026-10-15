@@ -14,7 +14,9 @@ class FakeModelDownloadRepository : ModelDownloadRepository {
   val pauses = mutableListOf<String>()
   val deletes = mutableListOf<String>()
   val selections = mutableListOf<String>()
+  val audioSelections = mutableListOf<String?>()
   override val activeTextModel = MutableStateFlow<String?>(null)
+  override val activeAudioModel = MutableStateFlow<String?>(null)
 
   override suspend fun download(modelId: String): DownloadStart {
     downloads += modelId
@@ -33,5 +35,10 @@ class FakeModelDownloadRepository : ModelDownloadRepository {
   override fun selectTextModel(modelId: String) {
     selections += modelId
     activeTextModel.value = modelId
+  }
+
+  override fun selectAudioModel(modelId: String?) {
+    audioSelections += modelId
+    activeAudioModel.value = modelId
   }
 }

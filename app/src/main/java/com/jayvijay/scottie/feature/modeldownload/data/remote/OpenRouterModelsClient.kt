@@ -91,7 +91,8 @@ class OpenRouterModelsClient @Inject constructor(private val json: Json) {
 
   @Serializable
   internal data class Architecture(
-    @SerialName("output_modalities") val outputModalities: List<String>? = null
+    @SerialName("input_modalities") val inputModalities: List<String>? = null,
+    @SerialName("output_modalities") val outputModalities: List<String>? = null,
   )
 
   @Serializable internal data class Links(val next: String? = null)
@@ -117,7 +118,9 @@ internal fun toAvailable(entries: List<OpenRouterModelsClient.Entry>): List<Avai
       if (outputs != null && outputs.none { it.equals("text", ignoreCase = true) }) {
         return@mapNotNull null
       }
-      AvailableModel(id, entry.name?.takeIf { it.isNotBlank() } ?: id)
+      val audioInput =
+        entry.architecture?.inputModalities?.any { it.equals("audio", ignoreCase = true) } == true
+      AvailableModel(id, entry.name?.takeIf { it.isNotBlank() } ?: id, audioInput = audioInput)
     }
     .distinctBy { it.id }
     .sortedWith(compareBy(String.CASE_INSENSITIVE_ORDER, AvailableModel::name).thenBy { it.id })

@@ -9,12 +9,22 @@ import kotlinx.serialization.Serializable
  * order; may be empty.
  */
 @Serializable
-data class OpenRouterConfig(val baseUrl: String, val apiKey: String, val models: List<String>) {
+data class OpenRouterConfig(
+  val baseUrl: String,
+  val apiKey: String,
+  val models: List<String>,
+  val audioModels: List<String> = emptyList(),
+) {
   /** Ids shared with on-device models in the active-model slot. */
   val modelIds: List<String>
     get() = models.map(::remoteId)
 
-  override fun toString() = "OpenRouterConfig(baseUrl=$baseUrl, apiKey=***, models=$models)"
+  /** Audio-capable ids shared with on-device speech models in the active-audio-model slot. */
+  val audioModelIds: List<String>
+    get() = audioModels.filter { it in models }.map(::remoteId)
+
+  override fun toString() =
+    "OpenRouterConfig(baseUrl=$baseUrl, apiKey=***, models=$models, audioModels=$audioModels)"
 
   companion object {
     const val DEFAULT_BASE_URL = "https://openrouter.ai/api/v1"
@@ -27,11 +37,14 @@ data class OpenRouterConfig(val baseUrl: String, val apiKey: String, val models:
 /** Keeps only selected ids still in [available], in [available]'s order. */
 fun OpenRouterConfig.prunedTo(available: List<AvailableModel>): OpenRouterConfig {
   val selected = models.toSet()
-  return copy(models = available.map { it.id }.filter { it in selected })
+  return copy(
+    models = available.map { it.id }.filter { it in selected },
+    audioModels = available.filter { it.id in selected && it.audioInput }.map { it.id },
+  )
 }
 
 /** One entry of the service's model list; [name] falls back to [id]. */
-data class AvailableModel(val id: String, val name: String)
+data class AvailableModel(val id: String, val name: String, val audioInput: Boolean = false)
 
 enum class FetchFailure {
   NO_CONNECTION,
@@ -59,11 +72,16 @@ sealed interface OpenRouterValidation {
  * Unsaved Settings input; [selection] is carried through unchanged. [baseUrl] is the API root that
  * `/models` and `/chat/completions` hang off, e.g. `https://openrouter.ai/api/v1`.
  */
-data class OpenRouterDraft(val baseUrl: String, val apiKey: String, val selection: List<String>) {
+data class OpenRouterDraft(
+  val baseUrl: String,
+  val apiKey: String,
+  val selection: List<String>,
+  val audioSelection: List<String> = emptyList(),
+) {
   fun validate(): OpenRouterValidation {
     val url = baseUrl.trim()
     return if (isWebAddress(url)) {
-      OpenRouterValidation.Valid(OpenRouterConfig(url, apiKey.trim(), selection))
+      OpenRouterValidation.Valid(OpenRouterConfig(url, apiKey.trim(), selection, audioSelection))
     } else {
       OpenRouterValidation.Invalid(setOf(OpenRouterField.BASE_URL))
     }

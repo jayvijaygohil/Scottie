@@ -3,16 +3,21 @@ package com.jayvijay.scottie.di
 import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.http.client.KoogHttpClientException
 import ai.koog.prompt.executor.model.PromptExecutor
+import com.jayvijay.scottie.core.ai.OnDeviceSttModels
 import com.jayvijay.scottie.core.ai.OnDeviceTextModels
 import com.jayvijay.scottie.core.ai.OpenRouterTextModels
+import com.jayvijay.scottie.feature.interacbanking.data.ai.provider.AndroidAudioRecorder
 import com.jayvijay.scottie.feature.interacbanking.data.ai.tools.MockInteracBankingTools
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.tools.InteracBankingTools
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.FailureClassifier
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceException
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.IntentExtractor
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InteracAssistantAgent
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.ModelResolver
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.ResolvedModel
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.SpeechTranscriber
+import com.jayvijay.scottie.feature.interacbanking.domain.repository.AudioRecorder
 import com.jayvijay.scottie.feature.interacbanking.domain.repository.TextModelSource
 import com.jayvijay.scottie.feature.interacbanking.presentation.ModelSettingsDestination
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.A2uiBridgeFactory
@@ -29,6 +34,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import java.io.IOException
 import javax.inject.Singleton
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 
 @Module
@@ -59,6 +65,26 @@ object InteracModule {
 
   @Provides
   @Singleton
+  fun speechTranscriber(
+    resolver: ModelResolver,
+    classifier: FailureClassifier,
+  ): SpeechTranscriber = SpeechTranscriber { wavBytes, modelId ->
+    try {
+      if (!modelId.startsWith(OpenRouterConfig.ID_PREFIX)) {
+        OnDeviceSttModels.transcribe(modelId, wavBytes)
+      } else {
+        val remoteId = modelId.removePrefix(OpenRouterConfig.ID_PREFIX)
+        OpenRouterTextModels.transcribeAudio(resolver.resolve(modelId).executor, remoteId, wavBytes)
+      }
+    } catch (e: CancellationException) {
+      throw e
+    } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+      throw InferenceException(classifier.classify(e), e)
+    }
+  }
+
+  @Provides
+  @Singleton
   fun bridgeFactory(): A2uiBridgeFactory {
     val catalog = interacCatalog()
     return A2uiBridgeFactory { ProcessorA2uiBridge(catalog) }
@@ -69,6 +95,7 @@ object InteracModule {
   fun textModelSource(repository: ModelDownloadRepository): TextModelSource =
     object : TextModelSource {
       override val active: Flow<String?> = repository.activeTextModel
+      override val activeAudio: Flow<String?> = repository.activeAudioModel
     }
 
   @Provides
@@ -135,4 +162,6 @@ private const val HTTP_NOT_FOUND = 404
 @InstallIn(SingletonComponent::class)
 interface InteracBindingsModule {
   @Binds fun interacBankingTools(impl: MockInteracBankingTools): InteracBankingTools
+
+  @Binds fun audioRecorder(impl: AndroidAudioRecorder): AudioRecorder
 }

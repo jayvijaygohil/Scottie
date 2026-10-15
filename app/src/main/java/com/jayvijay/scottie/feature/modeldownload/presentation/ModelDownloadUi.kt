@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -48,6 +49,8 @@ import com.jayvijay.scottie.feature.modeldownload.presentation.component.DeleteO
 import com.jayvijay.scottie.feature.modeldownload.presentation.component.ModelSections
 import com.jayvijay.scottie.feature.modeldownload.presentation.component.ModelSelector
 import com.jayvijay.scottie.feature.modeldownload.presentation.component.OpenRouterCard
+import com.jayvijay.scottie.feature.modeldownload.presentation.component.TAG_AUDIO_MODEL_OPTION
+import com.jayvijay.scottie.feature.modeldownload.presentation.component.TAG_AUDIO_MODEL_SELECTOR
 import com.slack.circuit.codegen.annotations.CircuitInject
 import com.slack.circuit.runtime.ui.Ui
 import dagger.hilt.components.SingletonComponent
@@ -85,13 +88,31 @@ class ModelDownloadUi @Inject constructor() : Ui<ModelDownloadState> {
             },
         )
 
-        ModelSelector(
-          models = state.models,
-          activeId = state.activeModelId,
-          enabled = state.models.isNotEmpty(),
-          onSelect = { state.eventSink(ModelDownloadAction.SelectModel(it)) },
+        FlowRow(
           modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp),
-        )
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          ModelSelector(
+            models = state.models,
+            activeId = state.activeModelId,
+            enabled = state.models.isNotEmpty(),
+            onSelect = { state.eventSink(ModelDownloadAction.SelectModel(it)) },
+            label = stringResource(R.string.model_selector_text_label),
+          )
+          ModelSelector(
+            models = state.audioModels,
+            activeId = state.activeAudioModelId,
+            enabled = true,
+            onSelect = { state.eventSink(ModelDownloadAction.SelectAudioModel(it)) },
+            label = stringResource(R.string.model_selector_audio_label),
+            noneLabel = stringResource(R.string.audio_model_none),
+            onSelectNone = { state.eventSink(ModelDownloadAction.SelectAudioModel(null)) },
+            selectorTag = TAG_AUDIO_MODEL_SELECTOR,
+            optionTag = TAG_AUDIO_MODEL_OPTION,
+            descriptionRes = R.string.audio_model_selector,
+          )
+        }
 
         when (val content = state.content) {
           ModelDownloadContent.Loading ->

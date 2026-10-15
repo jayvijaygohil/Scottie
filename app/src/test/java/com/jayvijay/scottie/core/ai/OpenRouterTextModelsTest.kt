@@ -35,6 +35,7 @@ class OpenRouterTextModelsTest {
     assertEquals(LLMProvider.OpenRouter, model.provider)
     assertEquals("acme/unknown", model.id)
     assertTrue(LLMCapability.Tools in model.capabilities.orEmpty())
+    assertTrue(LLMCapability.Audio in model.capabilities.orEmpty())
   }
 
   @Test

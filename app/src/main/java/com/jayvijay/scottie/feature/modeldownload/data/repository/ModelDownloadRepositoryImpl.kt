@@ -40,7 +40,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/** Owns catalog registration, the single active download, and the active text model. */
+/** Owns catalog registration, the single active download, and the active text/audio models. */
 @Singleton
 class ModelDownloadRepositoryImpl
 @Inject
@@ -52,6 +52,8 @@ constructor(
   @ApplicationScope private val scope: CoroutineScope,
   /** Holds the chosen text model id; absent until the user picks one. */
   @Named("activeTextModelFile") private val activeFile: File,
+  /** Holds the chosen audio model id; absent when "None" is selected. */
+  @Named("activeAudioModelFile") private val activeAudioFile: File,
   private val openRouter: OpenRouterConfigRepository,
 ) : ModelDownloadRepository {
 
@@ -64,6 +66,16 @@ constructor(
         val local = catalog.downloadedTextIds()
         val remote = config?.modelIds.orEmpty()
         id?.takeIf { it in local || it in remote } ?: local.firstOrNull() ?: remote.firstOrNull()
+      }
+      .stateIn(scope, SharingStarted.Eagerly, null)
+
+  private val storedAudio =
+    MutableStateFlow(activeAudioFile.takeIf { it.exists() }?.readText()?.takeIf { it.isNotBlank() })
+  override val activeAudioModel: StateFlow<String?> =
+    combine(state, storedAudio, openRouter.config) { catalog, id, config ->
+        val local = catalog.downloadedSpeechIds()
+        val remote = config?.audioModelIds.orEmpty()
+        id?.takeIf { it in local || it in remote }
       }
       .stateIn(scope, SharingStarted.Eagerly, null)
 
@@ -208,21 +220,46 @@ constructor(
     }
   }
 
+  override fun selectAudioModel(modelId: String?) {
+    if (modelId == null) {
+      storedAudio.value = null
+      scope.launch {
+        runCatching { activeAudioFile.delete() }
+          .onFailure { Log.w(TAG, "active audio model not cleared", it) }
+      }
+      return
+    }
+    val remote = openRouter.config.value?.audioModelIds.orEmpty()
+    if (modelId !in state.value.downloadedSpeechIds() && modelId !in remote) return
+    storedAudio.value = modelId
+    scope.launch {
+      runCatching { activeAudioFile.writeText(modelId) }
+        .onFailure { Log.w(TAG, "active audio model not saved", it) }
+    }
+  }
+
   private fun setStatus(modelId: String, status: ModelDownloadStatus) {
     state.update { (it as? ModelCatalog.Ready)?.withStatus(modelId, status) ?: it }
   }
-
-  private fun ModelCatalog.Ready.withStatus(modelId: String, status: ModelDownloadStatus) =
-    copy(entries = entries.map { if (it.model.id == modelId) it.copy(status = status) else it })
 
   private companion object {
     const val TAG = "ModelDownload"
   }
 }
 
+private fun ModelCatalog.Ready.withStatus(modelId: String, status: ModelDownloadStatus) =
+  copy(entries = entries.map { if (it.model.id == modelId) it.copy(status = status) else it })
+
 private fun ModelCatalog.downloadedTextIds(): List<String> =
   (this as? ModelCatalog.Ready)
     ?.entries
     ?.filter { it.model.type == ModelType.TEXT && it.status == Downloaded }
+    ?.map { it.model.id }
+    .orEmpty()
+
+private fun ModelCatalog.downloadedSpeechIds(): List<String> =
+  (this as? ModelCatalog.Ready)
+    ?.entries
+    ?.filter { it.model.type == ModelType.SPEECH_RECOGNITION && it.status == Downloaded }
     ?.map { it.model.id }
     .orEmpty()

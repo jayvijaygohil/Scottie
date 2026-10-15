@@ -58,8 +58,10 @@ import com.jayvijay.scottie.feature.modeldownload.presentation.TextModelOption
 
 const val TAG_MODEL_SELECTOR = "chat_model_selector"
 const val TAG_MODEL_OPTION = "chat_model_option"
+const val TAG_AUDIO_MODEL_SELECTOR = "audio_model_selector"
+const val TAG_AUDIO_MODEL_OPTION = "audio_model_option"
 
-/** Active model name with a dropdown of every available text model; haptic tick on a change. */
+/** Active model name with a dropdown of every available model; haptic tick on a change. */
 @Composable
 fun ModelSelector(
   models: List<TextModelOption>,
@@ -67,13 +69,20 @@ fun ModelSelector(
   enabled: Boolean,
   onSelect: (String) -> Unit,
   modifier: Modifier = Modifier,
+  label: String? = null,
+  noneLabel: String? = null,
+  onSelectNone: (() -> Unit)? = null,
+  selectorTag: String = TAG_MODEL_SELECTOR,
+  optionTag: String = TAG_MODEL_OPTION,
+  descriptionRes: Int = R.string.chat_model_selector,
 ) {
   val colors = ScottieTheme.colors
   var expanded by remember { mutableStateOf(false) }
   val haptic = LocalHapticFeedback.current
   val activeModel = models.firstOrNull { it.id == activeId }
-  val activeName = activeModel?.name ?: stringResource(R.string.chat_empty_title)
-  val description = stringResource(R.string.chat_model_selector, activeName)
+  val activeName = activeModel?.name ?: noneLabel ?: stringResource(R.string.chat_empty_title)
+  val description = stringResource(descriptionRes, activeName)
+  val hasActive = activeModel != null || (noneLabel == null && enabled)
   Box(modifier = modifier) {
     Row(
       modifier =
@@ -82,7 +91,7 @@ fun ModelSelector(
           .border(1.dp, colors.borderSubtle, RoundedCornerShape(999.dp))
           .clickable(enabled = enabled) { expanded = true }
           .semantics { contentDescription = description }
-          .testTag(TAG_MODEL_SELECTOR)
+          .testTag(selectorTag)
           .padding(horizontal = 12.dp, vertical = 6.dp),
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -91,8 +100,15 @@ fun ModelSelector(
         modifier =
           Modifier.size(7.dp)
             .clip(CircleShape)
-            .background(if (enabled) colors.statusSuccess else colors.interacGold)
+            .background(if (hasActive) colors.statusSuccess else colors.interacGold)
       )
+      if (label != null) {
+        Text(
+          text = "$label:",
+          style = MaterialTheme.typography.labelMedium,
+          color = colors.textSecondary,
+        )
+      }
       Text(
         text = activeName,
         style = MaterialTheme.typography.labelLarge,
@@ -119,6 +135,34 @@ fun ModelSelector(
       onDismissRequest = { expanded = false },
       containerColor = colors.surfaceCard,
     ) {
+      if (noneLabel != null && onSelectNone != null) {
+        DropdownMenuItem(
+          text = {
+            Text(
+              text = noneLabel,
+              style = MaterialTheme.typography.bodyMedium,
+              color = colors.textPrimary,
+            )
+          },
+          onClick = {
+            expanded = false
+            if (activeId != null) {
+              haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+              onSelectNone()
+            }
+          },
+          modifier = Modifier.testTag(optionTag),
+          trailingIcon = {
+            if (activeId == null) {
+              Icon(
+                Icons.Rounded.Check,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+              )
+            }
+          },
+        )
+      }
       models.forEach { model ->
         DropdownMenuItem(
           text = {
@@ -146,7 +190,7 @@ fun ModelSelector(
               onSelect(model.id)
             }
           },
-          modifier = Modifier.testTag(TAG_MODEL_OPTION),
+          modifier = Modifier.testTag(optionTag),
           trailingIcon = {
             if (model.id == activeId) {
               Icon(
@@ -218,7 +262,7 @@ fun ModelSections(
             onDelete = { onEvent(ModelDownloadAction.Delete(model.id)) },
             modifier = Modifier.animateItem(),
             onUse =
-              if (model.type == ModelType.TEXT) {
+              if (model.type == ModelType.TEXT || model.type == ModelType.SPEECH_RECOGNITION) {
                 { onEvent(ModelDownloadAction.UseModel(model.id)) }
               } else {
                 null

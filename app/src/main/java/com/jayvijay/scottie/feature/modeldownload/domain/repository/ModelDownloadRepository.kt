@@ -33,6 +33,18 @@ interface ModelDownloadRepository {
    * id.
    */
   fun selectTextModel(modelId: String)
+
+  /**
+   * Stored id if it is a downloaded `SPEECH_RECOGNITION` model or a configured remote audio id;
+   * else null ("None").
+   */
+  val activeAudioModel: StateFlow<String?>
+
+  /**
+   * Persists the choice, or clears it when [modelId] is null. Ignored unless [modelId] is null, a
+   * downloaded speech recognition model, or a configured remote audio id.
+   */
+  fun selectAudioModel(modelId: String?)
 }
 
 sealed interface DownloadStart {

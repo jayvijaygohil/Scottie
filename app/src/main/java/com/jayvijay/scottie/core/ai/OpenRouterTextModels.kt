@@ -2,6 +2,7 @@ package com.jayvijay.scottie.core.ai
 
 import ai.koog.http.client.KoogHttpClient
 import ai.koog.http.client.ktor.KtorKoogHttpClient
+import ai.koog.prompt.dsl.prompt
 import ai.koog.prompt.executor.clients.openrouter.OpenRouterClientSettings
 import ai.koog.prompt.executor.clients.openrouter.OpenRouterLLMClient
 import ai.koog.prompt.executor.clients.openrouter.OpenRouterModels
@@ -10,6 +11,8 @@ import ai.koog.prompt.executor.model.PromptExecutor
 import ai.koog.prompt.llm.LLMCapability
 import ai.koog.prompt.llm.LLMProvider
 import ai.koog.prompt.llm.LLModel
+import ai.koog.prompt.message.AttachmentContent
+import ai.koog.prompt.message.AttachmentSource
 import kotlin.reflect.KClass
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.json.Json
@@ -28,10 +31,50 @@ object OpenRouterTextModels {
         provider = LLMProvider.OpenRouter,
         id = modelId,
         capabilities =
-          listOf(LLMCapability.Temperature, LLMCapability.Tools, LLMCapability.Completion),
+          listOf(
+            LLMCapability.Temperature,
+            LLMCapability.Tools,
+            LLMCapability.Completion,
+            LLMCapability.Audio,
+          ),
         contextLength = CONTEXT_LENGTH,
         maxOutputTokens = MAX_OUTPUT_TOKENS,
       )
+
+  /** Sends [wavBytes] to an audio-capable OpenRouter model and returns plain-text transcription. */
+  suspend fun transcribeAudio(
+    executor: PromptExecutor,
+    modelId: String,
+    wavBytes: ByteArray,
+  ): String {
+    val base = llModel(modelId)
+    val capabilities = base.capabilities.orEmpty()
+    val model =
+      if (LLMCapability.Audio in capabilities) {
+        base
+      } else {
+        base.copy(capabilities = capabilities + LLMCapability.Audio)
+      }
+    val response =
+      executor.execute(
+        prompt =
+          prompt("stt") {
+            user {
+              text(TRANSCRIBE_PROMPT)
+              audio(
+                AttachmentSource.Audio(
+                  content = AttachmentContent.Binary.Bytes(wavBytes),
+                  format = "wav",
+                  mimeType = "audio/wav",
+                  fileName = "speech.wav",
+                )
+              )
+            }
+          },
+        model = model,
+      )
+    return response.textContent()
+  }
 
   /**
    * [baseUrl] already carries the API version path (`https://openrouter.ai/api/v1`), so other
@@ -173,4 +216,7 @@ object OpenRouterTextModels {
 
   private const val CONTEXT_LENGTH = 128_000L
   private const val MAX_OUTPUT_TOKENS = 4_096L
+  private const val TRANSCRIBE_PROMPT =
+    "Transcribe the spoken audio verbatim. Respond with only the transcribed text, " +
+      "or an empty string if no speech is audible."
 }

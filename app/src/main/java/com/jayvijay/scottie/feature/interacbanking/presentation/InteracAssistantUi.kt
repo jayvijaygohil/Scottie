@@ -1,7 +1,11 @@
 package com.jayvijay.scottie.feature.interacbanking.presentation
 
+import android.Manifest
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -27,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.a2ui.A2uiSurface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
@@ -40,9 +45,11 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.jayvijay.scottie.R
 import com.jayvijay.scottie.core.ui.ScottieCodeSmall
 import com.jayvijay.scottie.core.ui.ScottieTheme
+import com.jayvijay.scottie.core.ui.components.ScottieToast
 import com.jayvijay.scottie.core.ui.components.ScottieToolbar
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.Composer
@@ -59,6 +66,7 @@ import javax.inject.Inject
 
 const val TAG_LOGO = "chat_logo"
 const val TAG_CLEAR_CHAT = "chat_clear"
+const val TAG_VOICE_ERROR = "chat_voice_error"
 
 @CircuitInject(InteracAssistantScreen::class, SingletonComponent::class)
 class InteracAssistantUi @Inject constructor() : Ui<InteracAssistantState> {
@@ -68,73 +76,136 @@ class InteracAssistantUi @Inject constructor() : Ui<InteracAssistantState> {
   override fun Content(state: InteracAssistantState, modifier: Modifier) {
     val colors = ScottieTheme.colors
     val haptic = LocalHapticFeedback.current
-    val canClear = !state.busy && (state.turns.isNotEmpty() || state.input.isNotBlank())
-    Column(
+    val voiceIdle = state.voiceState == VoiceState.Idle
+    val canClear =
+      !state.busy && voiceIdle && (state.turns.isNotEmpty() || state.input.isNotBlank())
+    val requestOrStartRecord =
+      rememberRecordAudioPermissionGate(
+        onGranted = { state.eventSink(InteracAssistantAction.ToggleRecording) },
+        onDenied = { state.eventSink(InteracAssistantAction.MicrophonePermissionDenied) },
+      )
+
+    DisposableEffect(Unit) {
+      onDispose { state.eventSink(InteracAssistantAction.CancelRecording) }
+    }
+
+    Box(
       modifier =
         modifier.fillMaxSize().background(colors.surfaceCanvas).safeDrawingPadding().imePadding()
     ) {
-      ScottieToolbar(
-        title = stringResource(R.string.chat_header_logo),
-        titleContent = {
-          Text(
-            text = stringResource(R.string.chat_header_logo),
-            modifier =
-              Modifier.combinedClickable(
-                  onClick = {},
-                  onLongClickLabel = stringResource(R.string.chat_settings),
-                  onLongClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    state.eventSink(InteracAssistantAction.OpenSettings)
-                  },
-                )
-                .semantics { heading() }
-                .testTag(TAG_LOGO),
-            style = MaterialTheme.typography.headlineSmall,
-            color = colors.textPrimary,
-          )
-        },
-        actions = {
-          IconButton(
-            onClick = { state.eventSink(InteracAssistantAction.ClearChat) },
-            enabled = canClear,
-            modifier = Modifier.padding(end = 8.dp).size(36.dp).testTag(TAG_CLEAR_CHAT),
-          ) {
-            Icon(
-              imageVector = Icons.Rounded.DeleteSweep,
-              contentDescription = stringResource(R.string.chat_clear),
-              tint = if (canClear) colors.textSecondary else colors.textTertiary,
-              modifier = Modifier.size(18.dp),
+      Column(modifier = Modifier.fillMaxSize()) {
+        ScottieToolbar(
+          title = stringResource(R.string.chat_header_logo),
+          titleContent = {
+            Text(
+              text = stringResource(R.string.chat_header_logo),
+              modifier =
+                Modifier.combinedClickable(
+                    onClick = {},
+                    onLongClickLabel = stringResource(R.string.chat_settings),
+                    onLongClick = {
+                      haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                      state.eventSink(InteracAssistantAction.OpenSettings)
+                    },
+                  )
+                  .semantics { heading() }
+                  .testTag(TAG_LOGO),
+              style = MaterialTheme.typography.headlineSmall,
+              color = colors.textPrimary,
             )
-          }
-        },
-      )
-      if (state.missingModel) {
-        Box(
-          modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
-          contentAlignment = Alignment.Center,
-        ) {
-          EmptyState(onDownload = { state.eventSink(InteracAssistantAction.OpenSettings) })
-        }
-        return@Column
-      }
-      if (state.turns.isEmpty()) {
-        Welcome(
-          onExample = { state.eventSink(InteracAssistantAction.InputChanged(it)) },
-          modifier = Modifier.weight(1f).padding(16.dp),
+          },
+          actions = {
+            IconButton(
+              onClick = { state.eventSink(InteracAssistantAction.ClearChat) },
+              enabled = canClear,
+              modifier = Modifier.padding(end = 8.dp).size(36.dp).testTag(TAG_CLEAR_CHAT),
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.DeleteSweep,
+                contentDescription = stringResource(R.string.chat_clear),
+                tint = if (canClear) colors.textSecondary else colors.textTertiary,
+                modifier = Modifier.size(18.dp),
+              )
+            }
+          },
         )
-      } else {
-        Turns(state, modifier = Modifier.weight(1f).fillMaxWidth())
+        if (state.missingModel) {
+          Box(
+            modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
+            contentAlignment = Alignment.Center,
+          ) {
+            EmptyState(onDownload = { state.eventSink(InteracAssistantAction.OpenSettings) })
+          }
+          return@Column
+        }
+        if (state.turns.isEmpty()) {
+          Welcome(
+            onExample = { state.eventSink(InteracAssistantAction.InputChanged(it)) },
+            modifier = Modifier.weight(1f).padding(16.dp),
+          )
+        } else {
+          Turns(state, modifier = Modifier.weight(1f).fillMaxWidth())
+        }
+        Composer(
+          value = state.input,
+          enabled = !state.busy && voiceIdle && state.input.isNotBlank(),
+          onValueChange = { state.eventSink(InteracAssistantAction.InputChanged(it)) },
+          onSend = {
+            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+            state.eventSink(InteracAssistantAction.Send)
+          },
+          modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+          showRecord = state.activeAudioModelId != null,
+          voiceState = state.voiceState,
+          recordEnabled = !state.busy && state.voiceState != VoiceState.Transcribing,
+          onToggleRecord = {
+            haptic.performHapticFeedback(HapticFeedbackType.Confirm)
+            if (state.voiceState == VoiceState.Recording) {
+              state.eventSink(InteracAssistantAction.ToggleRecording)
+            } else {
+              requestOrStartRecord()
+            }
+          },
+        )
       }
-      Composer(
-        value = state.input,
-        enabled = !state.busy && state.input.isNotBlank(),
-        onValueChange = { state.eventSink(InteracAssistantAction.InputChanged(it)) },
-        onSend = {
-          haptic.performHapticFeedback(HapticFeedbackType.Confirm)
-          state.eventSink(InteracAssistantAction.Send)
-        },
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-      )
+
+      state.voiceError?.let { error ->
+        val messageRes =
+          when (error) {
+            VoiceError.PermissionDenied -> R.string.chat_mic_permission_denied
+            is VoiceError.Failed -> error.failure.message(R.string.chat_voice_failed)
+          }
+        Box(modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)) {
+          ScottieToast(
+            message = stringResource(messageRes),
+            actionLabel = stringResource(R.string.model_download_dismiss),
+            onAction = { state.eventSink(InteracAssistantAction.DismissVoiceError) },
+            modifier = Modifier.testTag(TAG_VOICE_ERROR),
+          )
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun rememberRecordAudioPermissionGate(
+  onGranted: () -> Unit,
+  onDenied: () -> Unit,
+): () -> Unit {
+  val context = LocalContext.current
+  val launcher =
+    rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+      if (granted) onGranted() else onDenied()
+    }
+  return {
+    val granted =
+      ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+        PackageManager.PERMISSION_GRANTED
+    if (granted) {
+      onGranted()
+    } else {
+      launcher.launch(Manifest.permission.RECORD_AUDIO)
     }
   }
 }
@@ -194,12 +265,12 @@ private fun Turn(turn: AssistantTurn, state: InteracAssistantState) {
   }
 }
 
-private fun InferenceFailure.message(): Int =
+private fun InferenceFailure.message(unknownRes: Int = R.string.chat_reply_failed): Int =
   when (this) {
     InferenceFailure.OFFLINE -> R.string.chat_reply_offline
     InferenceFailure.UNAUTHORIZED -> R.string.chat_reply_unauthorized
     InferenceFailure.MODEL_UNAVAILABLE -> R.string.chat_reply_model_unavailable
-    InferenceFailure.UNKNOWN -> R.string.chat_reply_failed
+    InferenceFailure.UNKNOWN -> unknownRes
   }
 
 @Composable

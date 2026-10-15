@@ -19,6 +19,7 @@ import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.Inferen
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_COMPOSER
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_EMPTY_STATE
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_EXAMPLE
+import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_RECORD
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_REPLY
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_SEND
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_THINKING
@@ -39,6 +40,9 @@ class InteracAssistantUiTest {
     activeModelId: String? = "a",
     input: String = "",
     busy: Boolean = false,
+    activeAudioModelId: String? = null,
+    voiceState: VoiceState = VoiceState.Idle,
+    voiceError: VoiceError? = null,
   ) {
     val state =
       InteracAssistantState(
@@ -48,6 +52,9 @@ class InteracAssistantUiTest {
         busy = busy,
         missingModel = activeModelId == null,
         surfaces = emptyList(),
+        activeAudioModelId = activeAudioModelId,
+        voiceState = voiceState,
+        voiceError = voiceError,
         eventSink = { actions += it },
       )
     rule.setContent { ScottieTheme { InteracAssistantUi().Content(state, Modifier) } }
@@ -154,5 +161,52 @@ class InteracAssistantUiTest {
     val composerBounds = rule.onNodeWithTag(TAG_COMPOSER).fetchSemanticsNode().boundsInRoot
     val sendBounds = rule.onNodeWithTag(TAG_SEND).fetchSemanticsNode().boundsInRoot
     assertEquals(composerBounds.center.y, sendBounds.center.y, 1.5f)
+  }
+
+  @Test
+  fun recordButtonIsHiddenWhenNoAudioModelSelectedAndShownWhenAudioModelActive() {
+    show(emptyList(), activeAudioModelId = null)
+    rule.onAllNodesWithTag(TAG_RECORD).assertCountEquals(0)
+  }
+
+  @Test
+  fun recordButtonShowsForActiveAudioModelAndDisablesSendAndClearWhileRecording() {
+    show(
+      listOf(AssistantTurn(1, "hi", TurnReply.Text("Hello"))),
+      input = "Draft",
+      activeAudioModelId = "sherpa-onnx-whisper-tiny.en",
+      voiceState = VoiceState.Recording,
+    )
+    rule.onNodeWithTag(TAG_RECORD).assertIsDisplayed().assertIsEnabled().performClick()
+    rule.onNodeWithTag(TAG_SEND).assertIsNotEnabled()
+    rule.onNodeWithTag(TAG_CLEAR_CHAT).assertIsNotEnabled()
+    assertEquals(listOf(InteracAssistantAction.ToggleRecording), actions)
+  }
+
+  @Test
+  fun transcribingDisablesRecordSendAndClearChat() {
+    rule.mainClock.autoAdvance = false
+    show(
+      listOf(AssistantTurn(1, "hi", TurnReply.Text("Hello"))),
+      input = "Draft",
+      activeAudioModelId = "openrouter:openai/gpt-4o-audio-preview",
+      voiceState = VoiceState.Transcribing,
+    )
+    rule.onNodeWithTag(TAG_RECORD).assertIsDisplayed().assertIsNotEnabled()
+    rule.onNodeWithTag(TAG_SEND).assertIsNotEnabled()
+    rule.onNodeWithTag(TAG_CLEAR_CHAT).assertIsNotEnabled()
+  }
+
+  @Test
+  fun voiceErrorToastDisplaysAndDispatchesDismiss() {
+    show(
+      emptyList(),
+      activeAudioModelId = "sherpa-onnx-whisper-tiny.en",
+      voiceError = VoiceError.PermissionDenied,
+    )
+    rule.onNodeWithTag(TAG_VOICE_ERROR).assertIsDisplayed()
+    rule.onNodeWithText("Microphone permission is required for voice input.").assertIsDisplayed()
+    rule.onNodeWithText("Dismiss").performClick()
+    assertEquals(listOf(InteracAssistantAction.DismissVoiceError), actions)
   }
 }

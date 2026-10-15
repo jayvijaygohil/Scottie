@@ -55,6 +55,11 @@ object DataModule {
   fun activeTextModelFile(@ApplicationContext context: Context): File =
     File(context.filesDir, "active_text_model")
 
+  @Provides
+  @Named("activeAudioModelFile")
+  fun activeAudioModelFile(@ApplicationContext context: Context): File =
+    File(context.filesDir, "active_audio_model")
+
   /** Excluded from backup in `res/xml`; keep the name in sync. */
   @Provides
   @Named("openRouterConfigFile")
