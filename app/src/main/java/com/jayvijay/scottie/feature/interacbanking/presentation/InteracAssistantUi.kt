@@ -2,7 +2,6 @@ package com.jayvijay.scottie.feature.interacbanking.presentation
 
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -21,14 +19,11 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DeleteSweep
-import androidx.compose.material.icons.rounded.SmartToy
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.a2ui.A2uiSurface
 import androidx.compose.runtime.Composable
@@ -81,7 +76,8 @@ class InteracAssistantUi @Inject constructor() : Ui<InteracAssistantState> {
       ScottieToolbar(
         title = stringResource(R.string.chat_header_logo),
         titleContent = {
-          Row(
+          Text(
+            text = stringResource(R.string.chat_header_logo),
             modifier =
               Modifier.combinedClickable(
                   onClick = {},
@@ -91,50 +87,24 @@ class InteracAssistantUi @Inject constructor() : Ui<InteracAssistantState> {
                     state.eventSink(InteracAssistantAction.OpenSettings)
                   },
                 )
+                .semantics { heading() }
                 .testTag(TAG_LOGO),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-          ) {
-            Surface(
-              shape = MaterialTheme.shapes.small,
-              color = colors.scotiaRedDeep,
-              modifier = Modifier.size(32.dp),
-            ) {
-              Box(contentAlignment = Alignment.Center) {
-                Icon(
-                  imageVector = Icons.Rounded.SmartToy,
-                  contentDescription = null,
-                  tint = MaterialTheme.colorScheme.onPrimary,
-                  modifier = Modifier.size(18.dp),
-                )
-              }
-            }
-            Text(
-              text = stringResource(R.string.chat_header_logo),
-              modifier = Modifier.semantics { heading() },
-              style = MaterialTheme.typography.headlineSmall,
-              color = colors.textPrimary,
-            )
-          }
+            style = MaterialTheme.typography.headlineSmall,
+            color = colors.textPrimary,
+          )
         },
         actions = {
-          Surface(
-            shape = RoundedCornerShape(10.dp),
-            color = colors.surfaceCanvas,
-            border = BorderStroke(1.dp, colors.borderSubtle),
+          IconButton(
+            onClick = { state.eventSink(InteracAssistantAction.ClearChat) },
+            enabled = canClear,
+            modifier = Modifier.padding(end = 8.dp).size(36.dp).testTag(TAG_CLEAR_CHAT),
           ) {
-            IconButton(
-              onClick = { state.eventSink(InteracAssistantAction.ClearChat) },
-              enabled = canClear,
-              modifier = Modifier.size(36.dp).testTag(TAG_CLEAR_CHAT),
-            ) {
-              Icon(
-                imageVector = Icons.Rounded.DeleteSweep,
-                contentDescription = stringResource(R.string.chat_clear),
-                tint = if (canClear) colors.textSecondary else colors.textTertiary,
-                modifier = Modifier.size(18.dp),
-              )
-            }
+            Icon(
+              imageVector = Icons.Rounded.DeleteSweep,
+              contentDescription = stringResource(R.string.chat_clear),
+              tint = if (canClear) colors.textSecondary else colors.textTertiary,
+              modifier = Modifier.size(18.dp),
+            )
           }
         },
       )
