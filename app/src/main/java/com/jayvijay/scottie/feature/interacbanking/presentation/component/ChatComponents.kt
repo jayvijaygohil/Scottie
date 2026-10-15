@@ -195,7 +195,7 @@ internal fun Composer(
   Row(
     modifier = modifier.fillMaxWidth().testTag(TAG_COMPOSER),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalAlignment = Alignment.Bottom,
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     Surface(
       modifier = Modifier.weight(1f).border(1.dp, colors.borderSubtle, ComposerShape),
@@ -206,13 +206,14 @@ internal fun Composer(
       BasicTextField(
         value = value,
         onValueChange = onValueChange,
+        minLines = 2,
         maxLines = 4,
         textStyle = textStyle,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         decorationBox = { field ->
           Box(
             modifier = Modifier.heightIn(min = 46.dp).padding(horizontal = 16.dp, vertical = 12.dp),
-            contentAlignment = Alignment.CenterStart,
+            contentAlignment = Alignment.TopStart,
           ) {
             if (value.isEmpty()) {
               Text(

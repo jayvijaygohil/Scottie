@@ -128,10 +128,10 @@ class InteracAssistantUiTest {
   }
 
   @Test
-  fun logoShowsScootieWithoutModelSelectorIgnoresSingleTapAndOpensSettingsOnLongPress() {
+  fun logoShowsScottieWithoutModelSelectorIgnoresSingleTapAndOpensSettingsOnLongPress() {
     show(emptyList())
     rule.onNodeWithTag(TAG_LOGO).assertIsDisplayed()
-    rule.onNodeWithText("Scootie").assertIsDisplayed()
+    rule.onNodeWithText("Scottie").assertIsDisplayed()
     rule.onAllNodesWithTag("chat_model_selector").assertCountEquals(0)
 
     rule.onNodeWithTag(TAG_LOGO).performClick()
@@ -146,5 +146,13 @@ class InteracAssistantUiTest {
     show(listOf(AssistantTurn(1, "hi", TurnReply.Text("Hello there"))))
     rule.onNodeWithTag(TAG_CLEAR_CHAT).assertIsEnabled().performClick()
     assertEquals(listOf(InteracAssistantAction.ClearChat), actions)
+  }
+
+  @Test
+  fun sendButtonStaysVerticallyCenteredWhenComposerExpandsMultiline() {
+    show(emptyList(), input = "Line 1\nLine 2\nLine 3\nLine 4")
+    val composerBounds = rule.onNodeWithTag(TAG_COMPOSER).fetchSemanticsNode().boundsInRoot
+    val sendBounds = rule.onNodeWithTag(TAG_SEND).fetchSemanticsNode().boundsInRoot
+    assertEquals(composerBounds.center.y, sendBounds.center.y, 1.5f)
   }
 }
