@@ -273,7 +273,9 @@ class MockInteracBankingToolsTest {
       setOf(CHEQUING, SAVINGS, "acc_chk_303", VISA),
       txns.map { it.accountId }.toSet(),
     )
-    assertTrue(txns.all { it.transactionId.isNotBlank() && it.amount > 0.0 && it.currency == "CAD" })
+    assertTrue(
+      txns.all { it.transactionId.isNotBlank() && it.amount > 0.0 && it.currency == "CAD" }
+    )
     val dates = txns.map { LocalDate.parse(it.date) }
     assertEquals(dates.sortedDescending(), dates)
   }
@@ -307,4 +309,3 @@ class MockInteracBankingToolsTest {
     assertEquals(6, result.size)
   }
 }
-

@@ -6,26 +6,26 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.longClick
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
 import com.jayvijay.scottie.core.ui.ScottieTheme
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
-import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_COMPOSER
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_EMPTY_STATE
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_EXAMPLE
-import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_MODEL_OPTION
-import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_MODEL_SELECTOR
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_REPLY
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_SEND
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_THINKING
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_USER_BUBBLE
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.TAG_WELCOME
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -42,7 +42,6 @@ class InteracAssistantUiTest {
   ) {
     val state =
       InteracAssistantState(
-        models = listOf(TextModelOption("a", "Model A"), TextModelOption("b", "Model B")),
         activeModelId = activeModelId,
         turns = turns,
         input = input,
@@ -94,13 +93,14 @@ class InteracAssistantUiTest {
   fun sendIsDisabledWhenBlankOrBusy() {
     show(emptyList(), input = "  ")
     rule.onNodeWithTag(TAG_SEND).assertIsNotEnabled()
+    rule.onNodeWithTag(TAG_CLEAR_CHAT).assertIsNotEnabled()
   }
 
   @Test
-  fun sendIsDisabledWhileBusy() {
+  fun sendAndClearAreDisabledWhileBusy() {
     show(listOf(AssistantTurn(1, "hi", TurnReply.Thinking)), input = "x", busy = true)
     rule.onNodeWithTag(TAG_SEND).assertIsNotEnabled()
-    rule.onNodeWithTag(TAG_MODEL_SELECTOR).assertIsNotEnabled()
+    rule.onNodeWithTag(TAG_CLEAR_CHAT).assertIsNotEnabled()
   }
 
   @Test
@@ -128,18 +128,23 @@ class InteracAssistantUiTest {
   }
 
   @Test
-  fun selectorListsModelsAndDispatchesSelection() {
+  fun logoShowsScootieWithoutModelSelectorIgnoresSingleTapAndOpensSettingsOnLongPress() {
     show(emptyList())
-    rule.onNodeWithTag(TAG_MODEL_SELECTOR).performClick()
-    rule.onAllNodesWithTag(TAG_MODEL_OPTION).assertCountEquals(2)
-    rule.onNodeWithText("Model B").performClick()
-    assertEquals(listOf(InteracAssistantAction.SelectModel("b")), actions)
+    rule.onNodeWithTag(TAG_LOGO).assertIsDisplayed()
+    rule.onNodeWithText("Scootie").assertIsDisplayed()
+    rule.onAllNodesWithTag("chat_model_selector").assertCountEquals(0)
+
+    rule.onNodeWithTag(TAG_LOGO).performClick()
+    assertTrue(actions.isEmpty())
+
+    rule.onNodeWithTag(TAG_LOGO).performTouchInput { longClick() }
+    assertEquals(listOf(InteracAssistantAction.OpenSettings), actions)
   }
 
   @Test
-  fun gearOpensSettings() {
-    show(emptyList())
-    rule.onNodeWithTag(TAG_SETTINGS).performClick()
-    assertEquals(listOf(InteracAssistantAction.OpenSettings), actions)
+  fun clearChatDispatchesWhenTurnsOrInputExist() {
+    show(listOf(AssistantTurn(1, "hi", TurnReply.Text("Hello there"))))
+    rule.onNodeWithTag(TAG_CLEAR_CHAT).assertIsEnabled().performClick()
+    assertEquals(listOf(InteracAssistantAction.ClearChat), actions)
   }
 }

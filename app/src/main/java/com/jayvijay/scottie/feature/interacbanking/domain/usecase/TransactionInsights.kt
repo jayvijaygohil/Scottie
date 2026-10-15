@@ -55,11 +55,9 @@ object TransactionInsights {
 
   private val PAYROLL_KEYWORDS =
     listOf("payroll", "salary", "direct dep", "paycheque", "paycheck", "employer")
-  private val RENT_KEYWORDS =
-    listOf("rent", "lease", "property", "landlord", "apartment", "mgmt")
+  private val RENT_KEYWORDS = listOf("rent", "lease", "property", "landlord", "apartment", "mgmt")
   private val REFUND_TRANSFER_KEYWORDS = listOf("refund", "transfer")
-  private val SUBSCRIPTION_BILL_KEYWORDS =
-    listOf("subscription", "utility", "utilities", "bill")
+  private val SUBSCRIPTION_BILL_KEYWORDS = listOf("subscription", "utility", "utilities", "bill")
   private val ANOMALY_KEYWORDS = listOf("duplicate", "unusual", "anomal")
   private const val MIN_RECURRING_INFLOW = 500.0
   private const val MIN_RECURRING_RENT = 500.0
@@ -90,7 +88,9 @@ object TransactionInsights {
     val accountScoped =
       transactions
         .filter { activeAccountIds.isEmpty() || it.accountId in activeAccountIds }
-        .sortedWith(compareByDescending<Transaction> { it.date }.thenByDescending { it.transactionId })
+        .sortedWith(
+          compareByDescending<Transaction> { it.date }.thenByDescending { it.transactionId }
+        )
 
     val explicitRange = parseDateRange(intent.startDate, intent.endDate, today)
 
@@ -100,7 +100,12 @@ object TransactionInsights {
       TransactionScenario.RENT_CHECK ->
         evaluateRent(accountScoped, explicitRange, today, accountNotFoundHint)
       TransactionScenario.SUBSCRIPTIONS_BILLS ->
-        evaluateSubscriptionsAndBills(accountScoped, explicitRange, intent.searchQuery, accountNotFoundHint)
+        evaluateSubscriptionsAndBills(
+          accountScoped,
+          explicitRange,
+          intent.searchQuery,
+          accountNotFoundHint,
+        )
       TransactionScenario.ANOMALIES ->
         evaluateAnomalies(accountScoped, explicitRange, intent.amount, accountNotFoundHint)
       TransactionScenario.REFUNDS_TRANSFERS ->
@@ -124,7 +129,9 @@ object TransactionInsights {
   }
 
   private fun resolveScenario(intent: AssistantIntent): TransactionScenario {
-    intent.scenario?.let { return it }
+    intent.scenario?.let {
+      return it
+    }
     val q = intent.searchQuery?.lowercase().orEmpty()
     return when {
       PAYROLL_KEYWORDS.any { it in q } -> TransactionScenario.SALARY_CHECK
@@ -172,13 +179,12 @@ object TransactionInsights {
   ): TransactionQueryResult {
     val credits = scoped.filter { it.direction == TransactionDirection.CREDIT }
     val recurringIds = recurringCreditIds(credits)
-    val candidates =
-      credits.filter { txn ->
-        txn.category != TransactionCategory.REFUND &&
-          (txn.category == TransactionCategory.INCOME ||
-            hasKeyword(txn, PAYROLL_KEYWORDS) ||
-            txn.transactionId in recurringIds)
-      }
+    val candidates = credits.filter { txn ->
+      txn.category != TransactionCategory.REFUND &&
+        (txn.category == TransactionCategory.INCOME ||
+          hasKeyword(txn, PAYROLL_KEYWORDS) ||
+          txn.transactionId in recurringIds)
+    }
     val targetRange = explicitRange ?: currentMonthRange(today)
     val inPeriod = candidates.filterInRange(targetRange)
     return if (inPeriod.isNotEmpty()) {
@@ -215,12 +221,11 @@ object TransactionInsights {
   ): TransactionQueryResult {
     val debits = scoped.filter { it.direction == TransactionDirection.DEBIT }
     val recurringRentIds = recurringMonthlyDebitIds(debits, MIN_RECURRING_RENT, RENT_TOLERANCE)
-    val candidates =
-      debits.filter { txn ->
-        txn.category == TransactionCategory.HOUSING ||
-          hasKeyword(txn, RENT_KEYWORDS) ||
-          txn.transactionId in recurringRentIds
-      }
+    val candidates = debits.filter { txn ->
+      txn.category == TransactionCategory.HOUSING ||
+        hasKeyword(txn, RENT_KEYWORDS) ||
+        txn.transactionId in recurringRentIds
+    }
     val targetRange = explicitRange ?: currentMonthRange(today)
     val inPeriod = candidates.filterInRange(targetRange)
     val prior =
@@ -258,20 +263,18 @@ object TransactionInsights {
     accountNotFoundHint: String?,
   ): TransactionQueryResult {
     val debits = scoped.filter { it.direction == TransactionDirection.DEBIT }
-    val recurringIds = recurringMonthlyDebitIds(debits, MIN_SUBSCRIPTION_DEBIT, SUBSCRIPTION_TOLERANCE)
+    val recurringIds =
+      recurringMonthlyDebitIds(debits, MIN_SUBSCRIPTION_DEBIT, SUBSCRIPTION_TOLERANCE)
     val candidates =
-      debits
-        .filterInRange(explicitRange)
-        .filter { txn ->
-          txn.category != TransactionCategory.HOUSING &&
-            !hasKeyword(txn, RENT_KEYWORDS) &&
-            (txn.category == TransactionCategory.SUBSCRIPTIONS ||
-              txn.category == TransactionCategory.UTILITIES ||
-              txn.transactionId in recurringIds)
-        }
+      debits.filterInRange(explicitRange).filter { txn ->
+        txn.category != TransactionCategory.HOUSING &&
+          !hasKeyword(txn, RENT_KEYWORDS) &&
+          (txn.category == TransactionCategory.SUBSCRIPTIONS ||
+            txn.category == TransactionCategory.UTILITIES ||
+            txn.transactionId in recurringIds)
+      }
     val query = searchQuery?.trim()?.takeIf { it.isNotEmpty() }
-    val filtered =
-      if (query == null) candidates else candidates.filter { matchesQuery(it, query) }
+    val filtered = if (query == null) candidates else candidates.filter { matchesQuery(it, query) }
     val items = filtered.map { FlaggedTransaction(it, InsightBadge.RECURRING) }
     return buildResult(
       scenario = TransactionScenario.SUBSCRIPTIONS_BILLS,
@@ -301,19 +304,18 @@ object TransactionInsights {
     val inRangeDebits = debits.filterInRange(explicitRange)
     val duplicateIds = duplicateDebitIds(inRangeDebits)
 
-    val flagged =
-      inRangeDebits.mapNotNull { txn ->
-        val isDuplicate = txn.transactionId in duplicateIds
-        val isLarge =
-          txn.category != TransactionCategory.HOUSING &&
-            !hasKeyword(txn, RENT_KEYWORDS) &&
-            txn.amount >= largeCutoff
-        when {
-          isDuplicate -> FlaggedTransaction(txn, InsightBadge.DUPLICATE)
-          isLarge -> FlaggedTransaction(txn, InsightBadge.LARGE_CHARGE)
-          else -> null
-        }
+    val flagged = inRangeDebits.mapNotNull { txn ->
+      val isDuplicate = txn.transactionId in duplicateIds
+      val isLarge =
+        txn.category != TransactionCategory.HOUSING &&
+          !hasKeyword(txn, RENT_KEYWORDS) &&
+          txn.amount >= largeCutoff
+      when {
+        isDuplicate -> FlaggedTransaction(txn, InsightBadge.DUPLICATE)
+        isLarge -> FlaggedTransaction(txn, InsightBadge.LARGE_CHARGE)
+        else -> null
       }
+    }
 
     val status =
       if (flagged.isNotEmpty()) VerificationStatus.CONFIRMED else VerificationStatus.NOT_DETECTED
@@ -337,11 +339,10 @@ object TransactionInsights {
     val q = rawQuery?.trim()?.lowercase().orEmpty()
     val onlyRefunds = "refund" in q && "transfer" !in q
     val onlyTransfers = ("transfer" in q || "e-trf" in q) && "refund" !in q
-    val partyFilter =
-      q.takeIf {
-        it.isNotEmpty() &&
-          it !in setOf("refund", "refunds", "transfer", "transfers", "e-transfer", "e-transfers")
-      }
+    val partyFilter = q.takeIf {
+      it.isNotEmpty() &&
+        it !in setOf("refund", "refunds", "transfer", "transfers", "e-transfer", "e-transfers")
+    }
 
     val matched =
       inRange
@@ -430,8 +431,9 @@ object TransactionInsights {
   private fun normalizeBounds(a: LocalDate, b: LocalDate): Pair<LocalDate, LocalDate> =
     if (a.isAfter(b)) b to a else a to b
 
-  private fun parseIsoDate(value: String): LocalDate? =
-    runCatching { LocalDate.parse(value) }.getOrNull()
+  private fun parseIsoDate(value: String): LocalDate? = runCatching {
+    LocalDate.parse(value)
+  }.getOrNull()
 
   private fun List<Transaction>.filterInRange(
     range: Pair<LocalDate, LocalDate>?
@@ -445,12 +447,7 @@ object TransactionInsights {
   }
 
   private fun matchesQuery(txn: Transaction, query: String): Boolean {
-    val tokens =
-      query
-        .lowercase()
-        .split(Regex("\\s+"))
-        .map { it.trim() }
-        .filter { it.isNotEmpty() }
+    val tokens = query.lowercase().split(Regex("\\s+")).map { it.trim() }.filter { it.isNotEmpty() }
     val haystacks =
       listOf(
         txn.merchant.lowercase(),

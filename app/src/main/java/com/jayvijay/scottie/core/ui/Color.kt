@@ -181,9 +181,7 @@ val ScottieDarkColorScheme =
     onTertiaryFixedVariant = StitchOnTertiaryFixedVariant,
   )
 
-/**
- * Extended banking semantic colors from the Stitch Autonomous Banking Experience design system.
- */
+/** Extended banking semantic colors from the Stitch Autonomous Banking Experience design system. */
 @Immutable
 data class ScottieExtendedColors(
   val scotiaRedDeep: Color,

@@ -101,6 +101,8 @@
     <string name="assistant_latency_debug">first card %1$d ms</string>
 
     <!-- Chat home screen -->
+    <string name="chat_header_logo">Scootie</string>
+    <string name="chat_clear">Clear chat</string>
     <string name="chat_empty_title">No model downloaded yet</string>
     <string name="chat_empty_action">Download a Model to Get Started</string>
     <string name="chat_settings">Model settings</string>

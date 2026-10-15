@@ -41,6 +41,8 @@ constructor(
   @Composable
   override fun present(): ModelDownloadState {
     val catalog by repository.catalog.collectAsState()
+    val activeModelId by repository.activeTextModel.collectAsState()
+    val savedConfig by openRouter.config.collectAsState()
     var error by rememberRetained { mutableStateOf<ModelDownloadError?>(null) }
     var query by rememberRetained { mutableStateOf("") }
     // User toggles only; sections without one are collapsed.
@@ -48,10 +50,17 @@ constructor(
     val scope = rememberCoroutineScope()
 
     val models = (catalog as? ModelCatalog.Ready)?.toModels().orEmpty()
+    val textModels =
+      models
+        .filter { it.type == ModelType.TEXT && it.status == ModelDownloadStatus.Downloaded }
+        .map { TextModelOption(it.id, it.name) } +
+        savedConfig?.models.orEmpty().map {
+          TextModelOption(OpenRouterConfig.remoteId(it), it, remote = true)
+        }
     val content = catalog.toContent { catalogSections(models, query, expansion) }
     val (section, onOpenRouter) = presentOpenRouter()
 
-    return ModelDownloadState(content, query, error, section) { action ->
+    return ModelDownloadState(content, query, error, section, textModels, activeModelId) { action ->
       when (action) {
         is ModelDownloadAction.OpenRouter -> onOpenRouter(action)
         ModelDownloadAction.Back -> navigator.pop()
@@ -77,6 +86,7 @@ constructor(
           if (query.isBlank()) {
             expansion = expansion + (action.type to !(expansion[action.type] ?: false))
           }
+        is ModelDownloadAction.SelectModel -> repository.selectTextModel(action.modelId)
         is ModelDownloadAction.UseModel -> {
           repository.selectTextModel(action.modelId)
           navigator.pop()

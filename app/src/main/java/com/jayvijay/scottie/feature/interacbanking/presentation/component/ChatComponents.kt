@@ -9,7 +9,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,12 +26,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.AccountBalanceWallet
 import androidx.compose.material.icons.rounded.AutoAwesome
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.RequestQuote
 import androidx.compose.material.icons.rounded.SwapHoriz
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -52,27 +48,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
 import com.jayvijay.scottie.core.ui.ScottieTheme
-import com.jayvijay.scottie.core.ui.components.ScottieBadge
-import com.jayvijay.scottie.core.ui.components.ScottieBadgeTone
 import com.jayvijay.scottie.core.ui.components.ScottieButton
-import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import kotlinx.coroutines.delay
 
 const val TAG_USER_BUBBLE = "assistant_user_bubble"
@@ -80,8 +68,6 @@ const val TAG_REPLY = "assistant_reply"
 const val TAG_COMPOSER = "assistant_composer"
 const val TAG_THINKING = "chat_thinking"
 const val TAG_SEND = "chat_send"
-const val TAG_MODEL_SELECTOR = "chat_model_selector"
-const val TAG_MODEL_OPTION = "chat_model_option"
 const val TAG_EMPTY_STATE = "chat_empty_state"
 const val TAG_WELCOME = "chat_welcome"
 const val TAG_EXAMPLE = "chat_example"
@@ -225,8 +211,7 @@ internal fun Composer(
         cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
         decorationBox = { field ->
           Box(
-            modifier =
-              Modifier.heightIn(min = 46.dp).padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier = Modifier.heightIn(min = 46.dp).padding(horizontal = 16.dp, vertical = 12.dp),
             contentAlignment = Alignment.CenterStart,
           ) {
             if (value.isEmpty()) {
@@ -259,109 +244,6 @@ internal fun Composer(
         contentDescription = stringResource(R.string.chat_send),
         modifier = Modifier.size(20.dp),
       )
-    }
-  }
-}
-
-/** Active model name with a dropdown of every downloaded text model; haptic tick on a change. */
-@Composable
-internal fun ModelSelector(
-  models: List<TextModelOption>,
-  activeId: String?,
-  enabled: Boolean,
-  onSelect: (String) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  val colors = ScottieTheme.colors
-  var expanded by remember { mutableStateOf(false) }
-  val haptic = LocalHapticFeedback.current
-  val activeModel = models.firstOrNull { it.id == activeId }
-  val activeName = activeModel?.name.orEmpty()
-  val description = stringResource(R.string.chat_model_selector, activeName)
-  Box(modifier = modifier) {
-    Row(
-      modifier =
-        Modifier.clip(RoundedCornerShape(999.dp))
-          .background(colors.surfaceCanvas)
-          .border(1.dp, colors.borderSubtle, RoundedCornerShape(999.dp))
-          .clickable(enabled = enabled) { expanded = true }
-          .semantics { contentDescription = description }
-          .testTag(TAG_MODEL_SELECTOR)
-          .padding(horizontal = 12.dp, vertical = 6.dp),
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-      Box(
-        modifier =
-          Modifier.size(7.dp)
-            .clip(CircleShape)
-            .background(if (enabled) colors.statusSuccess else colors.interacGold)
-      )
-      Text(
-        text = activeName,
-        style = MaterialTheme.typography.labelLarge,
-        color = colors.textPrimary,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.widthIn(max = 160.dp),
-      )
-      if (activeModel?.remote == true) {
-        ScottieBadge(
-          text = stringResource(R.string.chat_model_remote),
-          tone = ScottieBadgeTone.Neutral,
-        )
-      }
-      Icon(
-        painter = painterResource(R.drawable.ic_chevron_down),
-        contentDescription = null,
-        tint = colors.textSecondary,
-        modifier = Modifier.size(14.dp),
-      )
-    }
-    DropdownMenu(
-      expanded = expanded,
-      onDismissRequest = { expanded = false },
-      containerColor = colors.surfaceCard,
-    ) {
-      models.forEach { model ->
-        DropdownMenuItem(
-          text = {
-            Row(
-              horizontalArrangement = Arrangement.spacedBy(8.dp),
-              verticalAlignment = Alignment.CenterVertically,
-            ) {
-              Text(
-                text = model.name,
-                style = MaterialTheme.typography.bodyMedium,
-                color = colors.textPrimary,
-              )
-              if (model.remote) {
-                ScottieBadge(
-                  text = stringResource(R.string.chat_model_remote),
-                  tone = ScottieBadgeTone.Neutral,
-                )
-              }
-            }
-          },
-          onClick = {
-            expanded = false
-            if (model.id != activeId) {
-              haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
-              onSelect(model.id)
-            }
-          },
-          modifier = Modifier.testTag(TAG_MODEL_OPTION),
-          trailingIcon = {
-            if (model.id == activeId) {
-              Icon(
-                Icons.Rounded.Check,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-              )
-            }
-          },
-        )
-      }
     }
   }
 }
@@ -510,17 +392,6 @@ private fun ChatComponentsPreview() {
       modifier = Modifier.background(ScottieTheme.colors.surfaceCanvas).padding(16.dp),
       verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-      ModelSelector(
-        models =
-          listOf(
-            TextModelOption("a", "Gemma 4 E2B"),
-            TextModelOption("b", "Qwen"),
-            TextModelOption("openrouter:openai/gpt-4o", "openai/gpt-4o", remote = true),
-          ),
-        activeId = "a",
-        enabled = true,
-        onSelect = {},
-      )
       UserBubble("Send $50 to Alice")
       ReplyCard { ThinkingDots() }
       ReplyCard(Modifier.widthIn(max = 340.dp)) { RevealText("I can help with that.", 1) }

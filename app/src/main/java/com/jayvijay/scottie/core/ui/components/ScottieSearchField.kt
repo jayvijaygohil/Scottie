@@ -49,8 +49,7 @@ fun ScottieSearchField(
   val borderColor =
     if (isFocused) MaterialTheme.colorScheme.primary else ScottieTheme.colors.borderSubtle
   val borderWidth = if (isFocused) 1.5.dp else 1.dp
-  val textStyle =
-    MaterialTheme.typography.bodyLarge.copy(color = ScottieTheme.colors.textPrimary)
+  val textStyle = MaterialTheme.typography.bodyLarge.copy(color = ScottieTheme.colors.textPrimary)
 
   Surface(
     modifier = modifier.fillMaxWidth().border(borderWidth, borderColor, shape),

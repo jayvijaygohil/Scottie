@@ -38,4 +38,3 @@ Rules:
 
 fun interacAgentInstructions(currentDate: String): String =
   "$INTERAC_AGENT_INSTRUCTIONS\n\nCurrent local date: $currentDate"
-
