@@ -21,9 +21,17 @@ import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.text.AnnotatedString
 import com.jayvijay.scottie.core.ui.ScottieTheme
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.TransactionScenario
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Account
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.AccountType
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.InteracContact
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.Transaction
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransactionCategory
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransactionDirection
+import com.jayvijay.scottie.feature.interacbanking.domain.usecase.TransactionInsights.FlaggedTransaction
+import com.jayvijay.scottie.feature.interacbanking.domain.usecase.TransactionInsights.InsightBadge
+import com.jayvijay.scottie.feature.interacbanking.domain.usecase.TransactionInsights.TransactionQueryResult
+import com.jayvijay.scottie.feature.interacbanking.domain.usecase.TransactionInsights.VerificationStatus
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.InteracSurfaceTemplates.FormSeed
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -79,9 +87,11 @@ class InteracFormTest {
   private val aliceSeed = seed(alice, security = false, channel = "EMAIL", locked = true)
 
   /** Feeds the real template output into the test controller. */
-  private suspend fun ComposeUiTest.start(seed: FormSeed): A2uiTestController {
-    val lines =
-      InteracSurfaceTemplates.form("s", seed).map { Json.parseToJsonElement(it).jsonObject }
+  private suspend fun ComposeUiTest.start(seed: FormSeed): A2uiTestController =
+    startLines(InteracSurfaceTemplates.form("s", seed))
+
+  private suspend fun ComposeUiTest.startLines(rawLines: List<String>): A2uiTestController {
+    val lines = rawLines.map { Json.parseToJsonElement(it).jsonObject }
     val dataUpdate = lines.single { "updateDataModel" in it }["updateDataModel"]!!.jsonObject
     val data = dataUpdate["value"]!!.plain() as Map<*, *>
     val componentUpdate = lines.single { "updateComponents" in it }["updateComponents"]!!.jsonObject
@@ -211,6 +221,61 @@ class InteracFormTest {
     assertEquals(emptyList<Any>(), controller.outboundErrors)
   }
 
+  @Test
+  fun transactionListRendersStatusRowsAndReferenceHistory() = runComposeUiTest {
+    val result =
+      TransactionQueryResult(
+        scenario = TransactionScenario.SALARY_CHECK,
+        status = VerificationStatus.CONFIRMED,
+        items =
+          listOf(
+            FlaggedTransaction(
+              Transaction(
+                transactionId = "txn_105",
+                accountId = "acc_chk_101",
+                accountName = "Everyday Chequing",
+                date = "2026-10-01",
+                descriptor = "ADP PAYROLL - ACME CORP",
+                merchant = "Acme Corp Payroll",
+                category = TransactionCategory.INCOME,
+                direction = TransactionDirection.CREDIT,
+                amount = 3280.0,
+              ),
+              badge = InsightBadge.SALARY,
+              isReference = false,
+            ),
+            FlaggedTransaction(
+              Transaction(
+                transactionId = "txn_104",
+                accountId = "acc_chk_101",
+                accountName = "Everyday Chequing",
+                date = "2026-09-15",
+                descriptor = "CANADA PAYROLL ACME",
+                merchant = "Acme Corp Prior",
+                category = TransactionCategory.INCOME,
+                direction = TransactionDirection.CREDIT,
+                amount = 3265.0,
+              ),
+              badge = InsightBadge.SALARY,
+              isReference = true,
+            ),
+          ),
+        matchCount = 1,
+        totalInflow = 3280.0,
+        totalOutflow = 0.0,
+        periodLabel = "2026-10-01..2026-10-31",
+      )
+    val controller = startLines(InteracSurfaceTemplates.transactionResults("tx", result))
+    settle(controller)
+    onNodeWithText("Salary Verification").assertIsDisplayed()
+    onNodeWithText("Confirmed").assertIsDisplayed()
+    onNodeWithText("Acme Corp Payroll").assertIsDisplayed()
+    onNodeWithText("+$3,280.00 CAD").assertIsDisplayed()
+    onNodeWithText("Recent history").assertIsDisplayed()
+    onNodeWithText("Acme Corp Prior").assertIsDisplayed()
+    assertEquals(emptyList<Any>(), controller.outboundErrors)
+  }
+
   private fun JsonElement.plain(): Any? =
     when (this) {
       is JsonNull -> null
@@ -219,3 +284,4 @@ class InteracFormTest {
       is JsonObject -> mapValues { (_, v) -> v.plain() }
     }
 }
+

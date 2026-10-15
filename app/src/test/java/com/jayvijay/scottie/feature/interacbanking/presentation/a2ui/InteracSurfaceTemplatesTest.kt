@@ -8,7 +8,15 @@ import androidx.a2ui.model.protocol.A2uiServerToClientMessage
 import androidx.a2ui.model.protocol.A2uiUpdateComponentsMessage
 import androidx.a2ui.model.protocol.A2uiUpdateDataModelMessage
 import com.jayvijay.scottie.feature.interacbanking.Fixtures
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.TransactionScenario
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Account
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.Transaction
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransactionCategory
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransactionDirection
+import com.jayvijay.scottie.feature.interacbanking.domain.usecase.TransactionInsights.FlaggedTransaction
+import com.jayvijay.scottie.feature.interacbanking.domain.usecase.TransactionInsights.InsightBadge
+import com.jayvijay.scottie.feature.interacbanking.domain.usecase.TransactionInsights.TransactionQueryResult
+import com.jayvijay.scottie.feature.interacbanking.domain.usecase.TransactionInsights.VerificationStatus
 import com.jayvijay.scottie.feature.interacbanking.presentation.Notice
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.InteracSurfaceTemplates.ConfirmationData
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.InteracSurfaceTemplates.FormSeed
@@ -239,6 +247,61 @@ class InteracSurfaceTemplatesTest {
     assertTrue(item.bool("autodeposit"))
   }
 
+  private val sampleTransactionResult =
+    TransactionQueryResult(
+      scenario = TransactionScenario.RENT_CHECK,
+      status = VerificationStatus.CONFIRMED,
+      items =
+        listOf(
+          FlaggedTransaction(
+            Transaction(
+              transactionId = "txn_203",
+              accountId = "acc_chk_101",
+              accountName = "Everyday Chequing",
+              date = "2026-10-01",
+              descriptor = "MAPLE PROPERTY MGMT RENT",
+              merchant = "Maple Property Mgmt",
+              category = TransactionCategory.HOUSING,
+              direction = TransactionDirection.DEBIT,
+              amount = 2100.0,
+            ),
+            badge = InsightBadge.RENT,
+            isReference = false,
+          )
+        ),
+      matchCount = 1,
+      totalInflow = 0.0,
+      totalOutflow = 2100.0,
+      periodLabel = "2026-10-01..2026-10-31",
+      queryLabel = null,
+      accountNotFoundHint = "TFSA",
+    )
+
+  @Test
+  fun transactionResultsBindsSummaryItemsAndOptionalAlert() {
+    val lines = parse(InteracSurfaceTemplates.transactionResults("tx-1", sampleTransactionResult))
+    assertEquals(listOf("alert", "transactions"), lines.children())
+    assertEquals("accountNotFound", lines.component("alert").str("noticeKind"))
+    assertEquals("TFSA", lines.component("alert").str("noticeArg"))
+
+    val listComp = lines.component("transactions")
+    assertEquals("TransactionList", listComp.str("component"))
+    assertEquals("/summary/scenarioCode", listComp.path("scenarioCode"))
+    assertEquals("/items", listComp.path("items"))
+
+    val summary = lines.data()["summary"]!!.jsonObject
+    assertEquals("RENT_CHECK", summary.str("scenarioCode"))
+    assertEquals("CONFIRMED", summary.str("statusCode"))
+    assertEquals("1", summary.str("count"))
+    assertEquals("2,100.00", summary.str("outflowAmount"))
+
+    val item = lines.data()["items"]!!.jsonArray.single().jsonObject
+    assertEquals("txn_203", item.str("id"))
+    assertEquals("Maple Property Mgmt", item.str("merchant"))
+    assertEquals("RENT", item.str("badgeCode"))
+    assertFalse(item.bool("isReference"))
+  }
+
   @Test
   fun templatesPassCatalogValidationInProcessor() = runBlocking {
     withTimeout(5.seconds) {
@@ -272,11 +335,12 @@ class InteracSurfaceTemplatesTest {
                 "now",
                 "dinner",
               ),
-            )
+            ) +
+            InteracSurfaceTemplates.transactionResults("txn-1", sampleTransactionResult)
         allEnvelopes.forEach { processor.processMessage(toServerMessage(parse(it))) }
 
-        val activeIds = processor.activeSurfaces.first { it.size == 4 }.map { it.id }.toSet()
-        assertEquals(setOf("send-1", "req-1", "bal-1", "conf-1"), activeIds)
+        val activeIds = processor.activeSurfaces.first { it.size == 5 }.map { it.id }.toSet()
+        assertEquals(setOf("send-1", "req-1", "bal-1", "conf-1", "txn-1"), activeIds)
         assertEquals(emptyList<A2uiClientToServerMessage>(), events)
       } finally {
         collector.cancel()

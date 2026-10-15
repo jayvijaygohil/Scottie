@@ -142,4 +142,48 @@
     <string name="chat_reply_offline">No connection. Check your network and try again.</string>
     <string name="chat_reply_unauthorized">OpenRouter rejected the API key. Update it in Model settings.</string>
     <string name="chat_reply_model_unavailable">That model isn\'t available on OpenRouter. Check the model id in Model settings.</string>
+
+    <!-- Transaction queries & financial insights -->
+    <string name="assistant_txn_title_date_range">Transactions</string>
+    <string name="assistant_txn_title_salary_check">Salary Verification</string>
+    <string name="assistant_txn_title_rent_check">Rent Verification</string>
+    <string name="assistant_txn_title_subscriptions_bills">Recurring Bills &amp; Subscriptions</string>
+    <string name="assistant_txn_title_merchant_category">Spending Breakdown</string>
+    <string name="assistant_txn_title_anomalies">Flagged Charges</string>
+    <string name="assistant_txn_title_refunds_transfers">Refunds &amp; Transfers</string>
+
+    <string name="assistant_txn_status_confirmed">Confirmed</string>
+    <string name="assistant_txn_status_not_detected">Not Detected</string>
+    <string name="assistant_txn_banner_salary_confirmed">Recurring salary deposit confirmed for this period.</string>
+    <string name="assistant_txn_banner_salary_missing">No salary deposit detected in this period.</string>
+    <string name="assistant_txn_banner_rent_confirmed">Rent payment confirmed for this period.</string>
+    <string name="assistant_txn_banner_rent_missing">No rent payment detected in this period.</string>
+    <string name="assistant_txn_banner_anomalies_confirmed">Unusual or duplicate charges detected.</string>
+    <string name="assistant_txn_banner_anomalies_none">No duplicate or unusual charges detected.</string>
+
+    <string name="assistant_txn_summary_inflow">Inflow: +%1$s CAD</string>
+    <string name="assistant_txn_summary_outflow">Outflow: -%1$s CAD</string>
+    <string name="assistant_txn_empty">No matching transactions found.</string>
+    <string name="assistant_txn_empty_period">No matching transactions found for %1$s.</string>
+    <string name="assistant_txn_reference_header">Recent history</string>
+
+    <string name="assistant_txn_cat_income">Income</string>
+    <string name="assistant_txn_cat_housing">Housing</string>
+    <string name="assistant_txn_cat_utilities">Utilities</string>
+    <string name="assistant_txn_cat_subscriptions">Subscriptions</string>
+    <string name="assistant_txn_cat_groceries">Groceries</string>
+    <string name="assistant_txn_cat_dining">Dining</string>
+    <string name="assistant_txn_cat_transport">Transport</string>
+    <string name="assistant_txn_cat_shopping">Shopping</string>
+    <string name="assistant_txn_cat_transfer">Transfer</string>
+    <string name="assistant_txn_cat_refund">Refund</string>
+
+    <string name="assistant_txn_badge_salary">Salary</string>
+    <string name="assistant_txn_badge_rent">Rent</string>
+    <string name="assistant_txn_badge_recurring">Recurring</string>
+    <string name="assistant_txn_badge_duplicate">Duplicate</string>
+    <string name="assistant_txn_badge_large_charge">Large Charge</string>
+    <string name="assistant_txn_badge_refund">Refund</string>
+    <string name="assistant_txn_badge_transfer">Transfer</string>
 </resources>
+

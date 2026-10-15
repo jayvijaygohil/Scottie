@@ -490,6 +490,84 @@ class InteracAssistantPresenterTest {
     }
   }
 
+  @Test
+  fun transactionQueriesAndLiveTransferVisibility() = runTest {
+    modelPresent()
+    presenter.test(timeout = 5.seconds) {
+      var s =
+        send(
+          awaitState { !it.missingModel },
+          "Did I get my salary?",
+          AssistantIntent(
+            Intent.TRANSACTIONS,
+            scenario = AssistantIntent.TransactionScenario.SALARY_CHECK,
+          ),
+        )
+      assertEquals(TurnReply.Surface("turn-1"), s.turns.last().reply)
+      assertEquals("SALARY_CHECK", bridge.rootData()["summary"]!!.jsonObject.str("scenarioCode"))
+      assertEquals("CONFIRMED", bridge.rootData()["summary"]!!.jsonObject.str("statusCode"))
+
+      s =
+        send(
+          s,
+          "Did I pay my rent?",
+          AssistantIntent(
+            Intent.TRANSACTIONS,
+            scenario = AssistantIntent.TransactionScenario.RENT_CHECK,
+          ),
+        )
+      assertEquals("RENT_CHECK", bridge.rootData()["summary"]!!.jsonObject.str("scenarioCode"))
+      assertEquals("CONFIRMED", bridge.rootData()["summary"]!!.jsonObject.str("statusCode"))
+
+      s =
+        send(
+          s,
+          "Groceries on TFSA",
+          AssistantIntent(
+            Intent.TRANSACTIONS,
+            accountHint = "TFSA",
+            scenario = AssistantIntent.TransactionScenario.MERCHANT_CATEGORY,
+            searchQuery = "groceries",
+          ),
+        )
+      assertEquals("TFSA", bridge.component("alert")!!.str("noticeArg"))
+      assertEquals("339.15", bridge.rootData()["summary"]!!.jsonObject.str("outflowAmount"))
+
+      s =
+        send(
+          s,
+          "Any duplicate or unusual charges?",
+          AssistantIntent(
+            Intent.TRANSACTIONS,
+            scenario = AssistantIntent.TransactionScenario.ANOMALIES,
+          ),
+        )
+      assertEquals("ANOMALIES", bridge.rootData()["summary"]!!.jsonObject.str("scenarioCode"))
+      assertEquals("CONFIRMED", bridge.rootData()["summary"]!!.jsonObject.str("statusCode"))
+
+      val trf =
+        banking.executeSendTransfer(
+          "acc_chk_101",
+          Recipient.Saved("ct_alice"),
+          50.0,
+          DeliveryChannel.EMAIL,
+        )
+      send(
+        s,
+        "Show my recent transfers",
+        AssistantIntent(
+          Intent.TRANSACTIONS,
+          scenario = AssistantIntent.TransactionScenario.REFUNDS_TRANSFERS,
+          searchQuery = "transfer",
+        ),
+      )
+      val itemIds =
+        bridge.rootData()["items"]!!.jsonArray.map { it.jsonObject.str("id") }
+      assertTrue(trf.referenceId in itemIds)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private class FakeTextModelSource : TextModelSource {
     override val models = MutableStateFlow(emptyList<TextModelOption>())
     override val active = MutableStateFlow<String?>(null)
@@ -550,3 +628,4 @@ class InteracAssistantPresenterTest {
 private const val MODEL = "m.litertlm"
 private const val OTHER = "o.litertlm"
 private const val REMOTE = "openrouter:x/y"
+

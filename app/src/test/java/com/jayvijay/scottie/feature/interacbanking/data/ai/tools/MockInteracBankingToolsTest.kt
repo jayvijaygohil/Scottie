@@ -8,8 +8,13 @@ import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChann
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.InteracContact
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.MoneyRequestStatus
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Recipient
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransactionCategory
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransactionDirection
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransferStatus
+import java.time.Clock
 import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneOffset
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.concurrent.thread
@@ -30,7 +35,8 @@ private const val SECURITY_REQUIRED =
 private val SEEDED = listOf(1540.25, 6200.00, 85.40, 2500.00)
 
 class MockInteracBankingToolsTest {
-  private val tools = MockInteracBankingTools()
+  private val fixedClock = Clock.fixed(Instant.parse("2026-10-14T12:00:00Z"), ZoneOffset.UTC)
+  private val tools = MockInteracBankingTools(fixedClock)
 
   private fun balance(id: String) =
     tools.getAccountBalances().single { it.accountId == id }.availableBalance
@@ -259,9 +265,40 @@ class MockInteracBankingToolsTest {
   }
 
   @Test
+  fun seededTransactionsSpanAllAccountsInReverseChronologicalOrder() {
+    val txns = tools.getTransactions()
+
+    assertTrue(txns.size >= 25)
+    assertEquals(
+      setOf(CHEQUING, SAVINGS, "acc_chk_303", VISA),
+      txns.map { it.accountId }.toSet(),
+    )
+    assertTrue(txns.all { it.transactionId.isNotBlank() && it.amount > 0.0 && it.currency == "CAD" })
+    val dates = txns.map { LocalDate.parse(it.date) }
+    assertEquals(dates.sortedDescending(), dates)
+  }
+
+  @Test
+  fun executeSendTransferRecordsDebitTransferTransaction() {
+    val initialCount = tools.getTransactions().size
+    val result = tools.executeSendTransfer(CHEQUING, ALICE, 50.0, EMAIL)
+    val txns = tools.getTransactions()
+
+    assertEquals(initialCount + 1, txns.size)
+    val recorded = txns.first { it.transactionId == result.referenceId }
+    assertEquals(CHEQUING, recorded.accountId)
+    assertEquals("Everyday Chequing", recorded.accountName)
+    assertEquals("2026-10-14", recorded.date)
+    assertEquals("Alice Martin", recorded.merchant)
+    assertEquals(TransactionCategory.TRANSFER, recorded.category)
+    assertEquals(TransactionDirection.DEBIT, recorded.direction)
+    assertEquals(50.0, recorded.amount, 0.0)
+  }
+
+  @Test
   fun onlyReadToolsAreExposedToTheModel() = runTest {
     val names = tools.asTools().map { it.name }.toSet()
-    assertEquals(setOf("getAccountBalances", "findContacts"), names)
+    assertEquals(setOf("getAccountBalances", "findContacts", "getTransactions"), names)
 
     val tool = tools.getTool("findContacts")
     val args = tool.decodeArgs(JSONObject(emptyMap()), KotlinxSerializer())
@@ -270,3 +307,4 @@ class MockInteracBankingToolsTest {
     assertEquals(6, result.size)
   }
 }
+

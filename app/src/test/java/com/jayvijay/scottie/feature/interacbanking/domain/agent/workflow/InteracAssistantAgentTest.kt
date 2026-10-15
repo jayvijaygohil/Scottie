@@ -11,6 +11,7 @@ import ai.koog.prompt.llm.LLModel
 import ai.koog.serialization.typeToken
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.ChannelHint
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.Intent
+import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.TransactionScenario
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
 import org.junit.Assert.assertEquals
@@ -84,6 +85,47 @@ class InteracAssistantAgentTest {
         "Request $30 from Alice by text" to
           """{"intent":"REQUEST","amount":30,"recipientQuery":"Alice","channelHint":"SMS"}""" to
           AssistantIntent(Intent.REQUEST, 30.0, "Alice", channelHint = ChannelHint.SMS),
+        "Show my transactions between 2026-09-01 and 2026-09-15" to
+          """{"intent":"TRANSACTIONS","scenario":"DATE_RANGE",""" +
+            """"startDate":"2026-09-01","endDate":"2026-09-15"}""" to
+          AssistantIntent(
+            Intent.TRANSACTIONS,
+            scenario = TransactionScenario.DATE_RANGE,
+            startDate = "2026-09-01",
+            endDate = "2026-09-15",
+          ),
+        "Did I get my salary?" to
+          """{"intent":"TRANSACTIONS","scenario":"SALARY_CHECK"}""" to
+          AssistantIntent(Intent.TRANSACTIONS, scenario = TransactionScenario.SALARY_CHECK),
+        "Did I pay my rent this month?" to
+          """{"intent":"TRANSACTIONS","scenario":"RENT_CHECK","startDate":"this_month"}""" to
+          AssistantIntent(
+            Intent.TRANSACTIONS,
+            scenario = TransactionScenario.RENT_CHECK,
+            startDate = "this_month",
+          ),
+        "What are my recurring subscriptions and utility bills?" to
+          """{"intent":"TRANSACTIONS","scenario":"SUBSCRIPTIONS_BILLS"}""" to
+          AssistantIntent(Intent.TRANSACTIONS, scenario = TransactionScenario.SUBSCRIPTIONS_BILLS),
+        "How much did I spend on groceries on my Visa?" to
+          """{"intent":"TRANSACTIONS","scenario":"MERCHANT_CATEGORY",""" +
+            """"accountHint":"Visa","searchQuery":"groceries"}""" to
+          AssistantIntent(
+            Intent.TRANSACTIONS,
+            accountHint = "Visa",
+            scenario = TransactionScenario.MERCHANT_CATEGORY,
+            searchQuery = "groceries",
+          ),
+        "Are there any duplicate or unusual charges?" to
+          """{"intent":"TRANSACTIONS","scenario":"ANOMALIES"}""" to
+          AssistantIntent(Intent.TRANSACTIONS, scenario = TransactionScenario.ANOMALIES),
+        "Did my refund come through?" to
+          """{"intent":"TRANSACTIONS","scenario":"REFUNDS_TRANSFERS","searchQuery":"refund"}""" to
+          AssistantIntent(
+            Intent.TRANSACTIONS,
+            scenario = TransactionScenario.REFUNDS_TRANSFERS,
+            searchQuery = "refund",
+          ),
       )
     for ((pair, expected) in examples) {
       val (input, json) = pair

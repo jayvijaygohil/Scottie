@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AssistantIntent",
+  "description": "Structured output returned by InteracAssistantAgent. Extended with TRANSACTIONS intent and financial insight slots.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["intent"],
+  "properties": {
+    "intent": {
+      "type": "string",
+      "enum": ["BALANCE", "SEND", "REQUEST", "TRANSACTIONS", "OTHER"]
+    },
+    "amount": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0,
+      "description": "Transfer amount for SEND/REQUEST, or minimum amount threshold for TRANSACTIONS (e.g. 'charges over $500')."
+    },
+    "recipientQuery": {
+      "type": ["string", "null"],
+      "description": "Raw recipient fragment for SEND/REQUEST or transfer party filter."
+    },
+    "accountHint": {
+      "type": ["string", "null"],
+      "description": "Raw account phrase, e.g. 'savings', 'Everyday Chequing', 'Visa'."
+    },
+    "memo": {
+      "type": ["string", "null"],
+      "description": "Request memo, e.g. 'dinner'."
+    },
+    "channelHint": {
+      "type": ["string", "null"],
+      "enum": ["EMAIL", "SMS", null]
+    },
+    "scenario": {
+      "type": ["string", "null"],
+      "enum": [
+        "DATE_RANGE",
+        "SALARY_CHECK",
+        "RENT_CHECK",
+        "SUBSCRIPTIONS_BILLS",
+        "MERCHANT_CATEGORY",
+        "ANOMALIES",
+        "REFUNDS_TRANSFERS",
+        null
+      ],
+      "description": "Transaction query workflow when intent is TRANSACTIONS."
+    },
+    "startDate": {
+      "type": ["string", "null"],
+      "description": "ISO start date YYYY-MM-DD or relative token (today, this_week, this_month, last_month, last_7_days, last_30_days)."
+    },
+    "endDate": {
+      "type": ["string", "null"],
+      "description": "ISO end date YYYY-MM-DD."
+    },
+    "searchQuery": {
+      "type": ["string", "null"],
+      "description": "Merchant, category, or keyword filter (e.g. 'Uber', 'groceries', 'hydro', 'refund')."
+    },
+    "reply": {
+      "type": ["string", "null"],
+      "description": "One short sentence for the user. Required when intent is OTHER."
+    }
+  },
+  "examples": [
+    {
+      "input": "Show my transactions between 2026-09-01 and 2026-09-15",
+      "output": {
+        "intent": "TRANSACTIONS",
+        "scenario": "DATE_RANGE",
+        "startDate": "2026-09-01",
+        "endDate": "2026-09-15"
+      }
+    },
+    {
+      "input": "Did I get my salary?",
+      "output": {
+        "intent": "TRANSACTIONS",
+        "scenario": "SALARY_CHECK"
+      }
+    },
+    {
+      "input": "Did I pay my rent this month?",
+      "output": {
+        "intent": "TRANSACTIONS",
+        "scenario": "RENT_CHECK",
+        "startDate": "this_month"
+      }
+    },
+    {
+      "input": "What are my recurring subscriptions and utility bills?",
+      "output": {
+        "intent": "TRANSACTIONS",
+        "scenario": "SUBSCRIPTIONS_BILLS"
+      }
+    },
+    {
+      "input": "How much did I spend on groceries on my Visa?",
+      "output": {
+        "intent": "TRANSACTIONS",
+        "scenario": "MERCHANT_CATEGORY",
+        "accountHint": "Visa",
+        "searchQuery": "groceries"
+      }
+    },
+    {
+      "input": "Are there any duplicate or unusual charges?",
+      "output": {
+        "intent": "TRANSACTIONS",
+        "scenario": "ANOMALIES"
+      }
+    },
+    {
+      "input": "Did my refund come through?",
+      "output": {
+        "intent": "TRANSACTIONS",
+        "scenario": "REFUNDS_TRANSFERS",
+        "searchQuery": "refund"
+      }
+    }
+  ]
+}

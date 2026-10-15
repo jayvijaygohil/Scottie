@@ -24,6 +24,7 @@ import com.jayvijay.scottie.feature.interacbanking.domain.entities.Recipient
 import com.jayvijay.scottie.feature.interacbanking.domain.repository.TextModelSource
 import com.jayvijay.scottie.feature.interacbanking.domain.usecase.ContactMatcher
 import com.jayvijay.scottie.feature.interacbanking.domain.usecase.InteracResolution
+import com.jayvijay.scottie.feature.interacbanking.domain.usecase.TransactionInsights
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.A2uiBridge
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.A2uiBridgeFactory
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.InteracSurfaceTemplates
@@ -165,6 +166,7 @@ constructor(
         Intent.BALANCE -> balanceLines(intent.accountHint, surfaceId)
         Intent.SEND -> sendLines(intent, surfaceId)
         Intent.REQUEST -> requestLines(intent, surfaceId)
+        Intent.TRANSACTIONS -> transactionLines(intent, surfaceId)
       }
     return if (lines == null) {
       TurnReply.Text(intent.reply)
@@ -172,6 +174,12 @@ constructor(
       lines.forEach(bridge::accept)
       TurnReply.Surface(surfaceId)
     }
+  }
+
+  private suspend fun transactionLines(intent: AssistantIntent, surfaceId: String): List<String> {
+    val (accounts, transactions) = banking { getAccountBalances() to getTransactions() }
+    val result = TransactionInsights.evaluate(intent, transactions, accounts)
+    return InteracSurfaceTemplates.transactionResults(surfaceId, result)
   }
 
   private suspend fun balanceLines(hint: String?, surfaceId: String): List<String> {

@@ -6,6 +6,8 @@ import ai.koog.agents.core.tools.ToolRegistry
 import ai.koog.prompt.executor.model.StructureFixingParser
 import ai.koog.prompt.llm.LLModel
 import ai.koog.prompt.message.MessagePart
+import java.time.Clock
+import java.time.LocalDate
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,8 +22,15 @@ import kotlinx.serialization.json.Json
 class InteracAssistantAgent(
   private val toolRegistry: ToolRegistry,
   private val models: ModelResolver,
+  private val clock: Clock,
   private val classifier: FailureClassifier,
 ) : IntentExtractor {
+
+  constructor(
+    toolRegistry: ToolRegistry,
+    models: ModelResolver,
+    classifier: FailureClassifier,
+  ) : this(toolRegistry, models, Clock.systemDefaultZone(), classifier)
 
   override suspend fun extract(text: String, modelId: String): AssistantIntent =
     withContext(Dispatchers.Default) {
@@ -42,7 +51,7 @@ class InteracAssistantAgent(
         llmModel = model,
         strategy = strategy(model),
         toolRegistry = toolRegistry,
-        systemPrompt = INTERAC_AGENT_INSTRUCTIONS,
+        systemPrompt = interacAgentInstructions(LocalDate.now(clock).toString()),
         temperature = 0.0,
         maxIterations = MAX_ITERATIONS,
       )

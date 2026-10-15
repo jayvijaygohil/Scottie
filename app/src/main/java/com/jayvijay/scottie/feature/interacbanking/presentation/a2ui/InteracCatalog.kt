@@ -17,6 +17,7 @@ import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.BalanceCard
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.Confirmation
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.InteracForm
+import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.TransactionList
 
 const val INTERAC_CATALOG_ID = "com.jayvijay.scottie/a2ui/interac/v1"
 
@@ -53,7 +54,7 @@ fun interacCatalog(): A2uiCatalog {
     catalogId = INTERAC_CATALOG_ID,
     components =
       base.components.filterNot { it.name in REMOVED } +
-        listOf(Badge, Alert, BalanceCard, Confirmation, InteracForm),
+        listOf(Badge, Alert, BalanceCard, Confirmation, InteracForm, TransactionList),
     functions = base.functions,
     themeSchema = base.themeSchema,
     isInline = true,

@@ -6,8 +6,10 @@ import kotlinx.serialization.Serializable
 /** The only structure the model returns; everything else is resolved by the presenter. */
 @Serializable
 data class AssistantIntent(
-  @property:LLMDescription("BALANCE, SEND, REQUEST, or OTHER.") val intent: Intent,
-  @property:LLMDescription("Amount in CAD exactly as the user typed it; null when not given.")
+  @property:LLMDescription("BALANCE, SEND, REQUEST, TRANSACTIONS, or OTHER.") val intent: Intent,
+  @property:LLMDescription(
+    "Transfer amount in CAD for SEND/REQUEST, or minimum amount threshold for TRANSACTIONS."
+  )
   val amount: Double? = null,
   @property:LLMDescription("Raw recipient fragment: a name, email, or phone. Never an id.")
   val recipientQuery: String? = null,
@@ -20,20 +22,47 @@ data class AssistantIntent(
   val channelHint: ChannelHint? = null,
   @property:LLMDescription("One short sentence for the user. Required when intent is OTHER.")
   val reply: String? = null,
+  @property:LLMDescription("Transaction query workflow when intent is TRANSACTIONS.")
+  val scenario: TransactionScenario? = null,
+  @property:LLMDescription(
+    "ISO start date YYYY-MM-DD or relative token (today, this_week, this_month, last_month, " +
+      "last_7_days, last_30_days)."
+  )
+  val startDate: String? = null,
+  @property:LLMDescription("ISO end date YYYY-MM-DD.") val endDate: String? = null,
+  @property:LLMDescription(
+    "Merchant, category, or keyword filter (e.g. 'Uber', 'groceries', 'hydro', 'refund')."
+  )
+  val searchQuery: String? = null,
 ) {
+  @Serializable
   enum class Intent {
     BALANCE,
     SEND,
     REQUEST,
+    TRANSACTIONS,
     OTHER,
   }
 
+  @Serializable
   enum class ChannelHint {
     EMAIL,
     SMS,
+  }
+
+  @Serializable
+  enum class TransactionScenario {
+    DATE_RANGE,
+    SALARY_CHECK,
+    RENT_CHECK,
+    SUBSCRIPTIONS_BILLS,
+    MERCHANT_CATEGORY,
+    ANOMALIES,
+    REFUNDS_TRANSFERS,
   }
 
   companion object {
     val FALLBACK = AssistantIntent(Intent.OTHER)
   }
 }
+

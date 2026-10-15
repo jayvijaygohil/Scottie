@@ -82,3 +82,38 @@ data class MoneyRequestResult(
   val timestamp: String,
   val memo: String? = null,
 )
+
+@Serializable
+enum class TransactionDirection {
+  CREDIT,
+  DEBIT,
+}
+
+@Serializable
+enum class TransactionCategory {
+  INCOME,
+  HOUSING,
+  UTILITIES,
+  SUBSCRIPTIONS,
+  GROCERIES,
+  DINING,
+  TRANSPORT,
+  SHOPPING,
+  TRANSFER,
+  REFUND,
+}
+
+@Serializable
+data class Transaction(
+  val transactionId: String,
+  val accountId: String,
+  val accountName: String,
+  val date: String,
+  val descriptor: String,
+  val merchant: String,
+  val category: TransactionCategory,
+  val direction: TransactionDirection,
+  val amount: Double,
+  val currency: String = "CAD",
+)
+

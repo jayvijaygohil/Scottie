@@ -2,6 +2,7 @@ package com.jayvijay.scottie.feature.interacbanking.presentation.a2ui
 
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Account
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.InteracContact
+import com.jayvijay.scottie.feature.interacbanking.domain.usecase.TransactionInsights.TransactionQueryResult
 import com.jayvijay.scottie.feature.interacbanking.presentation.Notice
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.Alert
 import java.util.Locale
@@ -24,6 +25,7 @@ object InteracSurfaceTemplates {
   const val ROOT = "root"
   const val FORM = "form"
   const val ALERT = "alert"
+  const val TRANSACTIONS = "transactions"
   private const val VERSION = "v0.9"
 
   data class FormSeed(
@@ -194,6 +196,59 @@ object InteracSurfaceTemplates {
         fields.keys.forEach { bind(it, "/result/$it") }
       }
     return surface(surfaceId, data, listOf(column(listOf("result")), card))
+  }
+
+  fun transactionResults(surfaceId: String, result: TransactionQueryResult): List<String> {
+    val summaryFields =
+      listOf(
+        "scenarioCode",
+        "statusCode",
+        "count",
+        "inflowAmount",
+        "outflowAmount",
+        "periodLabel",
+        "queryLabel",
+      )
+    val data = buildJsonObject {
+      putJsonObject("summary") {
+        put("scenarioCode", result.scenario.name)
+        put("statusCode", result.status.name)
+        put("count", result.matchCount.toString())
+        put("inflowAmount", money(result.totalInflow))
+        put("outflowAmount", money(result.totalOutflow))
+        put("periodLabel", result.periodLabel.orEmpty())
+        put("queryLabel", result.queryLabel.orEmpty())
+      }
+      putJsonArray("items") {
+        result.items.forEach { flagged ->
+          val t = flagged.transaction
+          add(
+            buildJsonObject {
+              put("id", t.transactionId)
+              put("date", t.date)
+              put("merchant", t.merchant)
+              put("descriptor", t.descriptor)
+              put("categoryCode", t.category.name)
+              put("accountName", t.accountName)
+              put("directionCode", t.direction.name)
+              put("amount", money(t.amount))
+              put("currency", t.currency)
+              put("badgeCode", flagged.badge?.name.orEmpty())
+              put("isReference", flagged.isReference)
+            }
+          )
+        }
+      }
+    }
+    val listComponent =
+      component(TRANSACTIONS, "TransactionList") {
+        summaryFields.forEach { bind(it, "/summary/$it") }
+        bind("items", "/items")
+      }
+    val notice = result.accountNotFoundHint?.let { Notice.AccountNotFound(it) }
+    val alert = notice?.let { alert(notice = it) }
+    val children = listOfNotNull(alert?.let { ALERT }) + TRANSACTIONS
+    return surface(surfaceId, data, listOfNotNull(column(children), alert, listComponent))
   }
 
   private fun surface(id: String, data: JsonObject, components: List<JsonObject>): List<String> =

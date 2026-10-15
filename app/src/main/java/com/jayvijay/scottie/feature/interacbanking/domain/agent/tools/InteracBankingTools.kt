@@ -5,15 +5,20 @@ import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChann
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.InteracContact
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.MoneyRequestResult
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Recipient
+import com.jayvijay.scottie.feature.interacbanking.domain.entities.Transaction
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransferResult
 
 /**
  * Interac e-Transfer banking service. Failures throw [IllegalArgumentException] whose message is
- * the user-facing text. Only [getAccountBalances] and [findContacts] are model tools;
- * [executeSendTransfer], [executeRequestMoney], and [saveContact] are called by the presenter.
+ * the user-facing text. Only [getAccountBalances], [findContacts], and [getTransactions] are model
+ * tools; [executeSendTransfer], [executeRequestMoney], and [saveContact] are called by the
+ * presenter.
  */
 interface InteracBankingTools {
   fun getAccountBalances(): List<Account>
+
+  /** All posted transactions across accounts, newest first. */
+  fun getTransactions(): List<Transaction>
 
   /** Ranked fuzzy search; null or blank returns every contact. */
   fun findContacts(query: String? = null): List<InteracContact>
