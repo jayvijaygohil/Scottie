@@ -2,8 +2,10 @@ package com.jayvijay.scottie.feature.interacbanking.presentation
 
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,20 +13,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.a2ui.A2uiSurface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
+import com.jayvijay.scottie.core.ui.ScottieCodeSmall
 import com.jayvijay.scottie.core.ui.ScottieTheme
 import com.jayvijay.scottie.core.ui.components.ScottieToolbar
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
@@ -58,11 +65,12 @@ class InteracAssistantUi @Inject constructor() : Ui<InteracAssistantState> {
 
   @Composable
   override fun Content(state: InteracAssistantState, modifier: Modifier) {
+    val colors = ScottieTheme.colors
     Column(
       modifier =
         modifier
           .fillMaxSize()
-          .background(MaterialTheme.colorScheme.background)
+          .background(colors.surfaceCanvas)
           .safeDrawingPadding()
           .imePadding()
     ) {
@@ -77,22 +85,32 @@ class InteracAssistantUi @Inject constructor() : Ui<InteracAssistantState> {
           )
         },
         actions = {
-          IconButton(
-            onClick = { state.eventSink(InteracAssistantAction.OpenSettings) },
-            modifier = Modifier.testTag(TAG_SETTINGS),
+          Surface(
+            shape = RoundedCornerShape(10.dp),
+            color = colors.surfaceCanvas,
+            border = BorderStroke(1.dp, colors.borderSubtle),
           ) {
-            Icon(
-              Icons.Rounded.Settings,
-              contentDescription = stringResource(R.string.chat_settings),
-            )
+            IconButton(
+              onClick = { state.eventSink(InteracAssistantAction.OpenSettings) },
+              modifier = Modifier.size(36.dp).testTag(TAG_SETTINGS),
+            ) {
+              Icon(
+                imageVector = Icons.Rounded.Tune,
+                contentDescription = stringResource(R.string.chat_settings),
+                tint = colors.textSecondary,
+                modifier = Modifier.size(18.dp),
+              )
+            }
           }
         },
       )
       if (state.missingModel) {
-        EmptyState(
-          onDownload = { state.eventSink(InteracAssistantAction.OpenSettings) },
-          modifier = Modifier.padding(16.dp),
-        )
+        Box(
+          modifier = Modifier.weight(1f).fillMaxWidth().padding(16.dp),
+          contentAlignment = Alignment.Center,
+        ) {
+          EmptyState(onDownload = { state.eventSink(InteracAssistantAction.OpenSettings) })
+        }
         return@Column
       }
       if (state.turns.isEmpty()) {
@@ -112,7 +130,7 @@ class InteracAssistantUi @Inject constructor() : Ui<InteracAssistantState> {
           haptic.performHapticFeedback(HapticFeedbackType.Confirm)
           state.eventSink(InteracAssistantAction.Send)
         },
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
       )
     }
   }
@@ -130,7 +148,7 @@ private fun Turns(state: InteracAssistantState, modifier: Modifier = Modifier) {
     state = listState,
     modifier = modifier,
     reverseLayout = true,
-    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
     verticalArrangement = Arrangement.spacedBy(20.dp),
   ) {
     items(state.turns.asReversed(), key = { it.id }) { turn -> Turn(turn, state) }
@@ -139,7 +157,7 @@ private fun Turns(state: InteracAssistantState, modifier: Modifier = Modifier) {
 
 @Composable
 private fun Turn(turn: AssistantTurn, state: InteracAssistantState) {
-  Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+  Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
     UserBubble(turn.userText)
     val textCard = Modifier.widthIn(max = 340.dp)
     when (val reply = turn.reply) {
@@ -165,9 +183,9 @@ private fun Turn(turn: AssistantTurn, state: InteracAssistantState) {
     val debuggable = flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
     if (debuggable && turn.firstCardMs != null) {
       Text(
-        stringResource(R.string.assistant_latency_debug, turn.firstCardMs),
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        text = stringResource(R.string.assistant_latency_debug, turn.firstCardMs),
+        style = ScottieCodeSmall,
+        color = ScottieTheme.colors.textTertiary,
       )
     }
   }
@@ -183,7 +201,11 @@ private fun InferenceFailure.message(): Int =
 
 @Composable
 private fun ReplyText(resId: Int) {
-  Text(stringResource(resId), style = MaterialTheme.typography.bodyLarge)
+  Text(
+    text = stringResource(resId),
+    style = MaterialTheme.typography.bodyLarge,
+    color = ScottieTheme.colors.textPrimary,
+  )
 }
 
 private fun previewState(

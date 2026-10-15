@@ -1,16 +1,23 @@
 package com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components
 
+import android.content.res.Configuration
 import androidx.a2ui.compose.runtime.A2uiComponentProperties
 import androidx.a2ui.compose.runtime.A2uiComponentScope
 import androidx.a2ui.compose.runtime.A2uiProperty
 import androidx.a2ui.compose.ui.A2uiComponent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
-import com.jayvijay.scottie.core.ui.xelauikit.XelaAlert
+import com.jayvijay.scottie.core.ui.ScottieTheme
+import com.jayvijay.scottie.core.ui.components.ScottieAlertBanner
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.Alert.NoticeArg
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.Alert.NoticeKind
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components.Alert.Text
@@ -50,18 +57,44 @@ object Alert : A2uiComponent {
           NO_COVER -> stringResource(R.string.assistant_no_account_covers, arg.orEmpty())
           else -> return
         }
-    val error = (properties[Tone] ?: "info") == "error"
+    val isError = (properties[Tone] ?: "info") == "error"
     Box(modifier = modifier) {
-      XelaAlert(
+      ScottieAlertBanner(
         title =
           stringResource(
-            if (error) R.string.assistant_alert_title_error else R.string.assistant_alert_title_info
+            if (isError) R.string.assistant_alert_title_error
+            else R.string.assistant_alert_title_info
           ),
-        text = text,
-        primaryColor =
-          if (error) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-        secondaryColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        background = MaterialTheme.colorScheme.surface,
+        message = text,
+        isError = isError,
+      )
+    }
+  }
+}
+
+@Preview(name = "A2UI Alert Light", showBackground = true, widthDp = 360)
+@Preview(
+  name = "A2UI Alert Dark",
+  showBackground = true,
+  widthDp = 360,
+  uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+private fun AlertPreview() {
+  ScottieTheme {
+    Column(
+      modifier = Modifier.background(ScottieTheme.colors.surfaceCard).padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      ScottieAlertBanner(
+        title = "Notice",
+        message = "No account called Crypto; showing all accounts.",
+        isError = false,
+      )
+      ScottieAlertBanner(
+        title = "Cannot complete",
+        message = "No chequing or savings account covers $5,000.00.",
+        isError = true,
       )
     }
   }

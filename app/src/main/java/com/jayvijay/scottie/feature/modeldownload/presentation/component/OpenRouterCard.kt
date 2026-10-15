@@ -1,14 +1,19 @@
 package com.jayvijay.scottie.feature.modeldownload.presentation.component
 
 import android.content.res.Configuration
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -16,7 +21,9 @@ import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,16 +39,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
+import com.jayvijay.scottie.core.ui.ScottieCodeSmall
 import com.jayvijay.scottie.core.ui.ScottieTheme
 import com.jayvijay.scottie.core.ui.components.ScottieSearchField
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.AvailableModel
@@ -59,62 +69,87 @@ fun OpenRouterCard(
   onEvent: (ModelDownloadAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  val colors = ScottieTheme.colors
   Surface(
     modifier = modifier.fillMaxWidth(),
     shape = RoundedCornerShape(16.dp),
-    color = MaterialTheme.colorScheme.surface,
+    color = colors.surfaceCard,
+    border = BorderStroke(1.dp, colors.borderSubtle),
   ) {
-    Column(
-      modifier = Modifier.padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-      SettingsField(
-        value = section.baseUrl,
-        onValueChange = { onEvent(ModelDownloadAction.EditOpenRouterBaseUrl(it)) },
-        label = R.string.model_download_openrouter_base_url,
-        tag = OpenRouterCardTags.BASE_URL,
-        keyboardType = KeyboardType.Uri,
-        error =
-          R.string.model_download_openrouter_error_base_url.takeIf {
-            OpenRouterField.BASE_URL in section.errors
-          },
+    Column(modifier = Modifier.fillMaxWidth()) {
+      Box(
+        modifier =
+          Modifier.fillMaxWidth().height(3.dp).background(MaterialTheme.colorScheme.primary)
       )
-      ApiKeyField(section.apiKey) { onEvent(ModelDownloadAction.EditOpenRouterApiKey(it)) }
-      if (section.savedModelCount > 0) {
-        Text(
-          text =
-            pluralStringResource(
-              R.plurals.model_download_openrouter_saved,
-              section.savedModelCount,
-              section.savedModelCount,
-            ),
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.testTag(OpenRouterCardTags.SAVED),
-        )
-      }
-      FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+      Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
       ) {
-        ModelDownloadButton(
-          text = stringResource(R.string.model_download_openrouter_save),
-          onClick = { onEvent(ModelDownloadAction.SaveOpenRouter) },
-          filled = true,
-          modifier = Modifier.testTag(OpenRouterCardTags.SAVE),
+        SettingsField(
+          value = section.baseUrl,
+          onValueChange = { onEvent(ModelDownloadAction.EditOpenRouterBaseUrl(it)) },
+          label = R.string.model_download_openrouter_base_url,
+          tag = OpenRouterCardTags.BASE_URL,
+          keyboardType = KeyboardType.Uri,
+          error =
+            R.string.model_download_openrouter_error_base_url.takeIf {
+              OpenRouterField.BASE_URL in section.errors
+            },
         )
-        if (section.list != RemoteModels.Hidden) {
-          ModelDownloadButton(
-            text = stringResource(R.string.model_download_delete),
-            onClick = { onEvent(ModelDownloadAction.DeleteOpenRouter) },
-            modifier = Modifier.testTag(OpenRouterCardTags.DELETE),
-          )
+        ApiKeyField(section.apiKey) { onEvent(ModelDownloadAction.EditOpenRouterApiKey(it)) }
+        if (section.savedModelCount > 0) {
+          Surface(
+            color = colors.statusSuccessSubtle,
+            shape = RoundedCornerShape(999.dp),
+            border =
+              BorderStroke(1.dp, colors.statusSuccess.copy(alpha = SAVED_BADGE_BORDER_ALPHA)),
+          ) {
+            Row(
+              modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(6.dp),
+            ) {
+              Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(colors.statusSuccess))
+              Text(
+                text =
+                  pluralStringResource(
+                    R.plurals.model_download_openrouter_saved,
+                    section.savedModelCount,
+                    section.savedModelCount,
+                  ),
+                style = MaterialTheme.typography.labelSmall,
+                color = colors.statusSuccess,
+                modifier = Modifier.testTag(OpenRouterCardTags.SAVED),
+              )
+            }
+          }
         }
+        FlowRow(
+          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          ModelDownloadButton(
+            text = stringResource(R.string.model_download_openrouter_save),
+            onClick = { onEvent(ModelDownloadAction.SaveOpenRouter) },
+            filled = true,
+            modifier = Modifier.testTag(OpenRouterCardTags.SAVE),
+          )
+          if (section.list != RemoteModels.Hidden) {
+            ModelDownloadButton(
+              text = stringResource(R.string.model_download_delete),
+              onClick = { onEvent(ModelDownloadAction.DeleteOpenRouter) },
+              destructive = true,
+              modifier = Modifier.testTag(OpenRouterCardTags.DELETE),
+            )
+          }
+        }
+        RemoteModelList(section.list, section.query, onEvent)
       }
-      RemoteModelList(section.list, section.query, onEvent)
     }
   }
 }
+
+private const val SAVED_BADGE_BORDER_ALPHA = 0.25f
 
 /** Rows are plain children of the card's lazy item, so no nested lazy list. */
 @Composable
@@ -123,19 +158,24 @@ private fun RemoteModelList(
   query: String,
   onEvent: (ModelDownloadAction) -> Unit,
 ) {
+  val colors = ScottieTheme.colors
   when (list) {
     RemoteModels.Hidden -> Unit
     RemoteModels.Loading ->
       Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.testTag(OpenRouterCardTags.MODELS_LOADING),
+        modifier = Modifier.padding(top = 4.dp).testTag(OpenRouterCardTags.MODELS_LOADING),
       ) {
-        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+        CircularProgressIndicator(
+          modifier = Modifier.size(20.dp),
+          strokeWidth = 2.dp,
+          color = MaterialTheme.colorScheme.primary,
+        )
         Note(stringResource(R.string.model_download_openrouter_models_loading))
       }
     is RemoteModels.Failed ->
-      Column(modifier = Modifier.testTag(OpenRouterCardTags.MODELS_ERROR)) {
+      Column(modifier = Modifier.padding(top = 4.dp).testTag(OpenRouterCardTags.MODELS_ERROR)) {
         val message =
           when (list.reason) {
             FetchFailure.NO_CONNECTION -> R.string.model_download_openrouter_models_offline
@@ -158,6 +198,7 @@ private fun RemoteModelList(
       if (list.total == 0) {
         Note(stringResource(R.string.model_download_openrouter_models_empty))
       } else {
+        HorizontalDivider(color = colors.borderSubtle, modifier = Modifier.padding(vertical = 4.dp))
         ScottieSearchField(
           value = query,
           onValueChange = { onEvent(ModelDownloadAction.SearchRemoteModels(it)) },
@@ -167,11 +208,27 @@ private fun RemoteModelList(
         )
         if (list.visible.isEmpty()) {
           Note(stringResource(R.string.model_download_openrouter_models_no_match, query.trim()))
-        }
-        Column(modifier = Modifier.testTag(OpenRouterCardTags.MODEL_LIST)) {
-          list.visible.forEach { model ->
-            RemoteModelRow(model, model.id in list.selected) {
-              onEvent(ModelDownloadAction.ToggleRemoteModel(model.id))
+        } else {
+          Surface(
+            color = colors.surfaceCanvas,
+            shape = RoundedCornerShape(12.dp),
+            border = BorderStroke(1.dp, colors.borderSubtle),
+          ) {
+            Column(
+              modifier =
+                Modifier.fillMaxWidth().padding(vertical = 4.dp).testTag(OpenRouterCardTags.MODEL_LIST)
+            ) {
+              list.visible.forEachIndexed { index, model ->
+                if (index > 0) {
+                  HorizontalDivider(
+                    color = colors.borderSubtle,
+                    modifier = Modifier.padding(horizontal = 12.dp),
+                  )
+                }
+                RemoteModelRow(model, model.id in list.selected) {
+                  onEvent(ModelDownloadAction.ToggleRemoteModel(model.id))
+                }
+              }
             }
           }
         }
@@ -181,18 +238,37 @@ private fun RemoteModelList(
 
 @Composable
 private fun RemoteModelRow(model: AvailableModel, checked: Boolean, onToggle: () -> Unit) {
+  val colors = ScottieTheme.colors
   Row(
     verticalAlignment = Alignment.CenterVertically,
     modifier =
       Modifier.fillMaxWidth()
         .toggleable(value = checked, role = Role.Checkbox, onValueChange = { onToggle() })
-        .padding(vertical = 4.dp)
+        .padding(horizontal = 12.dp, vertical = 10.dp)
         .testTag(OpenRouterCardTags.MODEL_ROW_PREFIX + model.id),
   ) {
-    Checkbox(checked = checked, onCheckedChange = null)
+    Checkbox(
+      checked = checked,
+      onCheckedChange = null,
+      colors =
+        CheckboxDefaults.colors(
+          checkedColor = MaterialTheme.colorScheme.primary,
+          uncheckedColor = colors.textTertiary,
+        ),
+    )
     Column(modifier = Modifier.padding(start = 12.dp)) {
-      Text(model.name, style = MaterialTheme.typography.bodyLarge)
-      if (model.name != model.id) Note(model.id)
+      Text(
+        text = model.name,
+        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+        color = colors.textPrimary,
+      )
+      if (model.name != model.id) {
+        Text(
+          text = model.id,
+          style = ScottieCodeSmall,
+          color = colors.textSecondary,
+        )
+      }
     }
   }
 }
@@ -202,7 +278,7 @@ private fun Note(text: String) {
   Text(
     text = text,
     style = MaterialTheme.typography.bodyMedium,
-    color = MaterialTheme.colorScheme.onSurfaceVariant,
+    color = ScottieTheme.colors.textSecondary,
   )
 }
 
@@ -215,7 +291,10 @@ fun DeleteOpenRouterDialog(onEvent: (ModelDownloadAction) -> Unit) {
     text = { Text(stringResource(R.string.model_download_openrouter_delete_text)) },
     confirmButton = {
       TextButton(onClick = { onEvent(ModelDownloadAction.ConfirmDeleteOpenRouter) }) {
-        Text(stringResource(R.string.model_download_delete))
+        Text(
+          text = stringResource(R.string.model_download_delete),
+          color = MaterialTheme.colorScheme.error,
+        )
       }
     },
     dismissButton = {
@@ -224,7 +303,7 @@ fun DeleteOpenRouterDialog(onEvent: (ModelDownloadAction) -> Unit) {
       }
     },
     modifier = Modifier.testTag(OpenRouterCardTags.DELETE_DIALOG),
-    containerColor = MaterialTheme.colorScheme.surface,
+    containerColor = ScottieTheme.colors.surfaceCard,
   )
 }
 
@@ -271,6 +350,7 @@ private fun SettingsField(
   visualTransformation: VisualTransformation = VisualTransformation.None,
   trailingIcon: (@Composable () -> Unit)? = null,
 ) {
+  val colors = ScottieTheme.colors
   val supporting = error ?: hint
   OutlinedTextField(
     value = value,
@@ -287,9 +367,9 @@ private fun SettingsField(
     colors =
       OutlinedTextFieldDefaults.colors(
         focusedBorderColor = MaterialTheme.colorScheme.primary,
-        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-        focusedContainerColor = MaterialTheme.colorScheme.surface,
-        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+        unfocusedBorderColor = colors.borderSubtle,
+        focusedContainerColor = colors.surfaceCanvas,
+        unfocusedContainerColor = colors.surfaceCanvas,
       ),
   )
 }

@@ -1,5 +1,6 @@
 package com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.components
 
+import android.content.res.Configuration
 import androidx.a2ui.compose.runtime.A2uiComponentProperties
 import androidx.a2ui.compose.runtime.A2uiComponentScope
 import androidx.a2ui.compose.runtime.A2uiProperty
@@ -11,21 +12,30 @@ import androidx.a2ui.model.schema.A2uiObjectSchema
 import androidx.a2ui.model.schema.A2uiSchemaKeyword
 import androidx.a2ui.model.schema.A2uiStringSchema
 import androidx.a2ui.model.schema.commontypes.A2uiDataBindingSchema
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
-import com.jayvijay.scottie.core.ui.xelauikit.XelaBadge
-import com.jayvijay.scottie.core.ui.xelauikit.XelaDivider
+import com.jayvijay.scottie.core.ui.ScottieCodeSmall
+import com.jayvijay.scottie.core.ui.ScottieTheme
+import com.jayvijay.scottie.core.ui.components.ScottieBadge
+import com.jayvijay.scottie.core.ui.components.ScottieBadgeTone
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.AssistantIntent.TransactionScenario
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransactionCategory
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransactionDirection
@@ -94,194 +104,21 @@ object TransactionList : A2uiComponent {
     val periodLabel = properties.bind(PeriodLabel).orEmpty()
     val queryLabel = properties.bind(QueryLabel).orEmpty()
     val allItems = properties.bind(Items).orEmpty()
-    val primaryItems = allItems.filter { !it.isReference }
-    val referenceItems = allItems.filter { it.isReference }
 
-    Column(
-      modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      Header(scenarioCode, statusCode, periodLabel, queryLabel)
-      VerificationBanner(scenarioCode, statusCode)
-      if (count > 0) {
-        TotalsRow(inflow, outflow)
-      }
-      if (primaryItems.isEmpty()) {
-        val contextLabel = queryLabel.ifEmpty { periodLabel }
-        val emptyText =
-          if (contextLabel.isNotEmpty()) {
-            stringResource(R.string.assistant_txn_empty_period, contextLabel)
-          } else {
-            stringResource(R.string.assistant_txn_empty)
-          }
-        Text(
-          emptyText,
-          style = MaterialTheme.typography.bodyMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-      } else {
-        primaryItems.forEach { item -> TransactionRow(item) }
-      }
-      if (referenceItems.isNotEmpty()) {
-        Text(
-          stringResource(R.string.assistant_txn_reference_header),
-          style = MaterialTheme.typography.labelLarge,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-          modifier = Modifier.padding(top = 4.dp),
-        )
-        referenceItems.forEach { item -> TransactionRow(item) }
-      }
-    }
+    TransactionListContent(
+      scenarioCode = scenarioCode,
+      statusCode = statusCode,
+      count = count,
+      inflow = inflow,
+      outflow = outflow,
+      periodLabel = periodLabel,
+      queryLabel = queryLabel,
+      allItems = allItems,
+      modifier = modifier,
+    )
   }
 
-  @Composable
-  private fun Header(
-    scenarioCode: String,
-    statusCode: String,
-    periodLabel: String,
-    queryLabel: String,
-  ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-      Column(modifier = Modifier.weight(1f)) {
-        Text(
-          stringResource(scenarioTitle(scenarioCode)),
-          style = MaterialTheme.typography.titleMedium,
-        )
-        val subtitle = listOf(periodLabel, queryLabel).filter { it.isNotBlank() }.joinToString(" · ")
-        if (subtitle.isNotEmpty()) {
-          Text(
-            subtitle,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-          )
-        }
-      }
-      when (statusCode) {
-        VerificationStatus.CONFIRMED.name -> {
-          val tone =
-            if (scenarioCode == TransactionScenario.ANOMALIES.name) "warning" else "success"
-          val (bg, fg) = Badge.toneColors(tone)
-          XelaBadge(stringResource(R.string.assistant_txn_status_confirmed), bg, fg)
-        }
-        VerificationStatus.NOT_DETECTED.name -> {
-          val tone =
-            if (scenarioCode == TransactionScenario.ANOMALIES.name) "success" else "warning"
-          val (bg, fg) = Badge.toneColors(tone)
-          XelaBadge(stringResource(R.string.assistant_txn_status_not_detected), bg, fg)
-        }
-      }
-    }
-  }
-
-  @Composable
-  private fun VerificationBanner(scenarioCode: String, statusCode: String) {
-    val bannerRes =
-      when (scenarioCode) {
-        TransactionScenario.SALARY_CHECK.name ->
-          if (statusCode == VerificationStatus.CONFIRMED.name) {
-            R.string.assistant_txn_banner_salary_confirmed
-          } else {
-            R.string.assistant_txn_banner_salary_missing
-          }
-        TransactionScenario.RENT_CHECK.name ->
-          if (statusCode == VerificationStatus.CONFIRMED.name) {
-            R.string.assistant_txn_banner_rent_confirmed
-          } else {
-            R.string.assistant_txn_banner_rent_missing
-          }
-        TransactionScenario.ANOMALIES.name ->
-          if (statusCode == VerificationStatus.CONFIRMED.name) {
-            R.string.assistant_txn_banner_anomalies_confirmed
-          } else {
-            R.string.assistant_txn_banner_anomalies_none
-          }
-        else -> null
-      }
-    if (bannerRes != null) {
-      Text(
-        stringResource(bannerRes),
-        style = MaterialTheme.typography.bodyMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-    }
-  }
-
-  @Composable
-  private fun TotalsRow(inflow: String, outflow: String) {
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-      if (inflow.isNotBlank() && inflow != "0.00") {
-        Text(
-          stringResource(R.string.assistant_txn_summary_inflow, inflow),
-          style = MaterialTheme.typography.labelMedium,
-          color = MaterialTheme.colorScheme.primary,
-        )
-      }
-      if (outflow.isNotBlank() && outflow != "0.00") {
-        Text(
-          stringResource(R.string.assistant_txn_summary_outflow, outflow),
-          style = MaterialTheme.typography.labelMedium,
-          color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-      }
-    }
-    XelaDivider(color = MaterialTheme.colorScheme.outlineVariant)
-  }
-
-  @Composable
-  private fun TransactionRow(item: Item) {
-    val isCredit = item.directionCode == TransactionDirection.CREDIT.name
-    val sign = if (isCredit) "+" else "-"
-    Column(
-      modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-      verticalArrangement = Arrangement.spacedBy(2.dp),
-    ) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-          item.merchant,
-          style = MaterialTheme.typography.bodyLarge,
-          modifier = Modifier.weight(1f),
-        )
-        if (item.badgeCode.isNotBlank()) {
-          val badgeTone =
-            if (
-              item.badgeCode == InsightBadge.DUPLICATE.name ||
-                item.badgeCode == InsightBadge.LARGE_CHARGE.name
-            ) {
-              "warning"
-            } else {
-              "info"
-            }
-          val (bg, fg) = Badge.toneColors(badgeTone)
-          XelaBadge(
-            stringResource(badgeLabel(item.badgeCode)),
-            bg,
-            fg,
-          )
-        }
-        Text(
-          "$sign$${item.amount} ${item.currency}",
-          style = MaterialTheme.typography.bodyLarge,
-          modifier = Modifier.padding(start = 8.dp),
-        )
-      }
-      Text(
-        "${item.date} · ${item.accountName} · ${stringResource(categoryLabel(item.categoryCode))}",
-        style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-      Text(
-        item.descriptor,
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-      )
-      XelaDivider(color = MaterialTheme.colorScheme.outlineVariant)
-    }
-  }
-
-  private fun scenarioTitle(code: String) =
+  internal fun scenarioTitle(code: String) =
     when (code) {
       TransactionScenario.SALARY_CHECK.name -> R.string.assistant_txn_title_salary_check
       TransactionScenario.RENT_CHECK.name -> R.string.assistant_txn_title_rent_check
@@ -293,7 +130,7 @@ object TransactionList : A2uiComponent {
       else -> R.string.assistant_txn_title_date_range
     }
 
-  private fun categoryLabel(code: String) =
+  internal fun categoryLabel(code: String) =
     when (code) {
       TransactionCategory.INCOME.name -> R.string.assistant_txn_cat_income
       TransactionCategory.HOUSING.name -> R.string.assistant_txn_cat_housing
@@ -307,7 +144,7 @@ object TransactionList : A2uiComponent {
       else -> R.string.assistant_txn_cat_transfer
     }
 
-  private fun badgeLabel(code: String) =
+  internal fun badgeLabel(code: String) =
     when (code) {
       InsightBadge.SALARY.name -> R.string.assistant_txn_badge_salary
       InsightBadge.RENT.name -> R.string.assistant_txn_badge_rent
@@ -383,4 +220,315 @@ object TransactionList : A2uiComponent {
         }
       },
     )
+}
+
+@Composable
+internal fun TransactionListContent(
+  scenarioCode: String,
+  statusCode: String,
+  count: Int,
+  inflow: String,
+  outflow: String,
+  periodLabel: String,
+  queryLabel: String,
+  allItems: List<TransactionList.Item>,
+  modifier: Modifier = Modifier,
+) {
+  val colors = ScottieTheme.colors
+  val primaryItems = allItems.filter { !it.isReference }
+  val referenceItems = allItems.filter { it.isReference }
+
+  Column(
+    modifier = modifier.fillMaxWidth().padding(vertical = 4.dp),
+    verticalArrangement = Arrangement.spacedBy(10.dp),
+  ) {
+    Header(scenarioCode, statusCode, periodLabel, queryLabel)
+    VerificationBanner(scenarioCode, statusCode)
+    if (count > 0) {
+      TotalsRow(inflow, outflow)
+    }
+    if (primaryItems.isEmpty()) {
+      val contextLabel = queryLabel.ifEmpty { periodLabel }
+      val emptyText =
+        if (contextLabel.isNotEmpty()) {
+          stringResource(R.string.assistant_txn_empty_period, contextLabel)
+        } else {
+          stringResource(R.string.assistant_txn_empty)
+        }
+      Text(
+        text = emptyText,
+        style = MaterialTheme.typography.bodyMedium,
+        color = colors.textSecondary,
+      )
+    } else {
+      Surface(
+        color = colors.surfaceCanvas,
+        shape = RoundedCornerShape(14.dp),
+        border = BorderStroke(1.dp, colors.borderSubtle),
+      ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp)) {
+          primaryItems.forEachIndexed { index, item ->
+            TransactionRow(
+              item = item,
+              showDivider = index < primaryItems.lastIndex,
+            )
+          }
+        }
+      }
+    }
+    if (referenceItems.isNotEmpty()) {
+      Text(
+        text = stringResource(R.string.assistant_txn_reference_header),
+        style = MaterialTheme.typography.labelLarge,
+        color = colors.textSecondary,
+        modifier = Modifier.padding(top = 4.dp),
+      )
+      Surface(
+        color = colors.surfaceCanvas,
+        shape = RoundedCornerShape(14.dp),
+        border = BorderStroke(1.dp, colors.borderSubtle),
+      ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp)) {
+          referenceItems.forEachIndexed { index, item ->
+            TransactionRow(
+              item = item,
+              showDivider = index < referenceItems.lastIndex,
+            )
+          }
+        }
+      }
+    }
+  }
+}
+
+@Composable
+private fun Header(
+  scenarioCode: String,
+  statusCode: String,
+  periodLabel: String,
+  queryLabel: String,
+) {
+  val colors = ScottieTheme.colors
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    Column(modifier = Modifier.weight(1f)) {
+      Text(
+        text = stringResource(TransactionList.scenarioTitle(scenarioCode)),
+        style = MaterialTheme.typography.titleMedium,
+        color = colors.textPrimary,
+      )
+      val subtitle = listOf(periodLabel, queryLabel).filter { it.isNotBlank() }.joinToString(" · ")
+      if (subtitle.isNotEmpty()) {
+        Text(
+          text = subtitle,
+          style = MaterialTheme.typography.bodySmall,
+          color = colors.textSecondary,
+        )
+      }
+    }
+    when (statusCode) {
+      VerificationStatus.CONFIRMED.name -> {
+        val tone =
+          if (scenarioCode == TransactionScenario.ANOMALIES.name) {
+            ScottieBadgeTone.Warning
+          } else {
+            ScottieBadgeTone.Success
+          }
+        ScottieBadge(
+          text = stringResource(R.string.assistant_txn_status_confirmed),
+          tone = tone,
+        )
+      }
+      VerificationStatus.NOT_DETECTED.name -> {
+        val tone =
+          if (scenarioCode == TransactionScenario.ANOMALIES.name) {
+            ScottieBadgeTone.Success
+          } else {
+            ScottieBadgeTone.Warning
+          }
+        ScottieBadge(
+          text = stringResource(R.string.assistant_txn_status_not_detected),
+          tone = tone,
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun VerificationBanner(scenarioCode: String, statusCode: String) {
+  val colors = ScottieTheme.colors
+  val bannerRes =
+    when (scenarioCode) {
+      TransactionScenario.SALARY_CHECK.name ->
+        if (statusCode == VerificationStatus.CONFIRMED.name) {
+          R.string.assistant_txn_banner_salary_confirmed
+        } else {
+          R.string.assistant_txn_banner_salary_missing
+        }
+      TransactionScenario.RENT_CHECK.name ->
+        if (statusCode == VerificationStatus.CONFIRMED.name) {
+          R.string.assistant_txn_banner_rent_confirmed
+        } else {
+          R.string.assistant_txn_banner_rent_missing
+        }
+      TransactionScenario.ANOMALIES.name ->
+        if (statusCode == VerificationStatus.CONFIRMED.name) {
+          R.string.assistant_txn_banner_anomalies_confirmed
+        } else {
+          R.string.assistant_txn_banner_anomalies_none
+        }
+      else -> null
+    }
+  if (bannerRes != null) {
+    Surface(
+      color = colors.surfaceCanvas,
+      shape = RoundedCornerShape(10.dp),
+      border = BorderStroke(1.dp, colors.borderSubtle),
+    ) {
+      Text(
+        text = stringResource(bannerRes),
+        style = MaterialTheme.typography.bodyMedium,
+        color = colors.textSecondary,
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp),
+      )
+    }
+  }
+}
+
+@Composable
+private fun TotalsRow(inflow: String, outflow: String) {
+  val colors = ScottieTheme.colors
+  Row(
+    modifier = Modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    if (inflow.isNotBlank() && inflow != "0.00") {
+      Surface(
+        color = colors.statusSuccessSubtle,
+        shape = RoundedCornerShape(8.dp),
+      ) {
+        Text(
+          text = stringResource(R.string.assistant_txn_summary_inflow, inflow),
+          style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
+          color = colors.statusSuccess,
+          modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+        )
+      }
+    }
+    if (outflow.isNotBlank() && outflow != "0.00") {
+      Surface(
+        color = colors.surfaceCanvas,
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, colors.borderSubtle),
+      ) {
+        Text(
+          text = stringResource(R.string.assistant_txn_summary_outflow, outflow),
+          style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+          color = colors.textSecondary,
+          modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun TransactionRow(item: TransactionList.Item, showDivider: Boolean = true) {
+  val colors = ScottieTheme.colors
+  val isCredit = item.directionCode == TransactionDirection.CREDIT.name
+  val sign = if (isCredit) "+" else "-"
+  Column(
+    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+      Text(
+        text = item.merchant,
+        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
+        color = colors.textPrimary,
+        modifier = Modifier.weight(1f),
+      )
+      if (item.badgeCode.isNotBlank()) {
+        val badgeTone =
+          if (
+            item.badgeCode == InsightBadge.DUPLICATE.name ||
+              item.badgeCode == InsightBadge.LARGE_CHARGE.name
+          ) {
+            ScottieBadgeTone.Warning
+          } else {
+            ScottieBadgeTone.Brand
+          }
+        ScottieBadge(
+          text = stringResource(TransactionList.badgeLabel(item.badgeCode)),
+          tone = badgeTone,
+        )
+      }
+      Text(
+        text = "$sign$${item.amount} ${item.currency}",
+        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+        color = if (isCredit) colors.statusSuccess else colors.textPrimary,
+        modifier = Modifier.padding(start = 8.dp),
+      )
+    }
+    Text(
+      text =
+        "${item.date} · ${item.accountName} · " +
+          stringResource(TransactionList.categoryLabel(item.categoryCode)),
+      style = MaterialTheme.typography.bodySmall,
+      color = colors.textSecondary,
+    )
+    if (item.descriptor.isNotBlank()) {
+      Text(
+        text = item.descriptor,
+        style = ScottieCodeSmall,
+        color = colors.textTertiary,
+      )
+    }
+    if (showDivider) {
+      HorizontalDivider(color = colors.borderSubtle, modifier = Modifier.padding(top = 6.dp))
+    }
+  }
+}
+
+@Preview(name = "TransactionList Light", showBackground = true, widthDp = 360)
+@Preview(
+  name = "TransactionList Dark",
+  showBackground = true,
+  widthDp = 360,
+  uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+private fun TransactionListPreview() {
+  ScottieTheme {
+    Column(modifier = Modifier.background(ScottieTheme.colors.surfaceCard).padding(16.dp)) {
+      TransactionListContent(
+        scenarioCode = TransactionScenario.SALARY_CHECK.name,
+        statusCode = VerificationStatus.CONFIRMED.name,
+        count = 1,
+        inflow = "3,280.00",
+        outflow = "0.00",
+        periodLabel = "Oct 2026",
+        queryLabel = "",
+        allItems =
+          listOf(
+            TransactionList.Item(
+              id = "tx-1",
+              date = "2026-10-15",
+              merchant = "Acme Corp Payroll",
+              descriptor = "PAYROLL DEPOSIT ACME",
+              categoryCode = TransactionCategory.INCOME.name,
+              accountName = "Chequing",
+              directionCode = TransactionDirection.CREDIT.name,
+              amount = "3,280.00",
+              currency = "CAD",
+              badgeCode = InsightBadge.SALARY.name,
+              isReference = false,
+            )
+          ),
+      )
+    }
+  }
 }

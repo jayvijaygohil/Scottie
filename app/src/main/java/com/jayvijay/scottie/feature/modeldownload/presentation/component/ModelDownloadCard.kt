@@ -4,14 +4,22 @@ import android.content.res.Configuration
 import android.text.format.Formatter
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -23,21 +31,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jayvijay.scottie.R
+import com.jayvijay.scottie.core.ui.ScottieCodeSmall
 import com.jayvijay.scottie.core.ui.ScottieTheme
-import com.jayvijay.scottie.core.ui.xelauikit.XelaBadge
-import com.jayvijay.scottie.core.ui.xelauikit.XelaButton
-import com.jayvijay.scottie.core.ui.xelauikit.models.button.XelaButtonState
-import com.jayvijay.scottie.core.ui.xelauikit.models.button.XelaButtonType
-import com.jayvijay.scottie.core.ui.xelauikit.models.xelaButtonMedium
+import com.jayvijay.scottie.core.ui.components.ScottieBadge
+import com.jayvijay.scottie.core.ui.components.ScottieBadgeTone
+import com.jayvijay.scottie.core.ui.components.ScottieButton
+import com.jayvijay.scottie.core.ui.components.ScottieButtonStyle
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadFailure
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadPhase
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadProgress
@@ -63,106 +73,146 @@ fun ModelDownloadUiItem(
   /** Shown for downloaded text models; null hides the button. */
   onUse: (() -> Unit)? = null,
 ) {
+  val colors = ScottieTheme.colors
   val downloadLabel = stringResource(R.string.model_download_download)
   val density = LocalDensity.current
   val textMeasurer = rememberTextMeasurer()
+  val labelStyle = MaterialTheme.typography.labelLarge
   val downloadTextLayout =
-    remember(downloadLabel, density) {
-      textMeasurer.measure(text = downloadLabel, style = xelaButtonMedium)
+    remember(downloadLabel, density, labelStyle) {
+      textMeasurer.measure(text = downloadLabel, style = labelStyle)
     }
-  val buttonWidth = with(density) { downloadTextLayout.size.width.toDp() } + 32.dp
+  val buttonWidth = with(density) { downloadTextLayout.size.width.toDp() } + 36.dp
+  val isDownloading = status is ModelDownloadStatus.Downloading
 
   Surface(
     modifier = modifier.fillMaxWidth(),
     shape = RoundedCornerShape(16.dp),
-    color = MaterialTheme.colorScheme.surface,
+    color = colors.surfaceCard,
+    border =
+      BorderStroke(
+        width = 1.dp,
+        color =
+          if (isDownloading) {
+            MaterialTheme.colorScheme.primary.copy(alpha = ACTIVE_BORDER_ALPHA)
+          } else {
+            colors.borderSubtle
+          },
+      ),
   ) {
-    Column(
-      modifier =
-        Modifier.animateContentSize(MotionScheme.expressive().fastSpatialSpec()).padding(16.dp),
-      verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-      Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Row(
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
-          verticalAlignment = Alignment.Top,
-        ) {
-          Text(
-            text = name,
-            style = MaterialTheme.typography.titleMedium,
-            lineHeight = 24.sp,
-            modifier = Modifier.weight(1f),
-          )
-          SupportBadge(supported)
-        }
-        if (description != null) {
-          Text(
-            text = description,
-            style = MaterialTheme.typography.bodyMedium,
-            lineHeight = 16.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-          )
-        }
-      }
-
-      Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(
-          text = statusText(status, downloadBytes),
-          style = MaterialTheme.typography.bodyMedium,
-          lineHeight = 16.sp,
-          color =
-            if (status is ModelDownloadStatus.Failed) {
-              MaterialTheme.colorScheme.error
-            } else {
-              MaterialTheme.colorScheme.onSurfaceVariant
-            },
+    Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+      if (isDownloading) {
+        Box(
+          modifier =
+            Modifier.width(3.dp).fillMaxHeight().background(MaterialTheme.colorScheme.primary)
         )
-        if (status is ModelDownloadStatus.Downloading) {
-          ModelDownloadProgress(fraction = status.progress.fraction)
-        }
       }
-
-      FlowRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+      Column(
+        modifier =
+          Modifier.weight(1f)
+            .animateContentSize(MotionScheme.expressive().fastSpatialSpec())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
       ) {
-        val buttonModifier = Modifier.defaultMinSize(minWidth = buttonWidth)
-        val start: @Composable (Int) -> Unit = { label ->
-          ModelDownloadButton(
-            text = stringResource(label),
-            onClick = onDownload,
-            filled = true,
-            enabled = canStart,
-            modifier = buttonModifier,
-          )
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+          Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+          ) {
+            Text(
+              text = name,
+              style = MaterialTheme.typography.titleMedium,
+              color = colors.textPrimary,
+              lineHeight = 22.sp,
+              modifier = Modifier.weight(1f),
+            )
+            SupportBadge(supported = supported)
+          }
+          if (description != null) {
+            Text(
+              text = description,
+              style = MaterialTheme.typography.bodyMedium,
+              lineHeight = 18.sp,
+              color = colors.textSecondary,
+              maxLines = 2,
+              overflow = TextOverflow.Ellipsis,
+            )
+          }
         }
-        when (status) {
-          ModelDownloadStatus.Available -> start(R.string.model_download_download)
-          is ModelDownloadStatus.Paused -> start(R.string.model_download_resume)
-          is ModelDownloadStatus.Failed -> start(R.string.model_download_retry)
-          is ModelDownloadStatus.Downloading ->
+
+        Surface(
+          color = colors.surfaceCanvas,
+          shape = RoundedCornerShape(10.dp),
+          border = BorderStroke(1.dp, colors.borderSubtle),
+        ) {
+          Column(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+          ) {
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+              StatusDot(status = status)
+              Text(
+                text = statusText(status, downloadBytes),
+                style = ScottieCodeSmall.copy(fontWeight = FontWeight.Medium),
+                color =
+                  when (status) {
+                    is ModelDownloadStatus.Failed -> MaterialTheme.colorScheme.error
+                    is ModelDownloadStatus.Downloading -> MaterialTheme.colorScheme.primary
+                    ModelDownloadStatus.Downloaded -> colors.statusSuccess
+                    else -> colors.textSecondary
+                  },
+              )
+            }
+            if (status is ModelDownloadStatus.Downloading) {
+              ModelDownloadProgress(fraction = status.progress.fraction)
+            }
+          }
+        }
+
+        FlowRow(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+          verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+          val buttonModifier = Modifier.defaultMinSize(minWidth = buttonWidth)
+          val start: @Composable (Int) -> Unit = { label ->
             ModelDownloadButton(
-              text = stringResource(R.string.model_download_pause),
-              onClick = onPause,
+              text = stringResource(label),
+              onClick = onDownload,
+              filled = true,
+              enabled = canStart,
               modifier = buttonModifier,
             )
-          ModelDownloadStatus.Downloaded -> {
-            if (onUse != null) {
+          }
+          when (status) {
+            ModelDownloadStatus.Available -> start(R.string.model_download_download)
+            is ModelDownloadStatus.Paused -> start(R.string.model_download_resume)
+            is ModelDownloadStatus.Failed -> start(R.string.model_download_retry)
+            is ModelDownloadStatus.Downloading ->
               ModelDownloadButton(
-                text = stringResource(R.string.assistant_use_model),
-                onClick = onUse,
-                filled = true,
+                text = stringResource(R.string.model_download_pause),
+                onClick = onPause,
+                modifier = buttonModifier,
+              )
+            ModelDownloadStatus.Downloaded -> {
+              if (onUse != null) {
+                ModelDownloadButton(
+                  text = stringResource(R.string.assistant_use_model),
+                  onClick = onUse,
+                  filled = true,
+                  modifier = buttonModifier,
+                )
+              }
+              ModelDownloadButton(
+                text = stringResource(R.string.model_download_delete),
+                onClick = onDelete,
+                destructive = true,
                 modifier = buttonModifier,
               )
             }
-            ModelDownloadButton(
-              text = stringResource(R.string.model_download_delete),
-              onClick = onDelete,
-              modifier = buttonModifier,
-            )
           }
         }
       }
@@ -171,18 +221,27 @@ fun ModelDownloadUiItem(
 }
 
 @Composable
+private fun StatusDot(status: ModelDownloadStatus) {
+  val colors = ScottieTheme.colors
+  val dotColor =
+    when (status) {
+      ModelDownloadStatus.Downloaded -> colors.statusSuccess
+      is ModelDownloadStatus.Downloading -> MaterialTheme.colorScheme.primary
+      is ModelDownloadStatus.Paused -> colors.interacGold
+      is ModelDownloadStatus.Failed -> MaterialTheme.colorScheme.error
+      ModelDownloadStatus.Available -> colors.textTertiary
+    }
+  Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(dotColor))
+}
+
+@Composable
 private fun SupportBadge(supported: Boolean) {
-  XelaBadge(
+  ScottieBadge(
     text =
       stringResource(
         if (supported) R.string.model_support_supported else R.string.model_support_unsupported
       ),
-    backgroundColor =
-      if (supported) MaterialTheme.colorScheme.primaryContainer
-      else MaterialTheme.colorScheme.errorContainer,
-    textColor =
-      if (supported) MaterialTheme.colorScheme.onPrimaryContainer
-      else MaterialTheme.colorScheme.onErrorContainer,
+    tone = if (supported) ScottieBadgeTone.Success else ScottieBadgeTone.Error,
   )
 }
 
@@ -244,29 +303,31 @@ private fun DownloadFailure.label(): Int =
   }
 
 private const val PERCENT = 100
+private const val ACTIVE_BORDER_ALPHA = 0.35f
 
 @Composable
 private fun ModelDownloadProgress(fraction: Float?) {
+  val colors = ScottieTheme.colors
   val animatedProgress by
     animateFloatAsState(
       targetValue = fraction ?: 0f,
       animationSpec = MotionScheme.expressive().fastEffectsSpec(),
       label = "Model download progress",
     )
-  val modifier = Modifier.fillMaxWidth().height(4.dp)
+  val modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp))
 
   if (fraction == null) {
     LinearProgressIndicator(
       modifier = modifier,
       color = MaterialTheme.colorScheme.primary,
-      trackColor = MaterialTheme.colorScheme.outlineVariant,
+      trackColor = colors.borderSubtle,
     )
   } else {
     LinearProgressIndicator(
       progress = { animatedProgress },
       modifier = modifier,
       color = MaterialTheme.colorScheme.primary,
-      trackColor = MaterialTheme.colorScheme.outlineVariant,
+      trackColor = colors.borderSubtle,
       gapSize = 0.dp,
       drawStopIndicator = {},
     )
@@ -279,19 +340,20 @@ internal fun ModelDownloadButton(
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   filled: Boolean = false,
+  destructive: Boolean = false,
   enabled: Boolean = true,
 ) {
-  XelaButton(
+  ScottieButton(
     text = text,
     onClick = onClick,
-    state = if (enabled) XelaButtonState.DEFAULT else XelaButtonState.DISABLED,
-    type = if (filled) XelaButtonType.PRIMARY else XelaButtonType.SECONDARY,
-    background =
-      if (filled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
-    foregroundColor =
-      if (filled) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
-    defaultBorderColor = MaterialTheme.colorScheme.outlineVariant,
     modifier = modifier,
+    enabled = enabled,
+    style =
+      when {
+        filled -> ScottieButtonStyle.Primary
+        destructive -> ScottieButtonStyle.SubtleDestructive
+        else -> ScottieButtonStyle.Secondary
+      },
   )
 }
 
@@ -330,9 +392,7 @@ private fun PreviewModelDownloadUiItemStates() {
           name = "Qwen3.5 2B",
           description =
             "Alibaba general-purpose chat model; strong quality for its size."
-              .takeIf {
-                index != 1
-              },
+              .takeIf { index != 1 },
           // The third row is downloaded on a device that cannot run it.
           supported = index != 2,
           downloadBytes = PREVIEW_TOTAL,
