@@ -1,5 +1,6 @@
 package com.jayvijay.scottie.feature.modeldownload.presentation.component
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,13 +10,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
+import com.jayvijay.scottie.core.ui.ScottieTheme
 import com.jayvijay.scottie.core.ui.components.ScottieAccordionHeader
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
+import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
 import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadAction
+import com.jayvijay.scottie.feature.modeldownload.presentation.ModelDownloadModel
 import com.jayvijay.scottie.feature.modeldownload.presentation.ModelSection
 import com.jayvijay.scottie.feature.modeldownload.presentation.OpenRouterSection
+import com.jayvijay.scottie.feature.modeldownload.presentation.RemoteModels
 
 /** Flattened so long sections stay lazy and rows keep their identity while toggling. */
 @Composable
@@ -32,8 +39,8 @@ fun ModelSections(
 
   LazyColumn(
     modifier = modifier,
-    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
+    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 24.dp),
+    verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
     item(key = "openrouter", contentType = "category") {
       ScottieAccordionHeader(
@@ -90,3 +97,54 @@ private fun ModelType.label(): Int =
     ModelType.TEXT -> R.string.model_type_text
     ModelType.SPEECH_RECOGNITION -> R.string.model_type_speech
   }
+
+private const val PREVIEW_BYTES = 1_610_612_736L
+
+@Preview(name = "ModelSections Light", showBackground = true, widthDp = 390)
+@Preview(
+  name = "ModelSections Dark",
+  showBackground = true,
+  widthDp = 390,
+  uiMode = Configuration.UI_MODE_NIGHT_YES,
+)
+@Composable
+private fun ModelSectionsPreview() {
+  ScottieTheme {
+    ModelSections(
+      sections =
+        listOf(
+          ModelSection(
+            type = ModelType.TEXT,
+            count = 1,
+            expanded = true,
+            models =
+              listOf(
+                ModelDownloadModel(
+                  id = "qwen3.5",
+                  name = "Qwen3.5 2B Instruct",
+                  description = "Alibaba general-purpose chat model; strong quality for its size.",
+                  type = ModelType.TEXT,
+                  downloadBytes = PREVIEW_BYTES,
+                  status = ModelDownloadStatus.Downloaded,
+                  supported = true,
+                  canStart = false,
+                )
+              ),
+          )
+        ),
+      openRouter =
+        OpenRouterSection(
+          baseUrl = OpenRouterConfig.DEFAULT_BASE_URL,
+          apiKey = "",
+          errors = emptySet(),
+          savedModelCount = 0,
+          confirmingDelete = false,
+          expanded = false,
+          list = RemoteModels.Hidden,
+          query = "",
+        ),
+      onEvent = {},
+      onDownload = {},
+    )
+  }
+}

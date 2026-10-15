@@ -32,7 +32,7 @@ Rules:
    - Spending at a merchant or category ("groceries", "Uber", "hydro", "dining") → MERCHANT_CATEGORY with searchQuery.
    - General transaction lists or date ranges ("transactions between X and Y", "last month", "last 7 days") → DATE_RANGE.
    Use YYYY-MM-DD for explicit dates in startDate/endDate, or relative tokens (today, this_week, this_month, last_month, last_7_days, last_30_days).
-7. You may call findContacts, getAccountBalances, or getTransactions to inspect data, but still return the JSON object. Never attempt to send or request money.
+7. Only call findContacts, getAccountBalances, or getTransactions when needed to check a mentioned contact, account, or transaction, and still return the JSON object. Never attempt to send or request money.
 8. Anything outside balances, sending, requesting, or transactions → intent OTHER with a one-sentence reply
    saying you can check balances, review transactions, send an Interac e-Transfer, or request money."""
 

@@ -36,8 +36,8 @@ import androidx.core.content.ContextCompat
 import com.jayvijay.scottie.R
 import com.jayvijay.scottie.core.ui.ScottieTheme
 import com.jayvijay.scottie.core.ui.components.ScottieSearchField
+import com.jayvijay.scottie.core.ui.components.ScottieToast
 import com.jayvijay.scottie.core.ui.components.ScottieToolbar
-import com.jayvijay.scottie.core.ui.xelauikit.XelaToast
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadFailure
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.DownloadProgress
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus
@@ -57,15 +57,15 @@ class ModelDownloadUi @Inject constructor() : Ui<ModelDownloadState> {
 
   @Composable
   override fun Content(state: ModelDownloadState, modifier: Modifier) {
+    val colors = ScottieTheme.colors
     val onDownload = rememberNotificationPermissionGate { id ->
       state.eventSink(ModelDownloadAction.Download(id))
     }
 
     Box(
-      modifier =
-        modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).safeDrawingPadding()
+      modifier = modifier.fillMaxSize().background(colors.surfaceCanvas).safeDrawingPadding()
     ) {
-      Column(modifier = Modifier.fillMaxSize().padding(top = 12.dp)) {
+      Column(modifier = Modifier.fillMaxSize()) {
         ScottieToolbar(
           title = stringResource(R.string.model_download_title),
           subtitle = stringResource(R.string.model_download_intro),
@@ -118,13 +118,10 @@ class ModelDownloadUi @Inject constructor() : Ui<ModelDownloadState> {
 
       state.error?.let { error ->
         Box(modifier = Modifier.align(Alignment.BottomCenter).padding(16.dp)) {
-          XelaToast(
-            title = errorMessage(error),
-            firstActionButtonText = stringResource(R.string.model_download_dismiss),
-            onFirstButtonAction = { state.eventSink(ModelDownloadAction.DismissError) },
-            background = MaterialTheme.colorScheme.surface,
-            titleColor = MaterialTheme.colorScheme.onSurface,
-            firstActionButtonColor = MaterialTheme.colorScheme.primary,
+          ScottieToast(
+            message = errorMessage(error),
+            actionLabel = stringResource(R.string.model_download_dismiss),
+            onAction = { state.eventSink(ModelDownloadAction.DismissError) },
           )
         }
       }
@@ -184,7 +181,7 @@ private fun Message(text: String, loading: Boolean = false, fill: Boolean = true
     Text(
       text = text,
       style = MaterialTheme.typography.bodyLarge,
-      color = MaterialTheme.colorScheme.onSurfaceVariant,
+      color = ScottieTheme.colors.textSecondary,
       textAlign = TextAlign.Center,
     )
   }

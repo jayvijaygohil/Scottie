@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -19,8 +18,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -30,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
 import com.jayvijay.scottie.core.ui.ScottieTheme
 
-/** Single-line search input; the caller owns [value]. */
+/** Single-line search input styled with Stitch Autonomous Banking Experience tokens. */
 @Composable
 fun ScottieSearchField(
   value: String,
@@ -40,42 +44,49 @@ fun ScottieSearchField(
   modifier: Modifier = Modifier,
 ) {
   val keyboard = LocalSoftwareKeyboardController.current
-  val shape = RoundedCornerShape(12.dp)
+  var isFocused by remember { mutableStateOf(false) }
+  val shape = MaterialTheme.shapes.medium
+  val borderColor =
+    if (isFocused) MaterialTheme.colorScheme.primary else ScottieTheme.colors.borderSubtle
+  val borderWidth = if (isFocused) 1.5.dp else 1.dp
   val textStyle =
-    MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface)
+    MaterialTheme.typography.bodyLarge.copy(color = ScottieTheme.colors.textPrimary)
 
   Surface(
-    modifier =
-      modifier.fillMaxWidth().border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape),
+    modifier = modifier.fillMaxWidth().border(borderWidth, borderColor, shape),
     shape = shape,
-    color = MaterialTheme.colorScheme.surface,
+    color = ScottieTheme.colors.surfaceCard,
+    shadowElevation = if (isFocused) 2.dp else 0.dp,
   ) {
     BasicTextField(
       value = value,
       onValueChange = onValueChange,
       singleLine = true,
+      modifier = Modifier.onFocusChanged { isFocused = it.isFocused },
       textStyle = textStyle,
       cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
       keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
       keyboardActions = KeyboardActions(onSearch = { keyboard?.hide() }),
       decorationBox = { field ->
         Row(
-          modifier = Modifier.heightIn(min = 48.dp).padding(start = 12.dp),
+          modifier = Modifier.heightIn(min = 48.dp).padding(start = 14.dp),
           verticalAlignment = Alignment.CenterVertically,
-          horizontalArrangement = Arrangement.spacedBy(8.dp),
+          horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
           Icon(
             painter = painterResource(R.drawable.ic_search),
             contentDescription = null,
             modifier = Modifier.size(18.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            tint =
+              if (isFocused) MaterialTheme.colorScheme.primary
+              else ScottieTheme.colors.textTertiary,
           )
           Box(modifier = Modifier.weight(1f)) {
             if (value.isEmpty()) {
               Text(
                 text = placeholder,
                 style = textStyle,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = ScottieTheme.colors.textTertiary,
               )
             }
             field()
@@ -86,11 +97,11 @@ fun ScottieSearchField(
                 painter = painterResource(R.drawable.ic_close),
                 contentDescription = clearLabel,
                 modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = ScottieTheme.colors.textSecondary,
               )
             }
           } else {
-            Box(modifier = Modifier.size(12.dp))
+            Box(modifier = Modifier.size(14.dp))
           }
         }
       },
