@@ -65,4 +65,3 @@ data class AssistantIntent(
     val FALLBACK = AssistantIntent(Intent.OTHER)
   }
 }
-

@@ -13,15 +13,11 @@ import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.IntentE
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InteracAssistantAgent
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.ModelResolver
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.ResolvedModel
-import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import com.jayvijay.scottie.feature.interacbanking.domain.repository.TextModelSource
 import com.jayvijay.scottie.feature.interacbanking.presentation.ModelSettingsDestination
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.A2uiBridgeFactory
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.ProcessorA2uiBridge
 import com.jayvijay.scottie.feature.interacbanking.presentation.a2ui.interacCatalog
-import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelCatalog
-import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelDownloadStatus
-import com.jayvijay.scottie.feature.modeldownload.domain.entities.ModelType
 import com.jayvijay.scottie.feature.modeldownload.domain.entities.OpenRouterConfig
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.ModelDownloadRepository
 import com.jayvijay.scottie.feature.modeldownload.domain.repository.OpenRouterConfigRepository
@@ -34,7 +30,6 @@ import dagger.hilt.components.SingletonComponent
 import java.io.IOException
 import javax.inject.Singleton
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -71,29 +66,9 @@ object InteracModule {
 
   /** The only place both features meet: the chat reads model state through its own contract. */
   @Provides
-  fun textModelSource(
-    repository: ModelDownloadRepository,
-    openRouter: OpenRouterConfigRepository,
-  ): TextModelSource =
+  fun textModelSource(repository: ModelDownloadRepository): TextModelSource =
     object : TextModelSource {
-      override val models: Flow<List<TextModelOption>> =
-        combine(repository.catalog, openRouter.config) { catalog, config ->
-          val local =
-            (catalog as? ModelCatalog.Ready)
-              ?.entries
-              ?.filter {
-                it.model.type == ModelType.TEXT && it.status == ModelDownloadStatus.Downloaded
-              }
-              ?.map { TextModelOption(it.model.id, it.model.name) }
-              .orEmpty()
-          local +
-            config?.models.orEmpty().map {
-              TextModelOption(OpenRouterConfig.remoteId(it), it, remote = true)
-            }
-        }
       override val active: Flow<String?> = repository.activeTextModel
-
-      override fun select(id: String) = repository.selectTextModel(id)
     }
 
   @Provides

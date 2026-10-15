@@ -50,9 +50,7 @@ fun ScottieToolbar(
   /** Optional search input shown below the title, e.g. [ScottieSearchField]. */
   search: (@Composable () -> Unit)? = null,
 ) {
-  Column(
-    modifier = modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background),
-  ) {
+  Column(modifier = modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)) {
     TopAppBar(
       title = {
         if (titleContent != null) {
@@ -91,7 +89,7 @@ fun ScottieToolbar(
               ) {
                 Box(
                   modifier =
-                    Modifier.size(6.dp).background(ScottieTheme.colors.statusSuccess, CircleShape),
+                    Modifier.size(6.dp).background(ScottieTheme.colors.statusSuccess, CircleShape)
                 )
                 Text(
                   text = "SANDBOX READY",

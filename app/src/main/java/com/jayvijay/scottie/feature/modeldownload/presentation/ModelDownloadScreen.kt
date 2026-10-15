@@ -20,8 +20,22 @@ data class ModelDownloadState(
   /** Shown as a toast until [ModelDownloadAction.DismissError]. */
   val error: ModelDownloadError?,
   val openRouter: OpenRouterSection,
+  /** Downloaded text models in catalog order, then configured remote models. */
+  val models: List<TextModelOption> = emptyList(),
+  val activeModelId: String? = null,
   val eventSink: (ModelDownloadAction) -> Unit,
 ) : CircuitUiState
+
+/**
+ * A selectable text model; [id] is passed to inference: a downloaded `.litertlm` file name, or a
+ * prefixed OpenRouter id.
+ */
+data class TextModelOption(
+  val id: String,
+  val name: String,
+  /** True for an OpenRouter model; [name] is then the raw model id. */
+  val remote: Boolean = false,
+)
 
 sealed interface ModelDownloadContent {
   data object Loading : ModelDownloadContent
@@ -106,6 +120,9 @@ sealed interface ModelDownloadAction : CircuitUiEvent {
 
   /** Sections start collapsed; ignored while searching, when matching sections show expanded. */
   data class ToggleCategory(val type: ModelType) : ModelDownloadAction
+
+  /** Selects the active text model in-place without leaving Settings. */
+  data class SelectModel(val modelId: String) : ModelDownloadAction
 
   /** Opens the screen that runs a downloaded text model. */
   data class UseModel(val modelId: String) : ModelDownloadAction

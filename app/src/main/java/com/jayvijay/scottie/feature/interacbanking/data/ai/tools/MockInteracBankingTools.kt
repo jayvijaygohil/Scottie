@@ -231,7 +231,17 @@ class MockInteracBankingTools(private val clock: Clock = Clock.systemDefaultZone
       amount: Double,
     ): Transaction {
       val accName = accounts.first { it.accountId == accId }.name
-      return Transaction(id, accId, accName, date, descriptor, merchant, category, direction, amount)
+      return Transaction(
+        id,
+        accId,
+        accName,
+        date,
+        descriptor,
+        merchant,
+        category,
+        direction,
+        amount,
+      )
     }
 
     return listOf(
@@ -579,4 +589,3 @@ class MockInteracBankingTools(private val clock: Clock = Clock.systemDefaultZone
     const val ID_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
   }
 }
-

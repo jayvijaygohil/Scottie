@@ -35,9 +35,7 @@ import com.jayvijay.scottie.core.ui.ScottieTheme
 
 private const val CHEVRON_EXPANDED_DEGREES = 180f
 
-/**
- * Header row of a collapsible section styled with Stitch card tokens and count badge.
- */
+/** Header row of a collapsible section styled with Stitch card tokens and count badge. */
 @Composable
 fun ScottieAccordionHeader(
   title: String,
@@ -97,15 +95,13 @@ fun ScottieAccordionHeader(
           text = countLabel,
           style = MaterialTheme.typography.labelSmall,
           color =
-            if (expanded) MaterialTheme.colorScheme.primary
-            else ScottieTheme.colors.textSecondary,
+            if (expanded) MaterialTheme.colorScheme.primary else ScottieTheme.colors.textSecondary,
         )
       }
       Surface(
         shape = MaterialTheme.shapes.small,
         color =
-          if (expanded) ScottieTheme.colors.scotiaRedSubtle
-          else ScottieTheme.colors.surfaceCanvas,
+          if (expanded) ScottieTheme.colors.scotiaRedSubtle else ScottieTheme.colors.surfaceCanvas,
         modifier = Modifier.size(32.dp),
       ) {
         Box(contentAlignment = Alignment.Center) {

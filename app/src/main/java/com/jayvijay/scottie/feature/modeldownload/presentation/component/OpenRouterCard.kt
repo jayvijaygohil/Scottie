@@ -216,7 +216,9 @@ private fun RemoteModelList(
           ) {
             Column(
               modifier =
-                Modifier.fillMaxWidth().padding(vertical = 4.dp).testTag(OpenRouterCardTags.MODEL_LIST)
+                Modifier.fillMaxWidth()
+                  .padding(vertical = 4.dp)
+                  .testTag(OpenRouterCardTags.MODEL_LIST)
             ) {
               list.visible.forEachIndexed { index, model ->
                 if (index > 0) {

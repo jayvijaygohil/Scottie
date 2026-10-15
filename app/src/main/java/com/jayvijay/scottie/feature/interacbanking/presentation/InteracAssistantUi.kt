@@ -3,11 +3,14 @@ package com.jayvijay.scottie.feature.interacbanking.presentation
 import android.content.pm.ApplicationInfo
 import android.content.res.Configuration
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -20,7 +23,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.SmartToy
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +41,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.jayvijay.scottie.R
@@ -44,10 +50,8 @@ import com.jayvijay.scottie.core.ui.ScottieCodeSmall
 import com.jayvijay.scottie.core.ui.ScottieTheme
 import com.jayvijay.scottie.core.ui.components.ScottieToolbar
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
-import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.Composer
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.EmptyState
-import com.jayvijay.scottie.feature.interacbanking.presentation.component.ModelSelector
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.ReplyCard
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.RevealText
 import com.jayvijay.scottie.feature.interacbanking.presentation.component.ThinkingDots
@@ -58,31 +62,60 @@ import com.slack.circuit.runtime.ui.Ui
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 
-const val TAG_SETTINGS = "chat_settings"
+const val TAG_LOGO = "chat_logo"
+const val TAG_CLEAR_CHAT = "chat_clear"
 
 @CircuitInject(InteracAssistantScreen::class, SingletonComponent::class)
 class InteracAssistantUi @Inject constructor() : Ui<InteracAssistantState> {
 
+  @OptIn(ExperimentalFoundationApi::class)
   @Composable
   override fun Content(state: InteracAssistantState, modifier: Modifier) {
     val colors = ScottieTheme.colors
+    val haptic = LocalHapticFeedback.current
+    val canClear = !state.busy && (state.turns.isNotEmpty() || state.input.isNotBlank())
     Column(
       modifier =
-        modifier
-          .fillMaxSize()
-          .background(colors.surfaceCanvas)
-          .safeDrawingPadding()
-          .imePadding()
+        modifier.fillMaxSize().background(colors.surfaceCanvas).safeDrawingPadding().imePadding()
     ) {
       ScottieToolbar(
-        title = stringResource(R.string.app_name),
+        title = stringResource(R.string.chat_header_logo),
         titleContent = {
-          ModelSelector(
-            models = state.models,
-            activeId = state.activeModelId,
-            enabled = !state.busy && state.models.isNotEmpty(),
-            onSelect = { state.eventSink(InteracAssistantAction.SelectModel(it)) },
-          )
+          Row(
+            modifier =
+              Modifier.combinedClickable(
+                  onClick = {},
+                  onLongClickLabel = stringResource(R.string.chat_settings),
+                  onLongClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    state.eventSink(InteracAssistantAction.OpenSettings)
+                  },
+                )
+                .testTag(TAG_LOGO),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+          ) {
+            Surface(
+              shape = MaterialTheme.shapes.small,
+              color = colors.scotiaRedDeep,
+              modifier = Modifier.size(32.dp),
+            ) {
+              Box(contentAlignment = Alignment.Center) {
+                Icon(
+                  imageVector = Icons.Rounded.SmartToy,
+                  contentDescription = null,
+                  tint = MaterialTheme.colorScheme.onPrimary,
+                  modifier = Modifier.size(18.dp),
+                )
+              }
+            }
+            Text(
+              text = stringResource(R.string.chat_header_logo),
+              modifier = Modifier.semantics { heading() },
+              style = MaterialTheme.typography.headlineSmall,
+              color = colors.textPrimary,
+            )
+          }
         },
         actions = {
           Surface(
@@ -91,13 +124,14 @@ class InteracAssistantUi @Inject constructor() : Ui<InteracAssistantState> {
             border = BorderStroke(1.dp, colors.borderSubtle),
           ) {
             IconButton(
-              onClick = { state.eventSink(InteracAssistantAction.OpenSettings) },
-              modifier = Modifier.size(36.dp).testTag(TAG_SETTINGS),
+              onClick = { state.eventSink(InteracAssistantAction.ClearChat) },
+              enabled = canClear,
+              modifier = Modifier.size(36.dp).testTag(TAG_CLEAR_CHAT),
             ) {
               Icon(
-                imageVector = Icons.Rounded.Tune,
-                contentDescription = stringResource(R.string.chat_settings),
-                tint = colors.textSecondary,
+                imageVector = Icons.Rounded.DeleteSweep,
+                contentDescription = stringResource(R.string.chat_clear),
+                tint = if (canClear) colors.textSecondary else colors.textTertiary,
                 modifier = Modifier.size(18.dp),
               )
             }
@@ -121,7 +155,6 @@ class InteracAssistantUi @Inject constructor() : Ui<InteracAssistantState> {
       } else {
         Turns(state, modifier = Modifier.weight(1f).fillMaxWidth())
       }
-      val haptic = LocalHapticFeedback.current
       Composer(
         value = state.input,
         enabled = !state.busy && state.input.isNotBlank(),
@@ -213,11 +246,6 @@ private fun previewState(
   activeModelId: String? = "gemma-4-E2B-it.litertlm",
 ) =
   InteracAssistantState(
-    models =
-      listOf(
-        TextModelOption("gemma-4-E2B-it.litertlm", "Gemma 4 E2B"),
-        TextModelOption("qwen.litertlm", "Qwen"),
-      ),
     activeModelId = activeModelId,
     turns = turns,
     input = "",

@@ -2,13 +2,10 @@ package com.jayvijay.scottie.feature.interacbanking.presentation
 
 import androidx.a2ui.model.processor.A2uiSurfaceModel
 import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.InferenceFailure
-import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import com.slack.circuit.runtime.CircuitUiEvent
 import com.slack.circuit.runtime.CircuitUiState
 
 data class InteracAssistantState(
-  /** Downloaded text models in catalog order, then configured remote models. */
-  val models: List<TextModelOption>,
   val activeModelId: String?,
   /** Oldest first. */
   val turns: List<AssistantTurn>,
@@ -57,8 +54,8 @@ sealed interface InteracAssistantAction : CircuitUiEvent {
 
   data object Send : InteracAssistantAction
 
-  /** Ignored while a reply is in progress. */
-  data class SelectModel(val id: String) : InteracAssistantAction
+  /** Clears conversation turns, active surfaces, and unsent input when not busy. */
+  data object ClearChat : InteracAssistantAction
 
   data object OpenSettings : InteracAssistantAction
 }

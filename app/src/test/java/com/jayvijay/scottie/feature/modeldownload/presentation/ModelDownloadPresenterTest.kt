@@ -252,8 +252,44 @@ class ModelDownloadPresenterTest {
     repository.catalog.value = ready(entry("a", ModelDownloadStatus.Downloaded))
     presenter.test {
       awaitItem().eventSink(ModelDownloadAction.UseModel("a"))
+      assertEquals("a", awaitItem().activeModelId)
       assertEquals(listOf("a"), repository.selections)
       navigator.awaitPop()
+    }
+  }
+
+  @Test
+  fun selectModelListsDownloadedLocalThenRemoteAndUpdatesActiveWithoutPopping() = runTest {
+    repository.catalog.value =
+      ready(
+        entry("a", ModelDownloadStatus.Downloaded),
+        entry("b", Available),
+        entry("stt", ModelDownloadStatus.Downloaded, type = SPEECH_RECOGNITION),
+        entry("c", ModelDownloadStatus.Downloaded),
+      )
+    repository.activeTextModel.value = "a"
+    saved("openai/gpt-4o", "qwen/qwen-max")
+    fetches("openai/gpt-4o", "qwen/qwen-max")
+    presenter.test {
+      val initial = awaitItem()
+      assertEquals(
+        listOf(
+          TextModelOption("a", "Model a"),
+          TextModelOption("c", "Model c"),
+          TextModelOption("openrouter:openai/gpt-4o", "openai/gpt-4o", remote = true),
+          TextModelOption("openrouter:qwen/qwen-max", "qwen/qwen-max", remote = true),
+        ),
+        initial.models,
+      )
+      assertEquals("a", initial.activeModelId)
+
+      initial.eventSink(ModelDownloadAction.SelectModel("openrouter:openai/gpt-4o"))
+      var state = awaitItem()
+      while (state.activeModelId != "openrouter:openai/gpt-4o") state = awaitItem()
+      assertEquals("openrouter:openai/gpt-4o", state.activeModelId)
+      assertEquals(listOf("openrouter:openai/gpt-4o"), repository.selections)
+      navigator.expectNoGoToEvents()
+      cancelAndIgnoreRemainingEvents()
     }
   }
 

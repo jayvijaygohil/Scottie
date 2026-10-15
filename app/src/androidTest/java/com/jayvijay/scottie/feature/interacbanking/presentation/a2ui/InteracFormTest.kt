@@ -284,4 +284,3 @@ class InteracFormTest {
       is JsonObject -> mapValues { (_, v) -> v.plain() }
     }
 }
-

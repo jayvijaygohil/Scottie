@@ -65,7 +65,6 @@ constructor(
     val bridge = rememberRetained { bridgeFactory.create() }
     val startedAt = rememberRetained { mutableMapOf<String, Long>() }
     val surfaces by bridge.surfaces.collectAsState()
-    val models by source.models.collectAsState(initial = emptyList())
     val active by source.active.collectAsState(initial = null)
     val scope = rememberCoroutineScope()
 
@@ -107,7 +106,6 @@ constructor(
     }
 
     return InteracAssistantState(
-      models = models,
       activeModelId = active,
       turns = turns,
       input = input,
@@ -117,7 +115,15 @@ constructor(
     ) { action ->
       when (action) {
         is InteracAssistantAction.InputChanged -> input = action.text
-        is InteracAssistantAction.SelectModel -> if (!busy) source.select(action.id)
+        InteracAssistantAction.ClearChat -> {
+          if (busy || (turns.isEmpty() && input.isBlank())) return@InteracAssistantState
+          (turns.map { it.surfaceId } + surfaces.map { it.id }).distinct().forEach {
+            runCatching { bridge.accept(InteracSurfaceTemplates.deleteSurface(it)) }
+          }
+          turns = emptyList()
+          input = ""
+          startedAt.clear()
+        }
         InteracAssistantAction.OpenSettings -> navigator.goTo(settings.screen())
         InteracAssistantAction.Send -> {
           val text = input.trim()

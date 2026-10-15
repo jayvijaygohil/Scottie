@@ -208,7 +208,10 @@ class TransactionInsightsTest {
         )
       )
 
-    assertEquals(listOf("groc2", "dup2", "dup1", "sub2", "groc1"), normal.items.map { it.transaction.transactionId })
+    assertEquals(
+      listOf("groc2", "dup2", "dup1", "sub2", "groc1"),
+      normal.items.map { it.transaction.transactionId },
+    )
     assertEquals(normal.items, inverted.items)
     assertEquals("2026-10-03..2026-10-09", inverted.periodLabel)
     assertEquals(248.99, normal.totalOutflow, 0.001)
@@ -226,7 +229,10 @@ class TransactionInsightsTest {
         )
       )
     assertEquals("2026-09-01..2026-09-30", lastMonth.periodLabel)
-    assertEquals(listOf("trf1", "s2", "sub1", "r2"), lastMonth.items.map { it.transaction.transactionId })
+    assertEquals(
+      listOf("trf1", "s2", "sub1", "r2"),
+      lastMonth.items.map { it.transaction.transactionId },
+    )
 
     val openEnded =
       eval(
@@ -237,7 +243,10 @@ class TransactionInsightsTest {
         )
       )
     assertEquals("2026-10-10..2026-10-14", openEnded.periodLabel)
-    assertEquals(listOf("ref1", "large1", "util1"), openEnded.items.map { it.transaction.transactionId })
+    assertEquals(
+      listOf("ref1", "large1", "util1"),
+      openEnded.items.map { it.transaction.transactionId },
+    )
   }
 
   @Test

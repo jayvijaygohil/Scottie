@@ -10,7 +10,6 @@ import com.jayvijay.scottie.feature.interacbanking.domain.agent.workflow.Inferen
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.DeliveryChannel
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.MoneyRequestResult
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.Recipient
-import com.jayvijay.scottie.feature.interacbanking.domain.entities.TextModelOption
 import com.jayvijay.scottie.feature.interacbanking.domain.entities.TransferResult
 import com.jayvijay.scottie.feature.interacbanking.domain.repository.TextModelSource
 import com.slack.circuit.runtime.screen.ParcelableScreen
@@ -42,7 +41,6 @@ class InteracAssistantPresenterTest {
   }
 
   private fun modelPresent() {
-    source.models.value = listOf(TextModelOption(MODEL, "M"), TextModelOption(OTHER, "O"))
     source.active.value = MODEL
   }
 
@@ -114,7 +112,6 @@ class InteracAssistantPresenterTest {
       modelPresent()
       val ready = awaitState { !it.missingModel }
       assertEquals(MODEL, ready.activeModelId)
-      assertEquals(listOf(MODEL, OTHER), ready.models.map { it.id })
       assertTrue(ready.turns.isEmpty())
       cancelAndIgnoreRemainingEvents()
     }
@@ -131,19 +128,44 @@ class InteracAssistantPresenterTest {
       val thinking = awaitState { it.busy && it.turns.singleOrNull()?.reply == TurnReply.Thinking }
       assertEquals("", thinking.input)
       thinking.eventSink(InteracAssistantAction.InputChanged("again"))
-      awaitState { it.input == "again" }.eventSink(InteracAssistantAction.Send)
-      thinking.eventSink(InteracAssistantAction.SelectModel(OTHER))
+      val withDraft = awaitState { it.input == "again" }
+      withDraft.eventSink(InteracAssistantAction.Send)
+      withDraft.eventSink(InteracAssistantAction.ClearChat)
       gate.complete(Unit)
       val done = awaitState { !it.busy && it.turns.singleOrNull()?.reply == TurnReply.Text("ok") }
       assertEquals(listOf(MODEL), extractor.modelIds)
       assertEquals(listOf("hello"), extractor.calls)
-      assertTrue(source.selected.isEmpty())
       assertEquals("again", done.input)
 
-      done.eventSink(InteracAssistantAction.SelectModel(OTHER))
-      assertEquals(listOf(OTHER), source.selected)
+      source.active.value = OTHER
       val switched = awaitState { it.activeModelId == OTHER }
       assertEquals(1, switched.turns.size)
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun clearChatResetsTurnsInputAndDeletesSurfacesWhenNotBusy() = runTest {
+    modelPresent()
+    presenter.test(timeout = 5.seconds) {
+      var s = awaitState { !it.missingModel }
+      // Ignored when turns and input are both empty.
+      s.eventSink(InteracAssistantAction.ClearChat)
+
+      s = send(s, "savings", balanceIntent("savings"))
+      bridge.showSurface("turn-1")
+      s = awaitState { it.surfaces.isNotEmpty() }
+      s.eventSink(InteracAssistantAction.InputChanged("draft text"))
+      s = awaitState { it.input == "draft text" }
+
+      s.eventSink(InteracAssistantAction.ClearChat)
+      val cleared = awaitState { it.turns.isEmpty() && it.input.isEmpty() }
+      assertEquals(listOf("turn-1"), bridge.surfaceIds("deleteSurface"))
+
+      // Subsequent turn starts fresh at turn-1.
+      val next = send(cleared, "hi", AssistantIntent(Intent.OTHER, reply = "fresh"))
+      assertEquals(1, next.turns.single().id)
+      assertEquals(TurnReply.Text("fresh"), next.turns.single().reply)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -481,7 +503,6 @@ class InteracAssistantPresenterTest {
 
   @Test
   fun remoteActiveModelIsPassedToInference() = runTest {
-    source.models.value = listOf(TextModelOption(REMOTE, "x/y", remote = true))
     source.active.value = REMOTE
     presenter.test(timeout = 5.seconds) {
       send(awaitState { !it.missingModel }, "hi", AssistantIntent(Intent.OTHER, reply = "ok"))
@@ -561,22 +582,14 @@ class InteracAssistantPresenterTest {
           searchQuery = "transfer",
         ),
       )
-      val itemIds =
-        bridge.rootData()["items"]!!.jsonArray.map { it.jsonObject.str("id") }
+      val itemIds = bridge.rootData()["items"]!!.jsonArray.map { it.jsonObject.str("id") }
       assertTrue(trf.referenceId in itemIds)
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   private class FakeTextModelSource : TextModelSource {
-    override val models = MutableStateFlow(emptyList<TextModelOption>())
     override val active = MutableStateFlow<String?>(null)
-    val selected = mutableListOf<String>()
-
-    override fun select(id: String) {
-      selected += id
-      active.value = id
-    }
   }
 
   /** Counts money-moving calls so tests can assert "exactly once". */
@@ -628,4 +641,3 @@ class InteracAssistantPresenterTest {
 private const val MODEL = "m.litertlm"
 private const val OTHER = "o.litertlm"
 private const val REMOTE = "openrouter:x/y"
-

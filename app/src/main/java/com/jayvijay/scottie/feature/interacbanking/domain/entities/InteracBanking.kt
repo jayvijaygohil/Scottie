@@ -116,4 +116,3 @@ data class Transaction(
   val amount: Double,
   val currency: String = "CAD",
 )
-

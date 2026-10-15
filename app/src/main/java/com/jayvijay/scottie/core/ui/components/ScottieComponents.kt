@@ -59,9 +59,7 @@ fun ScottieBadgeTone.colors(): Pair<Color, Color> {
   }
 }
 
-/**
- * Pill/tag badge styled according to the Stitch Autonomous Banking Experience specification.
- */
+/** Pill/tag badge styled according to the Stitch Autonomous Banking Experience specification. */
 @Composable
 fun ScottieBadge(
   text: String,
@@ -210,9 +208,7 @@ private fun ButtonContent(text: String, leadingIcon: ImageVector?) {
   )
 }
 
-/**
- * Structured inline banking alert banner for error, warning, or informational notices.
- */
+/** Structured inline banking alert banner for error, warning, or informational notices. */
 @Composable
 fun ScottieAlertBanner(
   title: String,
@@ -269,9 +265,7 @@ fun ScottieAlertBanner(
   }
 }
 
-/**
- * Floating charcoal toast bar inspired by the Stitch Model Hub notification banner.
- */
+/** Floating charcoal toast bar inspired by the Stitch Model Hub notification banner. */
 @Composable
 fun ScottieToast(
   message: String,
