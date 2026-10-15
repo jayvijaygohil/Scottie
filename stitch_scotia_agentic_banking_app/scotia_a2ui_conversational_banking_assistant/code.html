@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-container-highest": "#e4e2e2", "on-primary-container": "#ffffff", "primary-container": "#ec111a", "on-surface-variant": "#5e3f3b", "on-tertiary-fixed": "#002113", "status-success": "#00875A", "on-secondary-fixed-variant": "#474646", "border-subtle": "#E5E7EB", "on-primary-fixed-variant": "#930008", "surface-charcoal": "#1E1E1E", "text-tertiary": "#8C8C8C", "secondary-fixed-dim": "#c8c6c5", "on-tertiary": "#ffffff", "tertiary-fixed-dim": "#71dba6", "on-primary-fixed": "#410001", "primary-fixed": "#ffdad5", "surface-tint": "#c0000f", "scotia-red-deep": "#C70A12", "surface-bright": "#fbf9f8", "surface-container": "#efeded", "text-secondary": "#595959", "on-surface": "#1b1c1c", "text-primary": "#121212", "on-error": "#ffffff", "surface": "#fbf9f8", "scotia-red-subtle": "#FDE8E9", "on-tertiary-container": "#000703", "inverse-surface": "#303030", "secondary-container": "#e5e2e1", "status-success-subtle": "#E6F5F0", "tertiary": "#006c47", "tertiary-fixed": "#8df7c1", "surface-canvas": "#F4F5F7", "secondary-fixed": "#e5e2e1", "surface-dim": "#dbdad9", "glow-brand-red": "rgba(236, 17, 26, 0.15)", "surface-container-high": "#eae8e7", "surface-variant": "#e4e2e2", "surface-card": "#FFFFFF", "on-secondary-container": "#656464", "inverse-on-surface": "#f2f0f0", "background": "#fbf9f8", "on-tertiary-fixed-variant": "#005235", "on-error-container": "#93000a", "error-container": "#ffdad6", "on-secondary-fixed": "#1c1b1b", "surface-container-lowest": "#ffffff", "secondary": "#5f5e5e", "interac-gold": "#FFA800", "inverse-primary": "#ffb4aa", "outline-variant": "#e9bcb6", "tertiary-container": "#03885b", "on-secondary": "#ffffff", "error": "#ba1a1a", "on-background": "#1b1c1c", "primary": "#bf000f", "surface-container-low": "#f5f3f3", "interac-gold-subtle": "#FFF5E0", "outline": "#936e69", "on-primary": "#ffffff", "primary-fixed-dim": "#ffb4aa" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-sm": "0.5rem", "space-xs": "0.25rem", "space-md": "1rem", "space-lg": "1.5rem", "gutter": "1rem", "space-xl": "2rem", "margin": "1rem" }, "fontFamily": { "title-lg": ["Hanken Grotesk"], "label-mono": ["JetBrains Mono"], "headline-lg": ["Hanken Grotesk"], "body-lg": ["Hanken Grotesk"], "label-md": ["Hanken Grotesk"], "headline-md": ["Hanken Grotesk"], "code-sm": ["JetBrains Mono"], "headline-sm": ["Hanken Grotesk"], "body-md": ["Hanken Grotesk"], "title-md": ["Hanken Grotesk"], "headline-lg-mobile": ["Hanken Grotesk"] }, "fontSize": { "title-lg": ["16px", { "lineHeight": "22px", "fontWeight": "600" }], "label-mono": ["11px", { "lineHeight": "14px", "fontWeight": "500" }], "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "700" }], "body-lg": ["15px", { "lineHeight": "22px", "fontWeight": "400" }], "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }], "headline-md": ["22px", { "lineHeight": "28px", "fontWeight": "600" }], "code-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "headline-sm": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "body-md": ["13px", { "lineHeight": "18px", "fontWeight": "400" }], "title-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "headline-lg-mobile": ["26px", { "lineHeight": "34px", "fontWeight": "700" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-28 flex flex-col justify-between px-margin pt-safe"><div class="h-6 flex items-center justify-between text-on-surface select-none pt-space-xs"><span class="font-label-mono text-label-mono font-medium tracking-tight">9:41</span><div class="flex items-center gap-space-xs"><span class="material-symbols-outlined text-[16px]">signal_cellular_alt</span><span class="font-label-mono text-label-mono font-bold tracking-tight text-[10px]">5G</span><span class="material-symbols-outlined text-[16px]">wifi</span><span class="material-symbols-outlined text-[16px]">battery_full</span></div></div><div class="h-16 flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="Scotiabank A2UI Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpm3ax4tKUH-QdwRcmBZVS9gNR358m4I7X28aJPPMbJKRfRCJ510amT6cMyi9a6U58pnkbPzTt77fKndmvUavIOe0AnbpSf4P6bY9u96qiUCR3OSOVtgnTve46OHAXyUO8XgJKVWIgojMwx6pfmyP4y-lNMuAWdxn8Kj0HA7ZOT71b-NcfO62izmHdj3k7OvZeJG7vlGltZsKhOZOkI2FYJGxhtGaQ1m0g8CMZ7mdT4kY1A6zREKp_"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-title-md text-title-md text-text-primary">A2Ui Assistant</span></div><div class="flex items-center gap-1.5 mt-0.5"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span></span><span class="font-label-mono text-label-mono text-tertiary uppercase tracking-wider text-[10px]">Online (On-Device/Cloud)</span></div></div></div><div class="relative flex items-center"><div class="relative p-0.5 rounded-full bg-surface-card shadow-[0_1px_8px_rgba(0,0,0,0.06)]"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBidFNXL0nmUMCgDNg7lFeitod1c1rlNGMqn2_fadEnqrzb6_ZJAzzk61By3T3UG-HqoTFAMtm2MT_825YWNUnprsX8okmRI2saBorTao9rrxMyIt3rcRyAZv7wMsbCH0teZdmq1xFl-J2l85bmUK7Mxxy_TJyhkV3UK-cXr7CJ2ORNvaibcy2EXl8sZYomwFUXuZSkAjHR-muEAmItSCRGZPsQW3CSh10qNinr2zGwf5oS828bqyiJ"/><span class="absolute -bottom-1 -right-1 bg-surface-card rounded-full p-0.5 shadow-sm flex items-center justify-center"><span class="material-symbols-outlined text-primary text-[13px] fill-1">verified_user</span></span></div></div></div></div></header><main class="flex-1 w-full bg-surface pt-28 pb-28"><div class="flex flex-col w-full">
+<!-- Model Selection & Sandbox Readiness Sub-Bar -->
+<div class="px-margin pt-space-xs pb-space-sm bg-surface-canvas shadow-sm">
+<div class="flex items-center justify-between gap-space-xs">
+<!-- Active Model Dropdown Pill -->
+<div class="relative inline-flex items-center">
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-card shadow-sm active:scale-95 transition-transform text-left" id="modelPickerBtn">
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
+</span>
+<span class="font-title-md text-title-md text-text-primary tracking-tight">Phi-3.5 Mini</span>
+<span class="px-1.5 py-0.5 rounded-full bg-status-success-subtle font-label-mono text-[9px] uppercase tracking-wide text-status-success font-semibold">On-Device</span>
+<span class="material-symbols-outlined text-[16px] text-text-tertiary">expand_more</span>
+</button>
+<!-- Dynamic Dropdown Menu -->
+<div class="hidden absolute top-full left-0 mt-1.5 w-64 rounded-xl bg-surface-card shadow-xl p-2 z-40 transition-all" id="modelPickerMenu">
+<div class="font-label-mono text-[10px] text-text-tertiary uppercase tracking-wider px-2 py-1">Inference Engine</div>
+<button class="w-full flex items-center justify-between p-2 rounded-lg bg-scotia-red-subtle/50 text-left">
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-text-primary">Phi-3.5 Mini (NPU)</span>
+<span class="font-label-mono text-[10px] text-status-success">100% Offline • Zero Latency</span>
+</div>
+<span class="material-symbols-outlined text-primary text-[18px]">check_circle</span>
+</button>
+<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-surface-container text-left mt-1">
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-text-primary">Claude 3.5 Sonnet</span>
+<span class="font-label-mono text-[10px] text-text-tertiary">Cloud Banking Sandbox</span>
+</div>
+<span class="font-label-mono text-[9px] px-1.5 py-0.5 rounded bg-surface-container font-medium text-text-secondary">Remote</span>
+</button>
+<button class="w-full flex items-center justify-between p-2 rounded-lg hover:bg-surface-container text-left mt-1">
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-text-primary">GPT-4o Mini</span>
+<span class="font-label-mono text-[10px] text-text-tertiary">Low-Latency Cloud LLM</span>
+</div>
+<span class="font-label-mono text-[9px] px-1.5 py-0.5 rounded bg-surface-container font-medium text-text-secondary">Remote</span>
+</button>
+</div>
+</div>
+<!-- Settings Icon Shortcut -->
+<a class="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-surface-card shadow-sm text-text-secondary active:scale-95 transition-transform" href="#" title="Manage Models">
+<span class="material-symbols-outlined text-[16px] text-primary">memory</span>
+<span class="font-label-mono text-[10px] font-medium text-text-primary">NPU: 1.8GB</span>
+</a>
+</div>
+<!-- Offline Sandbox & Privacy Assurance Ribbon -->
+<div class="mt-2 flex items-center justify-between px-2.5 py-1 rounded-lg bg-surface-card/60 shadow-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-status-success" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-label-mono text-[10px] text-text-secondary">100% On-Device Sandbox • Zero Retention Policy</span>
+</div>
+<span class="font-label-mono text-[9px] text-text-tertiary tracking-tight">FP16 NPU Active</span>
+</div>
+</div>
+<!-- Main Scrollable Chat Stream Container -->
+<div class="px-margin py-space-md flex flex-col gap-space-lg pb-40">
+<!-- Welcome Greeting & Instant Action Chips -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<div class="flex items-start gap-space-sm">
+<div class="w-9 h-9 rounded-xl bg-scotia-red-deep flex items-center justify-center shadow-md flex-shrink-0">
+<span class="material-symbols-outlined text-on-primary text-[20px]">smart_toy</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-text-primary">Hello, Julian</span>
+<span class="px-1.5 py-0.5 rounded-full bg-interac-gold-subtle font-label-mono text-[9px] text-interac-gold font-bold">VIP CLIENT</span>
+</div>
+<p class="font-body-md text-body-md text-text-secondary mt-0.5">
+            Your on-device financial co-pilot is primed. Ask for balance breakdowns, trigger payments, or inspect spending effortlessly.
+          </p>
+</div>
+</div>
+<!-- Horizontal Quick Action Suggestion Chips -->
+<div class="flex items-center gap-2 overflow-x-auto py-1 no-scrollbar">
+<button class="suggestion-chip flex items-center gap-1.5 px-3 py-2 rounded-full bg-surface-card shadow-sm hover:shadow active:scale-95 transition-all flex-shrink-0" data-prompt="What are my current balances across accounts?">
+<span class="material-symbols-outlined text-[16px] text-primary">account_balance</span>
+<span class="font-title-md text-title-md text-text-primary whitespace-nowrap">Check all balances</span>
+</button>
+<button class="suggestion-chip flex items-center gap-1.5 px-3 py-2 rounded-full bg-surface-card shadow-sm hover:shadow active:scale-95 transition-all flex-shrink-0" data-prompt="Send $85 to Sarah Jenkins via Interac">
+<span class="material-symbols-outlined text-[16px] text-interac-gold" style="font-variation-settings: 'FILL' 1;">bolt</span>
+<span class="font-title-md text-title-md text-text-primary whitespace-nowrap">Send $85 to Sarah</span>
+</button>
+<button class="suggestion-chip flex items-center gap-1.5 px-3 py-2 rounded-full bg-surface-card shadow-sm hover:shadow active:scale-95 transition-all flex-shrink-0" data-prompt="Request $45 from David for Dinner">
+<span class="material-symbols-outlined text-[16px] text-status-success">call_received</span>
+<span class="font-title-md text-title-md text-text-primary whitespace-nowrap">Request $45 (David)</span>
+</button>
+<button class="suggestion-chip flex items-center gap-1.5 px-3 py-2 rounded-full bg-surface-card shadow-sm hover:shadow active:scale-95 transition-all flex-shrink-0" data-prompt="Show recent credit card charges">
+<span class="material-symbols-outlined text-[16px] text-text-secondary">receipt_long</span>
+<span class="font-title-md text-title-md text-text-primary whitespace-nowrap">Recent activity</span>
+</button>
+</div>
+</div>
+<!-- TURN 1: Account Balances & Smart Aggregator -->
+<div class="flex flex-col gap-2">
+<!-- User Query -->
+<div class="flex justify-end">
+<div class="max-w-[82%] px-4 py-2.5 rounded-2xl rounded-tr-sm bg-primary-container text-on-primary-container shadow-md">
+<p class="font-body-lg text-body-lg">What are my current balances across accounts?</p>
+<div class="flex items-center justify-end gap-1 mt-1 opacity-80">
+<span class="font-label-mono text-[9px]">10:11 AM</span>
+<span class="material-symbols-outlined text-[12px]">done_all</span>
+</div>
+</div>
+</div>
+<!-- Agent Turn 1 Response & Generative Accounts Card -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-1.5">
+<div class="w-6 h-6 rounded-md bg-scotia-red-deep flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[14px]">smart_toy</span>
+</div>
+<span class="font-label-md text-label-md text-text-secondary font-medium">Scotia A2UI Agent</span>
+<span class="font-label-mono text-[10px] text-text-tertiary">0.08s (NPU Latency)</span>
+</div>
+<!-- Generative UI Accounts Card -->
+<div class="w-full rounded-2xl bg-surface-card shadow-md p-space-md flex flex-col gap-space-sm">
+<!-- Card Header & Total Liquidity Summary -->
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-mono text-label-mono uppercase tracking-wider text-text-tertiary">Real-Time Portfolio</span>
+<span class="font-headline-md text-headline-md text-text-primary font-bold tracking-tight">$14,820.50 <span class="font-label-md text-label-md font-normal text-text-secondary">CAD</span></span>
+</div>
+<div class="px-2.5 py-1 rounded-full bg-status-success-subtle flex items-center gap-1">
+<span class="material-symbols-outlined text-status-success text-[14px]">verified</span>
+<span class="font-label-mono text-[10px] text-status-success font-semibold">Liquid &amp; Ready</span>
+</div>
+</div>
+<!-- Accounts Itemized List -->
+<div class="flex flex-col gap-2 mt-1">
+<!-- Chequing -->
+<div class="p-3 rounded-xl bg-surface-canvas flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-card flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined text-[18px]">account_balance_wallet</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-text-primary font-semibold">Ultimate Package</span>
+<span class="font-label-mono text-[10px] text-text-tertiary font-normal">...4821</span>
+</div>
+<span class="font-label-md text-label-md text-text-secondary">Primary Operating Chequing</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-title-lg text-title-lg text-text-primary font-bold">$6,420.50</span>
+<span class="block font-label-mono text-[9px] text-status-success font-medium">Available</span>
+</div>
+</div>
+<!-- Savings -->
+<div class="p-3 rounded-xl bg-surface-canvas flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-card flex items-center justify-center text-status-success shadow-sm">
+<span class="material-symbols-outlined text-[18px]">trending_up</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-text-primary font-semibold">MomentumPLUS Savings</span>
+<span class="font-label-mono text-[10px] text-text-tertiary font-normal">...9012</span>
+</div>
+<span class="font-label-md text-label-md text-text-secondary">Earns 4.85% APY</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-title-lg text-title-lg text-text-primary font-bold">$8,400.00</span>
+<span class="block font-label-mono text-[9px] text-status-success font-medium">Available</span>
+</div>
+</div>
+<!-- Visa Infinite Credit Card -->
+<div class="p-3 rounded-xl bg-surface-canvas flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-card flex items-center justify-center text-scotia-red-deep shadow-sm">
+<span class="material-symbols-outlined text-[18px]">credit_card</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-text-primary font-semibold">Scotia Momentum Visa</span>
+<span class="font-label-mono text-[10px] text-text-tertiary font-normal">...1104</span>
+</div>
+<span class="font-label-md text-label-md text-text-secondary">Limit: $10,000.00</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-title-lg text-title-lg text-text-primary font-bold">-$1,845.20</span>
+<span class="block font-label-mono text-[9px] text-text-secondary font-medium">$8,154.80 left</span>
+</div>
+</div>
+<!-- ScotiaLine LOC -->
+<div class="p-3 rounded-xl bg-surface-canvas flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-surface-card flex items-center justify-center text-tertiary shadow-sm">
+<span class="material-symbols-outlined text-[18px]">account_balance</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-title-md text-title-md text-text-primary font-semibold">ScotiaLine LOC</span>
+<span class="font-label-mono text-[10px] text-text-tertiary font-normal">...3391</span>
+</div>
+<span class="font-label-md text-label-md text-text-secondary">Prime + 1.25%</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-title-lg text-title-lg text-text-primary font-bold">$15,000.00</span>
+<span class="block font-label-mono text-[9px] text-status-success font-medium">Available Credit</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TURN 2: Interactive Interac e-Transfer Preparation Card -->
+<div class="flex flex-col gap-2">
+<!-- User Query -->
+<div class="flex justify-end">
+<div class="max-w-[85%] px-4 py-2.5 rounded-2xl rounded-tr-sm bg-primary-container text-on-primary-container shadow-md">
+<p class="font-body-lg text-body-lg">Send $120 to Sarah Jenkins via Interac with SMS notification</p>
+<div class="flex items-center justify-end gap-1 mt-1 opacity-80">
+<span class="font-label-mono text-[9px]">10:12 AM</span>
+<span class="material-symbols-outlined text-[12px]">done_all</span>
+</div>
+</div>
+</div>
+<!-- Assistant Generative Interactive Slip -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-1.5">
+<div class="w-6 h-6 rounded-md bg-scotia-red-deep flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[14px]">smart_toy</span>
+</div>
+<span class="font-label-md text-label-md text-text-secondary font-medium">Scotia A2UI Agent</span>
+<span class="font-label-mono text-[10px] text-text-tertiary">Slot-filling complete</span>
+</div>
+<!-- Interactive Interac Card with Gold Stripe Indicator -->
+<div class="w-full rounded-2xl bg-surface-card shadow-lg p-space-md flex flex-col gap-space-sm relative overflow-hidden transition-all duration-300" id="transferInteractiveCard">
+<!-- Top Interac Gold Accent Band -->
+<div class="absolute top-0 left-0 right-0 h-1.5 bg-interac-gold"></div>
+<!-- Card Header & Badge -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-2">
+<span class="w-7 h-7 rounded-full bg-interac-gold-subtle flex items-center justify-center font-bold text-interac-gold text-[11px] font-label-mono">e-T</span>
+<span class="font-title-lg text-title-lg text-text-primary">Draft Transfer</span>
+</div>
+<div class="px-2 py-0.5 rounded-full bg-status-success-subtle flex items-center gap-1">
+<span class="material-symbols-outlined text-status-success text-[12px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-mono text-[10px] text-status-success font-semibold">Autodeposit Verified</span>
+</div>
+</div>
+<!-- Recipient Preview Pill -->
+<div class="flex items-center justify-between p-3 rounded-xl bg-surface-canvas">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-scotia-red-subtle flex items-center justify-center text-primary font-title-lg font-bold">
+                SJ
+              </div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-text-primary">Sarah Jenkins</span>
+<span class="font-label-mono text-[11px] text-text-secondary">+1 (416) 555-0192</span>
+</div>
+</div>
+<span class="font-label-mono text-[10px] px-2 py-1 rounded bg-surface-card shadow-sm text-text-secondary">Contact Matched</span>
+</div>
+<!-- Delivery Method Toggle: Email vs SMS -->
+<div class="flex flex-col gap-1.5">
+<span class="font-label-mono text-label-mono text-text-tertiary uppercase tracking-wide">Notification Channel</span>
+<div class="grid grid-cols-2 gap-2 bg-surface-canvas p-1 rounded-xl">
+<button class="channel-toggle py-2 px-3 rounded-lg font-title-md text-title-md text-center transition-all bg-transparent text-text-secondary" data-mode="email" type="button">
+                Email Address
+              </button>
+<button class="channel-toggle py-2 px-3 rounded-lg font-title-md text-title-md text-center transition-all bg-surface-card shadow-sm text-text-primary font-semibold" data-mode="sms" type="button">
+                SMS (Selected)
+              </button>
+</div>
+</div>
+<!-- Editable Transfer Amount & Account Pickers -->
+<div class="grid grid-cols-1 gap-space-xs">
+<div class="flex flex-col gap-1">
+<span class="font-label-mono text-label-mono text-text-tertiary uppercase tracking-wide">Transfer Amount</span>
+<div class="flex items-center justify-between p-3 rounded-xl bg-surface-canvas">
+<span class="font-label-mono text-title-lg text-text-secondary">CAD $</span>
+<input class="w-32 bg-transparent text-right font-headline-md text-headline-md text-text-primary font-bold focus:outline-none" id="transferAmountInput" type="text" value="120.00"/>
+</div>
+</div>
+<!-- Source Account Selector -->
+<div class="flex flex-col gap-1 mt-1">
+<span class="font-label-mono text-label-mono text-text-tertiary uppercase tracking-wide">From Account</span>
+<div class="flex items-center justify-between p-3 rounded-xl bg-surface-canvas">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-primary">account_balance_wallet</span>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-text-primary">Ultimate Chequing ...4821</span>
+<span class="font-label-mono text-[10px] text-status-success">$6,420.50 Available</span>
+</div>
+</div>
+<span class="font-label-mono text-[11px] text-text-secondary">Fee: $0.00</span>
+</div>
+</div>
+</div>
+<!-- Solvency Safety Check Callout -->
+<div class="flex items-center gap-2 p-2.5 rounded-xl bg-status-success-subtle text-status-success">
+<span class="material-symbols-outlined text-[16px]">security</span>
+<span class="font-body-md text-body-md">Sufficient funds verified. Instant zero-fee processing.</span>
+</div>
+<!-- Action CTA Trigger -->
+<button class="w-full py-3.5 px-space-md rounded-xl bg-primary-container text-on-primary-container font-title-lg text-title-lg font-semibold flex items-center justify-center gap-2 shadow-md hover:bg-scotia-red-deep active:scale-[0.98] transition-all" id="sendTransferTriggerBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">send</span>
+<span>Authorize &amp; Send $120.00 CAD</span>
+</button>
+</div>
+</div>
+</div>
+<!-- TURN 3: Request Money via Interac Draft -->
+<div class="flex flex-col gap-2">
+<!-- User Query -->
+<div class="flex justify-end">
+<div class="max-w-[85%] px-4 py-2.5 rounded-2xl rounded-tr-sm bg-primary-container text-on-primary-container shadow-md">
+<p class="font-body-lg text-body-lg">Request $45 from Alex Chen for dinner memo: Sushi night</p>
+<div class="flex items-center justify-end gap-1 mt-1 opacity-80">
+<span class="font-label-mono text-[9px]">10:13 AM</span>
+<span class="material-symbols-outlined text-[12px]">done_all</span>
+</div>
+</div>
+</div>
+<!-- Assistant Response & Interactive Request Slip -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-1.5">
+<div class="w-6 h-6 rounded-md bg-scotia-red-deep flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[14px]">smart_toy</span>
+</div>
+<span class="font-label-md text-label-md text-text-secondary font-medium">Scotia A2UI Agent</span>
+<span class="font-label-mono text-[10px] text-text-tertiary">Draft Prepared</span>
+</div>
+<div class="w-full rounded-2xl bg-surface-card shadow-md p-space-md flex flex-col gap-space-sm relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-status-success-subtle flex items-center justify-center text-status-success font-bold text-[12px]">
+<span class="material-symbols-outlined text-[16px]">call_received</span>
+</div>
+<span class="font-title-lg text-title-lg text-text-primary">Money Request Form</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-surface-canvas font-label-mono text-[10px] text-text-secondary">Ready to Dispatch</span>
+</div>
+<div class="flex flex-col gap-2 bg-surface-canvas p-3 rounded-xl">
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-text-secondary">Requestee</span>
+<span class="font-title-md text-title-md text-text-primary">Alex Chen (alex.c***@outlook.com)</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-text-secondary">Amount</span>
+<span class="font-headline-sm text-headline-sm text-text-primary font-bold">$45.00 CAD</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-text-secondary">Deposit Into</span>
+<span class="font-label-mono text-[11px] text-text-primary">Ultimate Chequing ...4821</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="font-body-md text-body-md text-text-secondary">Invoice / Memo</span>
+<span class="font-body-md text-body-md font-semibold text-text-primary">"Sushi night"</span>
+</div>
+</div>
+<div class="flex items-center gap-2 p-2 rounded-lg bg-surface-canvas text-text-secondary">
+<span class="material-symbols-outlined text-[15px] text-interac-gold">help</span>
+<span class="font-label-mono text-[10px]">Alex will answer security question or verify via online banking.</span>
+</div>
+<div class="flex items-center gap-2 mt-1">
+<button class="flex-1 py-2.5 rounded-xl bg-surface-canvas font-title-md text-title-md text-text-primary hover:bg-secondary-container transition-all">
+              Cancel Draft
+            </button>
+<button class="flex-1 py-2.5 rounded-xl bg-primary text-on-primary font-title-md text-title-md font-semibold shadow-sm active:scale-95 transition-all">
+              Send Request
+            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- TURN 4: Completed Permanent Receipt Card -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-1.5">
+<div class="w-6 h-6 rounded-md bg-status-success flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary text-[14px]">done_all</span>
+</div>
+<span class="font-label-md text-label-md text-status-success font-semibold">Transfer Executed Successfully</span>
+<span class="font-label-mono text-[10px] text-text-tertiary">10:14 AM EST</span>
+</div>
+<!-- Finished Transaction Confirmation Card -->
+<div class="w-full rounded-2xl bg-surface-card shadow-lg p-space-md flex flex-col gap-space-sm relative overflow-hidden">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-status-success-subtle flex items-center justify-center text-status-success">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="flex flex-col">
+<span class="font-title-md text-title-md text-text-primary font-bold">Interac e-Transfer Sent</span>
+<span class="font-label-mono text-[10px] text-text-tertiary">#SC-9824104928-ET</span>
+</div>
+</div>
+<span class="font-headline-sm text-headline-sm text-text-primary font-bold">$120.00</span>
+</div>
+<div class="grid grid-cols-2 gap-2 bg-surface-canvas p-3 rounded-xl">
+<div class="flex flex-col">
+<span class="font-label-mono text-[10px] text-text-tertiary uppercase">Recipient</span>
+<span class="font-title-md text-title-md text-text-primary">Sarah Jenkins</span>
+<span class="font-label-mono text-[10px] text-text-secondary">+1 416-555-0192</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-mono text-[10px] text-text-tertiary uppercase">Debited From</span>
+<span class="font-title-md text-title-md text-text-primary">Chequing ...4821</span>
+<span class="font-label-mono text-[10px] text-status-success">Updated: $6,300.50</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-status-success text-[15px]">verified_user</span>
+<span class="font-label-mono text-[10px] text-text-secondary">Autodeposited directly to recipient</span>
+</div>
+<button class="font-title-md text-title-md text-primary font-semibold flex items-center gap-0.5 hover:underline">
+<span>Share Receipt</span>
+<span class="material-symbols-outlined text-[14px]">share</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Assistant Floating Input Dock & Control Surface -->
+<div class="fixed bottom-16 left-0 right-0 z-40 px-margin pb-2 bg-surface/90 backdrop-blur-xl">
+<div class="w-full max-w-md mx-auto flex flex-col gap-1.5">
+<!-- Input Rail -->
+<div class="flex items-center gap-2 p-1.5 rounded-2xl bg-surface-card shadow-xl">
+<button class="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-primary active:scale-95 transition-transform" title="Attach Document or Receipt" type="button">
+<span class="material-symbols-outlined text-[20px]">attach_file</span>
+</button>
+<input class="flex-1 bg-transparent font-body-lg text-body-lg text-text-primary placeholder:text-text-tertiary focus:outline-none px-1" id="agentChatInput" placeholder="Ask Scotia Agent or request transfer..." type="text"/>
+<button class="w-10 h-10 rounded-xl flex items-center justify-center text-text-secondary hover:text-text-primary active:scale-95 transition-transform" title="Dictate Query" type="button">
+<span class="material-symbols-outlined text-[20px]">mic</span>
+</button>
+<button class="w-10 h-10 rounded-xl bg-primary-container text-on-primary-container flex items-center justify-center shadow-md active:scale-90 transition-transform" id="agentSendBtn" type="button">
+<span class="material-symbols-outlined text-[20px]">arrow_upward</span>
+</button>
+</div>
+<!-- Dock Metadata & Privacy Footnote -->
+<div class="flex items-center justify-between px-2">
+<div class="flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+<span class="font-label-mono text-[10px] text-text-tertiary">Active: Phi-3.5 Mini (NPU) • Tap to switch</span>
+</div>
+<div class="flex items-center gap-1 text-text-tertiary">
+<span class="material-symbols-outlined text-[11px]">lock</span>
+<span class="font-label-mono text-[9px]">256-Bit Encrypted</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    // Model Selection Menu Toggle
+    const pickerBtn = document.getElementById('modelPickerBtn');
+    const pickerMenu = document.getElementById('modelPickerMenu');
+    if (pickerBtn && pickerMenu) {
+      pickerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        pickerMenu.classList.toggle('hidden');
+      });
+      document.addEventListener('click', () => {
+        pickerMenu.classList.add('hidden');
+      });
+    }
+
+    // Channel Toggle (SMS vs Email)
+    const channelToggles = document.querySelectorAll('.channel-toggle');
+    channelToggles.forEach(btn => {
+      btn.addEventListener('click', function() {
+        channelToggles.forEach(b => {
+          b.classList.remove('bg-surface-card', 'shadow-sm', 'text-text-primary', 'font-semibold');
+          b.classList.add('bg-transparent', 'text-text-secondary');
+        });
+        this.classList.remove('bg-transparent', 'text-text-secondary');
+        this.classList.add('bg-surface-card', 'shadow-sm', 'text-text-primary', 'font-semibold');
+      });
+    });
+
+    // Suggestion Chips Autofill
+    const chips = document.querySelectorAll('.suggestion-chip');
+    const input = document.getElementById('agentChatInput');
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const text = chip.getAttribute('data-prompt');
+        if (input && text) {
+          input.value = text;
+          input.focus();
+        }
+      });
+    });
+
+    // Transfer Trigger Confirmation Animation
+    const sendBtn = document.getElementById('sendTransferTriggerBtn');
+    const transferCard = document.getElementById('transferInteractiveCard');
+    if (sendBtn && transferCard) {
+      sendBtn.addEventListener('click', () => {
+        sendBtn.innerHTML = '<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span><span>Processing Autodeposit...</span>';
+        sendBtn.classList.add('opacity-80');
+        setTimeout(() => {
+          sendBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check</span><span>Funds Transferred!</span>';
+          sendBtn.classList.remove('bg-primary-container');
+          sendBtn.classList.add('bg-status-success');
+        }, 800);
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-semibold"><div class="flex items-center justify-around h-16 max-w-md mx-auto px-margin"><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-md text-secondary hover:text-on-surface transition-colors" data-path="a2ui-assistant" href="#"><span class="material-symbols-outlined text-[24px]">smart_toy</span><span class="font-label-md text-label-md mt-0.5">A2UI Assistant</span></a><a class="flex flex-col items-center justify-center min-w-[44px] min-h-[44px] px-space-md text-secondary hover:text-on-surface transition-colors" data-path="settings-&amp;-models" href="#"><span class="material-symbols-outlined text-[24px]">tune</span><span class="font-label-md text-label-md mt-0.5">Settings &amp; Models</span></a></div></nav></body></html>
